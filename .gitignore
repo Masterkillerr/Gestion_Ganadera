@@ -20,9 +20,17 @@ frontend/build/
 backend/uploads/*
 !backend/uploads/.gitkeep
 
+# Java Build outputs
+backend/target/
+*.class
+*.jar
+*.war
+*.ear
+
 # IDE
 .vscode/
 .idea/
+*.iml
 *.swp
 *.swo
 
