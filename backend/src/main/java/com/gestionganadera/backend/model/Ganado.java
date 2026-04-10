@@ -7,12 +7,11 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "ganado", indexes = {
-    @Index(columnList = "lote_id"),
-    @Index(columnList = "estado")
+        @Index(columnList = "lote_id"),
+        @Index(columnList = "estado")
 })
 @Data
 @NoArgsConstructor

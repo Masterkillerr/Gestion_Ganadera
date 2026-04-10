@@ -14,8 +14,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UsuarioController {
 
-    // TODO: Implement UsuarioController with proper service and DTO mapping
-    public ResponseEntity<?> getAllUsuarios() {
-        return ResponseEntity.ok("Not implemented yet");
+    private final UsuarioDetailsService usuarioDetailsService;
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UsuarioDTO>> getAllUsuarios() {
+        // TODO: Implement with proper service and DTO mapping
+        return ResponseEntity.ok(List.of());
     }
 }
