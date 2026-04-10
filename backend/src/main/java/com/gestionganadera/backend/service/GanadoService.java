@@ -3,6 +3,7 @@ package com.gestionganadera.backend.service;
 import com.gestionganadera.backend.model.Ganado;
 import com.gestionganadera.backend.repository.GanadoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,15 +19,15 @@ public class GanadoService {
         return ganadoRepository.findAll();
     }
 
-    public Optional<Ganado> findById(String id) {
+    public Optional<Ganado> findById(@NonNull String id) {
         return ganadoRepository.findById(id);
     }
 
-    public Ganado save(Ganado ganado) {
+    public Ganado save(@NonNull Ganado ganado) {
         return ganadoRepository.save(ganado);
     }
 
-    public Ganado update(String id, Ganado ganado) {
+    public Ganado update(@NonNull String id, @NonNull Ganado ganado) {
         return ganadoRepository.findById(id)
                 .map(existing -> {
                     existing.setIdentificador(ganado.getIdentificador());
@@ -42,7 +43,7 @@ public class GanadoService {
                 .orElseThrow(() -> new RuntimeException("Ganado no encontrado"));
     }
 
-    public void delete(String id) {
+    public void delete(@NonNull String id) {
         ganadoRepository.deleteById(id);
     }
 }

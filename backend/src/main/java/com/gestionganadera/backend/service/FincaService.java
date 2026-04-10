@@ -3,6 +3,7 @@ package com.gestionganadera.backend.service;
 import com.gestionganadera.backend.model.Finca;
 import com.gestionganadera.backend.repository.FincaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,15 +19,15 @@ public class FincaService {
         return fincaRepository.findAll();
     }
 
-    public Optional<Finca> findById(String id) {
+    public Optional<Finca> findById(@NonNull String id) {
         return fincaRepository.findById(id);
     }
 
-    public Finca save(Finca finca) {
+    public Finca save(@NonNull Finca finca) {
         return fincaRepository.save(finca);
     }
 
-    public Finca update(String id, Finca finca) {
+    public Finca update(@NonNull String id, @NonNull Finca finca) {
         return fincaRepository.findById(id)
                 .map(existing -> {
                     existing.setNombre(finca.getNombre());
@@ -38,7 +39,7 @@ public class FincaService {
                 .orElseThrow(() -> new RuntimeException("Finca no encontrada"));
     }
 
-    public void delete(String id) {
+    public void delete(@NonNull String id) {
         fincaRepository.deleteById(id);
     }
 }

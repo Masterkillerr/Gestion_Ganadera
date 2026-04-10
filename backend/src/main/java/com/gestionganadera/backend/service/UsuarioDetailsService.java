@@ -1,6 +1,5 @@
 package com.gestionganadera.backend.service;
 
-import com.gestionganadera.backend.model.Usuario;
 import com.gestionganadera.backend.repository.UsuarioRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
