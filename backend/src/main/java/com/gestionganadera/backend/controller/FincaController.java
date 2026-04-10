@@ -5,6 +5,7 @@ import com.gestionganadera.backend.service.FincaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class FincaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Finca> getFincaById(@PathVariable String id) {
+    public ResponseEntity<Finca> getFincaById(@PathVariable @NonNull String id) {
         return fincaService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -30,19 +31,19 @@ public class FincaController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Finca> createFinca(@RequestBody Finca finca) {
+    public ResponseEntity<Finca> createFinca(@RequestBody @NonNull Finca finca) {
         return ResponseEntity.ok(fincaService.save(finca));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Finca> updateFinca(@PathVariable String id, @RequestBody Finca finca) {
+    public ResponseEntity<Finca> updateFinca(@PathVariable @NonNull String id, @RequestBody @NonNull Finca finca) {
         return ResponseEntity.ok(fincaService.update(id, finca));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteFinca(@PathVariable String id) {
+    public ResponseEntity<Void> deleteFinca(@PathVariable @NonNull String id) {
         fincaService.delete(id);
         return ResponseEntity.noContent().build();
     }

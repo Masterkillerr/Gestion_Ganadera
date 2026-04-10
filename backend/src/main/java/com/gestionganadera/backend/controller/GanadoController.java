@@ -4,6 +4,7 @@ import com.gestionganadera.backend.model.Ganado;
 import com.gestionganadera.backend.service.GanadoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,24 +22,24 @@ public class GanadoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Ganado> getGanadoById(@PathVariable String id) {
+    public ResponseEntity<Ganado> getGanadoById(@PathVariable @NonNull String id) {
         return ganadoService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Ganado> createGanado(@RequestBody Ganado ganado) {
+    public ResponseEntity<Ganado> createGanado(@RequestBody @NonNull Ganado ganado) {
         return ResponseEntity.ok(ganadoService.save(ganado));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Ganado> updateGanado(@PathVariable String id, @RequestBody Ganado ganado) {
+    public ResponseEntity<Ganado> updateGanado(@PathVariable @NonNull String id, @RequestBody @NonNull Ganado ganado) {
         return ResponseEntity.ok(ganadoService.update(id, ganado));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGanado(@PathVariable String id) {
+    public ResponseEntity<Void> deleteGanado(@PathVariable @NonNull String id) {
         ganadoService.delete(id);
         return ResponseEntity.noContent().build();
     }
