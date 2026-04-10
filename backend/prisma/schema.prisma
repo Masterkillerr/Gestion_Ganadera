@@ -1,5 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// ============================================
+// MODELO DE DATOS - SISTEMA DE GESTIÓN GANADERA
+// ============================================
 
 generator client {
   provider = "prisma-client-js"
@@ -10,4 +11,235 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Define your models here
+// ============================================
+// ENUMS
+// ============================================
+
+enum Rol {
+  ADMIN
+  OPERADOR
+}
+
+enum EstadoGanado {
+  ACTIVO
+  EN_TRATAMIENTO
+  SECO
+  VENDIDO
+  MUERTO
+}
+
+enum SexoGanado {
+  MACHO
+  HEMBRA
+}
+
+enum TipoMovimiento {
+  TRASLADO
+  VENTA
+  BAJA
+  COMPRA
+}
+
+enum TurnoProduccion {
+  MANANA
+  TARDE
+  NOCHE
+}
+
+// ============================================
+// MODELOS PRINCIPALES
+// ============================================
+
+model Usuario {
+  id        String   @id @default(uuid())
+  nombre    String
+  email     String   @unique
+  password  String
+  rol       Rol      @default(OPERADOR)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  fincasEncargadas   Finca[]              @relation("EncargadoFinca")
+  sanidadesAplicadas Sanidad[]            @relation("VeterinarioSanidad")
+  movimientos        MovimientoInventario[]
+
+  @@map("usuarios")
+}
+
+model Finca {
+  id          String   @id @default(uuid())
+  nombre      String
+  ubicacion   String
+  area        Float    // Hectáreas
+  encargadoId String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  encargado Usuario? @relation("EncargadoFinca", fields: [encargadoId], references: [id], onDelete: SetNull)
+  lotes     Lote[]
+
+  @@map("fincas")
+}
+
+model Lote {
+  id           String   @id @default(uuid())
+  nombre       String
+  fincaId      String
+  capacidad    Int      // Capacidad máxima de ganado
+  tipoPasto    String?
+  area         Float?   // Hectáreas del lote
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relaciones
+  finca  Finca   @relation(fields: [fincaId], references: [id], onDelete: Cascade)
+  ganado Ganado[]
+
+  @@unique([fincaId, nombre])
+  @@map("lotes")
+}
+
+model Ganado {
+  id              String       @id @default(uuid())
+  identificador   String       @unique // Arete/ID único
+  raza            String?
+  sexo            SexoGanado
+  fechaNacimiento DateTime?
+  peso            Float?       // Kg
+  estado          EstadoGanado @default(ACTIVO)
+  loteId          String
+  fotoUrl         String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  // Relaciones
+  lote               Lote               @relation(fields: [loteId], references: [id], onDelete: Restrict)
+  
+  // Reproducción
+  reproduccionesMadre  Reproduccion[]   @relation("MadreReproduccion")
+  reproduccionesPadre  Reproduccion[]   @relation("PadreReproduccion")
+  ternerosNacidosMadre Ternero[]        @relation("MadreTernero")
+  ternerosNacidosPadre Ternero[]        @relation("PadreTernero")
+  
+  // Sanidad y Producción
+  sanidades          Sanidad[]
+  produccionesLeche  ProduccionLeche[]
+  movimientosOrigen  MovimientoInventario[] @relation("OrigenMovimiento")
+  movimientosDestino MovimientoInventario[] @relation("DestinoMovimiento")
+
+  @@index([loteId])
+  @@index([estado])
+  @@map("ganado")
+}
+
+model Reproduccion {
+  id                String    @id @default(uuid())
+  vacaId            String    // Madre
+  toroId            String    // Padre
+  fechaMonta        DateTime  @default(now())
+  fechaPartoEsperada DateTime?
+  fechaPartoReal    DateTime?
+  tipoParto         String?   // Normal, Cesárea, Asistido
+  observaciones     String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relaciones
+  vaca Ganado @relation("MadreReproduccion", fields: [vacaId], references: [id], onDelete: Restrict)
+  toro Ganado @relation("PadreReproduccion", fields: [toroId], references: [id], onDelete: Restrict)
+  
+  terneros Ternero[]
+
+  @@index([vacaId])
+  @@index([toroId])
+  @@index([fechaPartoEsperada])
+  @@map("reproduccion")
+}
+
+model Ternero {
+  id              String    @id @default(uuid())
+  madreId         String
+  padreId         String
+  reproduccionId  String    @unique
+  fechaNacimiento DateTime?
+  pesoNacimiento  Float?    // Kg
+  sexo            SexoGanado
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relaciones
+  madre        Ganado       @relation("MadreTernero", fields: [madreId], references: [id], onDelete: Restrict)
+  padre        Ganado       @relation("PadreTernero", fields: [padreId], references: [id], onDelete: Restrict)
+  reproduccion Reproduccion @relation(fields: [reproduccionId], references: [id], onDelete: Cascade)
+
+  @@index([madreId])
+  @@index([padreId])
+  @@map("terneros")
+}
+
+model Sanidad {
+  id              String   @id @default(uuid())
+  ganadoId        String
+  tipoTratamiento String   // Vacunación, Desparasitación, Antibiótico, etc.
+  medicamento     String
+  dosis           String
+  fechaAplicacion DateTime @default(now())
+  fechaRetiro     DateTime? // Fecha de retiro antes de consumo/producción
+  veterinarioId   String?
+  observaciones   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relaciones
+  ganado    Ganado   @relation(fields: [ganadoId], references: [id], onDelete: Cascade)
+  veterinario Usuario? @relation("VeterinarioSanidad", fields: [veterinarioId], references: [id], onDelete: SetNull)
+
+  @@index([ganadoId])
+  @@index([fechaAplicacion])
+  @@index([fechaRetiro])
+  @@map("sanidad")
+}
+
+model ProduccionLeche {
+  id           String         @id @default(uuid())
+  ganadoId     String
+  fecha        DateTime       @default(now())
+  cantidadLitros Float        // Litros producidos
+  turno        TurnoProduccion
+  observaciones String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  // Relaciones
+  ganado Ganado @relation(fields: [ganadoId], references: [id], onDelete: Cascade)
+
+  @@index([ganadoId])
+  @@index([fecha])
+  @@map("produccion_leche")
+}
+
+model MovimientoInventario {
+  id           String         @id @default(uuid())
+  ganadoId     String
+  tipoMovimiento TipoMovimiento
+  fecha        DateTime       @default(now())
+  origenId     String?        // Lote origen
+  destinoId    String?        // Lote destino
+  motivo       String?
+  usuarioId    String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  // Relaciones
+  ganado    Ganado @relation("OrigenMovimiento", fields: [ganadoId], references: [id], onDelete: Restrict)
+  origen    Lote?  @relation("LoteOrigen", fields: [origenId], references: [id], onDelete: SetNull)
+  destino   Lote?  @relation("LoteDestino", fields: [destinoId], references: [id], onDelete: SetNull)
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Restrict)
+
+  @@index([ganadoId])
+  @@index([fecha])
+  @@index([tipoMovimiento])
+  @@map("movimientos_inventario")
+}
