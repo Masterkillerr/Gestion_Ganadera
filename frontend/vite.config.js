@@ -3,7 +3,10 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/Gestion_Ganadera/',
+  base: './',
+  build: {
+    assetsDir: 'assets',
+  },
   server: {
     port: 5173,
   },
