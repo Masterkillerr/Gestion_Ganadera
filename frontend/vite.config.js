@@ -6,6 +6,7 @@ export default defineConfig({
   base: './',
   build: {
     assetsDir: 'assets',
+    crossorigin: null,
   },
   server: {
     port: 5173,
