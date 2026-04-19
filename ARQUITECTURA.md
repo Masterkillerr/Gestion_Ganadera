@@ -18,15 +18,14 @@ Sistema web integral para la gestión de operaciones ganaderas, permitiendo admi
 - Recharts (dashboard y estadísticas)
 
 **Backend:**
-- Node.js + Express.js (API REST)
-- JWT (autenticación)
-- bcrypt (encriptación contraseñas)
-- multer (subida de imágenes)
-- express-validator (validación requests)
+- Java 17
+- Spring Boot 3.5.x
+- Spring Security + JWT
+- Spring Data JPA (Hibernate)
+- Maven (Gestión de dependencias)
 
 **Base de Datos:**
 - PostgreSQL (base de datos relacional)
-- Prisma ORM (gestión de modelo de datos)
 
 ---
 
@@ -93,72 +92,15 @@ Ganado (id, arete/identificador, raza, sexo, fechaNacimiento,
 
 ```
 /api
-├── /auth
-│   ├── POST /register          # Registro de usuario
-│   ├── POST /login             # Login y JWT
-│   └── POST /refresh-token     # Refrescar token
-│
-├── /usuarios (Admin)
-│   ├── GET /                   # Listar usuarios
-│   ├── GET /:id                # Detalle usuario
-│   ├── POST /                  # Crear usuario
-│   ├── PUT /:id                # Editar usuario
-│   └── DELETE /:id             # Eliminar usuario
-│
-├── /fincas
-│   ├── GET /                   # Listar fincas
-│   ├── GET /:id                # Detalle finca
-│   ├── POST /                  # Crear finca
-│   ├── PUT /:id                # Editar finca
-│   └── DELETE /:id             # Eliminar finca
-│
-├── /lotes
-│   ├── GET /                   # Listar lotes
-│   ├── GET /:id                # Detalle lote
-│   ├── GET /:id/ganado         # Ganado en lote
-│   ├── POST /                  # Crear lote
-│   ├── PUT /:id                # Editar lote
-│   └── DELETE /:id             # Eliminar lote
-│
-├── /ganado
-│   ├── GET /                   # Listar ganado (con filtros)
-│   ├── GET /:id                # Detalle ganado
-│   ├── GET /:id/historial      # Historial completo
-│   ├── POST /                  # Registrar ganado
-│   ├── PUT /:id                # Editar ganado
-│   ├── DELETE /:id             # Eliminar/baja ganado
-│   └── POST /:id/foto          # Subir foto
-│
-├── /reproduccion
-│   ├── GET /                   # Listar registros
-│   ├── GET /:id                # Detalle
-│   ├── POST /                  # Registrar monta
-│   ├── PUT /:id                # Actualizar (parto)
-│   └── GET /pendientes-parto   # Próximos partos
-│
-├── /sanidad
-│   ├── GET /                   # Listar tratamientos
-│   ├── GET /:id                # Detalle
-│   ├── POST /                  # Registrar tratamiento
-│   ├── PUT /:id                # Editar tratamiento
-│   └── GET /calendario         # Calendario vacunación
-│
-├── /produccion
-│   ├── GET /                   # Listar registros
-│   ├── POST /                  # Registrar producción
-│   ├── GET /resumen            # Resumen producción
-│   └── GET /estadisticas       # Estadísticas producción
-│
-├── /movimientos
-│   ├── GET /                   # Listar movimientos
-│   ├── POST /                  # Registrar movimiento
-│   └── GET /:ganadoId/historial # Historial movimientos
-│
-└── /dashboard
-    ├── GET /estadisticas       # Stats generales
-    ├── GET /produccion-mensual # Producción mensual
-    ├── GET /estado-hatos       # Estado de hatos
-    └── GET /alertas            # Alertas del sistema
+├── /auth               # AuthController (Login/JWT)
+├── /usuarios           # UsuarioController
+├── /fincas             # FincaController
+├── /lotes              # LoteController
+├── /ganado             # GanadoController
+├── /reproduccion       # Entidad/Repository
+├── /sanidad            # Entidad/Repository
+├── /produccion         # Entidad/Repository
+└── /dashboard          # Lógica en servicios
 ```
 
 ---
@@ -372,18 +314,19 @@ Ganado (id, arete/identificador, raza, sexo, fechaNacimiento,
 Gestion_Ganadera/
 ├── backend/
 │   ├── src/
-│   │   ├── controllers/          # Controladores por entidad
-│   │   ├── routes/               # Rutas API
-│   │   ├── middleware/           # Auth, validación, uploads
-│   │   ├── services/             # Lógica de negocio
-│   │   ├── utils/                # Helpers
-│   │   └── app.js                # Config Express
-│   ├── prisma/
-│   │   ├── schema.prisma         # Modelo de datos
-│   │   └── seed.js               # Datos iniciales
-│   ├── uploads/                  # Imágenes ganado
-│   ├── .env                      # Variables entorno
-│   └── package.json
+│   │   ├── main/
+│   │   │   ├── java/com/gestionganadera/backend/
+│   │   │   │   ├── config/       # SecurityConfig
+│   │   │   │   ├── controller/   # REST Controllers
+│   │   │   │   ├── dto/          # Data Transfer Objects
+│   │   │   │   ├── model/        # Entities (JPA)
+│   │   │   │   ├── repository/   # Spring Data Repositories
+│   │   │   │   ├── service/      # Business Logic
+│   │   │   │   └── util/         # JWT, FileUpload
+│   │   │   └── resources/
+│   │   │       └── application.properties
+│   ├── pom.xml                   # Maven dependencies
+│   └── .classpath                # IDE config
 │
 ├── frontend/
 │   ├── src/
