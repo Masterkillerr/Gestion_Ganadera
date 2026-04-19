@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GestGan - Sistema de Gestión Ganadera</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Sistema de Gestión Ganadera" />
+  <link rel="icon" type="image/svg+xml" href="./vite.svg" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="./assets/index-Cpj9vfDr.css">
+  <style>
+    body { background: #0a0f0a; color: #f3f4f6; font-family: Inter, sans-serif; margin: 0; }
+    .glass-card { background: linear-gradient(135deg, #1e2b1ecc, #182118e6); border: 1px solid #2e3d2e; border-radius: 1rem; padding: 1.25rem; }
+    h1 { color: #82d682; font-size: 1.875rem; font-weight: bold; }
+    h2 { color: #82d682; font-size: 1.125rem; font-weight: bold; margin-bottom: 1rem; }
+    .badge { background: #113e11; color: #82d682; padding: 0.25rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; border: 1px solid #186118; }
+    .btn { background: #1f7d1f; color: white; padding: 0.5rem 1rem; border-radius: 0.75rem; border: none; cursor: pointer; }
+    .btn:hover { background: #2d9c2d; }
+    .grid { display: grid; gap: 1.5rem; }
+    .p-8 { padding: 2rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-3 { padding: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-4 { margin-top: 1rem; }
+    .space-y-8 > * + * { margin-top: 2rem; }
+    .text-gray-100 { color: #f3f4f6; }
+    .text-gray-400 { color: #9ca3af; }
+    .text-gray-500 { color: #6b7280; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 0.75rem; color: #6b7280; font-size: 0.75rem; text-transform: uppercase; }
+    td { padding: 0.75rem; border-top: 1px solid #2e3d2e; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    function App() {
+      return (
+        <div className="p-8 space-y-8" style={{ maxWidth: '1600px', margin: '0 auto' }}>
+          <div>
+            <h1>Visión General</h1>
+            <p className="text-gray-400 mt-1">Resumen del estado actual de la hacienda</p>
+          </div>
+
+          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+            <div className="glass-card">
+              <p className="text-gray-400" style={{ fontSize: '0.875rem' }}>Total Ganado</p>
+              <h1 style={{ fontSize: '1.875rem' }}>200<head></h1>
+            </div>
+            <div className="glass-card">
+              <p className="text-gray-400" style={{ fontSize: '0.875rem' }}>Producción Hoy</p>
+              <h1 style={{ fontSize: '1.875rem' }}>185L</h1>
+            </div>
+            <div className="glass-card">
+              <p className="text-gray-400" style={{ fontSize: '0.875rem' }}>Partos Próximos</p>
+              <h1 style={{ fontSize: '1.875rem' }}>4</h1>
+            </div>
+            <div className="glass-card">
+              <p className="text-gray-400" style={{ fontSize: '0.875rem' }}>En Tratamiento</p>
+              <h1 style={{ fontSize: '1.875rem' }}>12</h1>
+            </div>
+          </div>
+
+          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+            <div className="glass-card p-6">
+              <h2>Producción de Leche (Últimos 7 meses)</h2>
+              <div style={{ padding: '1rem' }}>
+                <p className="text-gray-400">Ene: 4000L - Feb: 3800L - Mar: 4200L</p>
+                <p className="text-gray-400">Abr: 4500L - May: 4800L - Jun: 5100L - Jul: 4900L</p>
+              </div>
+            </div>
+            <div className="glass-card p-6">
+              <h2>Distribución por Edad</h2>
+              <div style={{ marginTop: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                  <span className="text-gray-400">Adultos (>24m)</span>
+                  <span>120</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                  <span className="text-gray-400">Novillos (12-24m)</span>
+                  <span>45</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span className="text-gray-400">Terneros (0-12m)</span>
+                  <span>35</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+            <div className="glass-card p-6">
+              <h2>Alertas del Sistema</h2>
+              <div style={{ marginTop: '1rem' }}>
+                <div style={{ padding: '0.75rem', background: 'rgba(120, 53, 15, 0.3)', borderRadius: '0.5rem', marginBottom: '0.75rem' }}>
+                  <p style={{ fontWeight: 'bold', color: '#fcd34d' }}>Parto inminente</p>
+                  <p className="text-gray-400" style={{ fontSize: '0.75rem' }}>Vaca #402 "Lola" (Lote Norte)</p>
+                </div>
+                <div style={{ padding: '0.75rem', background: 'rgba(127, 29, 29, 0.3)', borderRadius: '0.5rem', marginBottom: '0.75rem' }}>
+                  <p style={{ fontWeight: 'bold', color: '#f87171' }}>Vacunación retrasada</p>
+                  <p className="text-gray-400" style={{ fontSize: '0.75rem' }}>Lote Sur (Fiebre Aftosa)</p>
+                </div>
+                <div style={{ padding: '0.75rem', background: 'rgba(29, 58, 138, 0.3)', borderRadius: '0.5rem' }}>
+                  <p style={{ fontWeight: 'bold', color: '#60a5fa' }}>Baja producción</p>
+                  <p className="text-gray-400" style={{ fontSize: '0.75rem' }}>Vaca #128 bajó 15% esta semana</p>
+                </div>
+              </div>
+            </div>
+            <div className="glass-card p-6" style={{ gridColumn: 'span 2' }}>
+              <h2>Últimos Movimientos</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Animal</th>
+                    <th>Origen</th>
+                    <th>Destino</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>TR-1029</td>
+                    <td>17 Abr, 08:30</td>
+                    <td>Lote Terneros</td>
+                    <td>Corral 1</td>
+                    <td>Lote Este</td>
+                    <td><span className="badge">Completado</span></td>
+                  </tr>
+                  <tr>
+                    <td>TR-1028</td>
+                    <td>16 Abr, 16:45</td>
+                    <td>Toro #005</td>
+                    <td>Lote Norte</td>
+                    <td>Cuarentena</td>
+                    <td><span className="badge">Completado</span></td>
+                  </tr>
+                  <tr>
+                    <td>TR-1027</td>
+                    <td>16 Abr, 09:15</td>
+                    <td>Vacas Lecheras (x15)</td>
+                    <td>Lote Sur</td>
+                    <td>Ordeño</td>
+                    <td><span className="badge">Completado</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
+            <p>Sistema de Gestión Ganadera - GestGan v1.0</p>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
