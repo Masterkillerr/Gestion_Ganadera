@@ -96,7 +96,7 @@ Ganado (id, arete/identificador, raza, sexo, fechaNacimiento,
 ├── /usuarios           # UsuarioController
 ├── /fincas             # FincaController
 ├── /lotes              # LoteController
-├── /ganado             # GanadoController
+├── /animales           # AnimalController
 ├── /reproduccion       # Entidad/Repository
 ├── /sanidad            # Entidad/Repository
 ├── /produccion         # Entidad/Repository
@@ -311,24 +311,23 @@ Ganado (id, arete/identificador, raza, sexo, fechaNacimiento,
 ## 📁 Estructura del Proyecto
 
 ```
-Gestion_Ganadera/
-├── backend/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/gestionganadera/backend/
-│   │   │   │   ├── config/       # SecurityConfig
-│   │   │   │   ├── controller/   # REST Controllers
-│   │   │   │   ├── dto/          # Data Transfer Objects
-│   │   │   │   ├── model/        # Entities (JPA)
-│   │   │   │   ├── repository/   # Spring Data Repositories
-│   │   │   │   ├── service/      # Business Logic
-│   │   │   │   └── util/         # JWT, FileUpload
-│   │   │   └── resources/
-│   │   │       └── application.properties
+/home/alvaro/
+├── Gestion_Ganadera/ (Repositorio Backend)
+│   ├── backend/
+│   │   ├── src/main/java/com/gestionganadera/backend/
+│   │   │   ├── config/       # SecurityConfig
+│   │   │   ├── controller/   # REST Controllers
+│   │   │   ├── dto/          # Data Transfer Objects
+│   │   │   ├── model/        # Entities (JPA)
+│   │   │   ├── repository/   # Spring Data Repositories
+│   │   │   ├── service/      # Business Logic
+│   │   │   └── util/         # JWT, FileUpload
+│   │   └── resources/
+│   │       └── application.properties
 │   ├── pom.xml                   # Maven dependencies
-│   └── .classpath                # IDE config
+│   └── README.md
 │
-├── frontend/
+├── Gestion_Ganadera_Frontend/ (Repositorio Frontend)
 │   ├── src/
 │   │   ├── pages/                # Vistas por módulo
 │   │   ├── components/           # Componentes reutilizables
@@ -338,15 +337,14 @@ Gestion_Ganadera/
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   ├── public/
-│   ├── .env
+│   ├── .env                      # VITE_API_URL=http://localhost:8080/api
 │   └── package.json
-│
+```
 ├── database/
 │   └── init.sql                  # Script BD
 │
 ├── docs/
 │   └── documento_proyecto.md     # Documentación completa
-│
 ├── README.md
 └── .gitignore
 ```
