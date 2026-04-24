@@ -6,32 +6,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
-@Table(name = "lotes")
+@Table(name = "partos")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Lote {
-
+public class Parto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 100)
-    private String nombre;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "especie_id")
-    private Especie especie;
+    @JoinColumn(name = "madre_id")
+    private Animal madre;
 
     @Column(nullable = false)
-    private Integer cantidad;
+    private LocalDate fecha;
 
-    @Column(name = "fecha_ingreso")
-    private LocalDate fechaIngreso;
-
-    @Column(length = 50)
-    private String estado;
+    @Column(name = "cantidad_crias")
+    private Integer cantidadCrias;
 }

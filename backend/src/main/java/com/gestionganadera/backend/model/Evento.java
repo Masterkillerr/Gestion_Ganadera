@@ -5,15 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "reproducciones")
+@Table(name = "eventos")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Reproduccion {
+public class Evento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +25,16 @@ public class Reproduccion {
     @Column(length = 50)
     private String tipo;
 
-    @Column(nullable = false)
-    private LocalDate fecha;
+    @Column(columnDefinition = "TEXT")
+    private String descripcion;
 
-    @Column(length = 100)
-    private String resultado;
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime fecha;
+
+    @PrePersist
+    protected void onCreate() {
+        if (fecha == null) {
+            fecha = LocalDateTime.now();
+        }
+    }
 }

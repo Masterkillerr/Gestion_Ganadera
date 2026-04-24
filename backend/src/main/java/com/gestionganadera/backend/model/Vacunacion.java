@@ -6,15 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "reproducciones")
+@Table(name = "vacunaciones", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"animal_id", "vacuna_id", "fecha"})
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Reproduccion {
-
+public class Vacunacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -23,12 +23,13 @@ public class Reproduccion {
     @JoinColumn(name = "animal_id")
     private Animal animal;
 
-    @Column(length = 50)
-    private String tipo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vacuna_id")
+    private Vacuna vacuna;
 
     @Column(nullable = false)
     private LocalDate fecha;
 
-    @Column(length = 100)
-    private String resultado;
+    @Column(name = "proxima_dosis")
+    private LocalDate proximaDosis;
 }

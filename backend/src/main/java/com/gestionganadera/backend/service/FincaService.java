@@ -19,7 +19,7 @@ public class FincaService {
         return fincaRepository.findAll();
     }
 
-    public Optional<Finca> findById(@NonNull String id) {
+    public Optional<Finca> findById(@NonNull Integer id) {
         return fincaRepository.findById(id);
     }
 
@@ -27,19 +27,17 @@ public class FincaService {
         return fincaRepository.save(finca);
     }
 
-    public Finca update(@NonNull String id, @NonNull Finca finca) {
+    public Finca update(@NonNull Integer id, @NonNull Finca finca) {
         return fincaRepository.findById(id)
                 .map(existing -> {
                     existing.setNombre(finca.getNombre());
                     existing.setUbicacion(finca.getUbicacion());
-                    existing.setArea(finca.getArea());
-                    existing.setEncargado(finca.getEncargado());
                     return fincaRepository.save(existing);
                 })
                 .orElseThrow(() -> new RuntimeException("Finca no encontrada"));
     }
 
-    public void delete(@NonNull String id) {
+    public void delete(@NonNull Integer id) {
         fincaRepository.deleteById(id);
     }
 }

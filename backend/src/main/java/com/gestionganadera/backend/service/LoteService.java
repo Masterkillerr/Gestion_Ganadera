@@ -19,7 +19,7 @@ public class LoteService {
         return loteRepository.findAll();
     }
 
-    public Optional<Lote> findById(@NonNull String id) {
+    public Optional<Lote> findById(@NonNull Integer id) {
         return loteRepository.findById(id);
     }
 
@@ -27,19 +27,20 @@ public class LoteService {
         return loteRepository.save(lote);
     }
 
-    public Lote update(@NonNull String id, @NonNull Lote lote) {
+    public Lote update(@NonNull Integer id, @NonNull Lote lote) {
         return loteRepository.findById(id)
                 .map(existing -> {
                     existing.setNombre(lote.getNombre());
-                    existing.setCapacidad(lote.getCapacidad());
-                    existing.setTipoPasto(lote.getTipoPasto());
-                    existing.setArea(lote.getArea());
+                    existing.setEspecie(lote.getEspecie());
+                    existing.setCantidad(lote.getCantidad());
+                    existing.setFechaIngreso(lote.getFechaIngreso());
+                    existing.setEstado(lote.getEstado());
                     return loteRepository.save(existing);
                 })
                 .orElseThrow(() -> new RuntimeException("Lote no encontrado"));
     }
 
-    public void delete(@NonNull String id) {
+    public void delete(@NonNull Integer id) {
         loteRepository.deleteById(id);
     }
 }

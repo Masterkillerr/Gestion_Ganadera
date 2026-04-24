@@ -22,7 +22,7 @@ public class LoteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Lote> getLoteById(@PathVariable @NonNull String id) {
+    public ResponseEntity<Lote> getLoteById(@PathVariable @NonNull Integer id) {
         return loteService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -34,12 +34,12 @@ public class LoteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Lote> updateLote(@PathVariable @NonNull String id, @RequestBody @NonNull Lote lote) {
+    public ResponseEntity<Lote> updateLote(@PathVariable @NonNull Integer id, @RequestBody @NonNull Lote lote) {
         return ResponseEntity.ok(loteService.update(id, lote));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLote(@PathVariable @NonNull String id) {
+    public ResponseEntity<Void> deleteLote(@PathVariable @NonNull Integer id) {
         loteService.delete(id);
         return ResponseEntity.noContent().build();
     }

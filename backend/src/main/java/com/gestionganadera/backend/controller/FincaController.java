@@ -23,7 +23,7 @@ public class FincaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Finca> getFincaById(@PathVariable @NonNull String id) {
+    public ResponseEntity<Finca> getFincaById(@PathVariable @NonNull Integer id) {
         return fincaService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -37,13 +37,13 @@ public class FincaController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Finca> updateFinca(@PathVariable @NonNull String id, @RequestBody @NonNull Finca finca) {
+    public ResponseEntity<Finca> updateFinca(@PathVariable @NonNull Integer id, @RequestBody @NonNull Finca finca) {
         return ResponseEntity.ok(fincaService.update(id, finca));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteFinca(@PathVariable @NonNull String id) {
+    public ResponseEntity<Void> deleteFinca(@PathVariable @NonNull Integer id) {
         fincaService.delete(id);
         return ResponseEntity.noContent().build();
     }
