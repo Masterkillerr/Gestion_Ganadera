@@ -5,16 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "reproducciones")
+@Table(name = "alimentaciones")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Reproduccion {
-
+public class Alimentacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -23,12 +22,13 @@ public class Reproduccion {
     @JoinColumn(name = "animal_id")
     private Animal animal;
 
-    @Column(length = 50)
-    private String tipo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "alimento_id")
+    private Alimento alimento;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal cantidad;
 
     @Column(nullable = false)
     private LocalDate fecha;
-
-    @Column(length = 100)
-    private String resultado;
 }

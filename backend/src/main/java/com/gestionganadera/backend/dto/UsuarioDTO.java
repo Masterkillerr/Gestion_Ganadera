@@ -24,10 +24,10 @@ public class UsuarioDTO {
 
     public static UsuarioDTO fromEntity(Usuario usuario) {
         UsuarioDTO dto = new UsuarioDTO();
-        dto.setId(usuario.getId());
+        dto.setId(usuario.getId().toString());
         dto.setNombre(usuario.getNombre());
         dto.setEmail(usuario.getEmail());
-        dto.setRol(usuario.getRol().name());
+        dto.setRol(usuario.getRole() != null ? usuario.getRole().getNombre() : null);
         return dto;
     }
 }

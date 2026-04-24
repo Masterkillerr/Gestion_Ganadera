@@ -6,14 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "reproducciones")
+@Table(name = "tratamientos")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Reproduccion {
+public class Tratamiento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,12 +22,16 @@ public class Reproduccion {
     @JoinColumn(name = "animal_id")
     private Animal animal;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "medicamento_id")
+    private Medicamento medicamento;
+
     @Column(length = 50)
-    private String tipo;
+    private String dosis;
 
-    @Column(nullable = false)
-    private LocalDate fecha;
+    @Column(name = "fecha_inicio")
+    private LocalDate fechaInicio;
 
-    @Column(length = 100)
-    private String resultado;
+    @Column(name = "fecha_fin")
+    private LocalDate fechaFin;
 }
