@@ -5,6 +5,8 @@ import com.gestionganadera.backend.service.CategoriaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,5 +21,10 @@ public class CategoriaController {
     @GetMapping
     public ResponseEntity<List<Categoria>> findAll() {
         return ResponseEntity.ok(categoriaService.findAll());
+    }
+
+    @PostMapping
+    public ResponseEntity<Categoria> createCategoria(@RequestBody Categoria categoria) {
+        return ResponseEntity.ok(categoriaService.save(categoria));
     }
 }

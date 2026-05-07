@@ -5,6 +5,8 @@ import com.gestionganadera.backend.service.RazaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,5 +21,10 @@ public class RazaController {
     @GetMapping
     public ResponseEntity<List<Raza>> findAll() {
         return ResponseEntity.ok(razaService.findAll());
+    }
+
+    @PostMapping
+    public ResponseEntity<Raza> createRaza(@RequestBody Raza raza) {
+        return ResponseEntity.ok(razaService.save(raza));
     }
 }

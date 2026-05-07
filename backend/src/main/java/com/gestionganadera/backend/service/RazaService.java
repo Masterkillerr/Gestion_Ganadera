@@ -15,4 +15,8 @@ public class RazaService {
     public List<Raza> findAll() {
         return razaRepository.findAll();
     }
+
+    public Raza save(Raza raza) {
+        return razaRepository.save(raza);
+    }
 }
