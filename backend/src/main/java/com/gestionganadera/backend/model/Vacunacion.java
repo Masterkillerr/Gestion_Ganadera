@@ -32,4 +32,7 @@ public class Vacunacion {
 
     @Column(name = "proxima_dosis")
     private LocalDate proximaDosis;
+
+    @Column(columnDefinition = "TEXT")
+    private String observaciones;
 }

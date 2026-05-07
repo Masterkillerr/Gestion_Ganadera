@@ -18,6 +18,9 @@ public class Categoria {
     @Column(nullable = false, length = 100)
     private String nombre;
 
+    @Column(columnDefinition = "TEXT")
+    private String descripcion;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "especie_id")
     private Especie especie;

@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import com.gestionganadera.backend.dto.AnimalDTO;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/animales")
 @RequiredArgsConstructor
@@ -17,25 +20,29 @@ public class AnimalController {
     private final AnimalService animalService;
 
     @GetMapping
-    public ResponseEntity<List<Animal>> getAllAnimales() {
-        return ResponseEntity.ok(animalService.findAll());
+    public ResponseEntity<List<AnimalDTO>> getAllAnimales() {
+        List<AnimalDTO> animales = animalService.findAll().stream()
+                .map(AnimalDTO::fromEntity)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(animales);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Animal> getAnimalById(@PathVariable @NonNull Integer id) {
+    public ResponseEntity<AnimalDTO> getAnimalById(@PathVariable @NonNull Integer id) {
         return animalService.findById(id)
+                .map(AnimalDTO::fromEntity)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Animal> createAnimal(@RequestBody @NonNull Animal animal) {
-        return ResponseEntity.ok(animalService.save(animal));
+    public ResponseEntity<AnimalDTO> createAnimal(@RequestBody @NonNull Animal animal) {
+        return ResponseEntity.ok(AnimalDTO.fromEntity(animalService.save(animal)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Animal> updateAnimal(@PathVariable @NonNull Integer id, @RequestBody @NonNull Animal animal) {
-        return ResponseEntity.ok(animalService.update(id, animal));
+    public ResponseEntity<AnimalDTO> updateAnimal(@PathVariable @NonNull Integer id, @RequestBody @NonNull Animal animal) {
+        return ResponseEntity.ok(AnimalDTO.fromEntity(animalService.update(id, animal)));
     }
 
     @DeleteMapping("/{id}")

@@ -20,8 +20,15 @@ public class Animal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true, nullable = false, length = 100)
-    private String identificador;
+
+    @Column(name = "identificador_arete", length = 50)
+    private String identificadorArete;
+
+    @Column(length = 100)
+    private String nombre;
+
+    @Column(length = 20)
+    private String sexo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "especie_id")
@@ -42,21 +49,28 @@ public class Animal {
     @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
 
-    @Column(precision = 10, scale = 2)
-    private BigDecimal peso;
+    @Column(name = "peso_nacimiento", precision = 10, scale = 2)
+    private BigDecimal pesoNacimiento;
+
+    @Column(name = "peso_actual", precision = 10, scale = 2)
+    private BigDecimal pesoActual;
 
     @Column(length = 50)
     private String estado;
+
+    @Column(name = "foto_url", columnDefinition = "TEXT")
+    private String fotoUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "madre_id")
+    private Animal madre;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "padre_id")
+    private Animal padre;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "finca_id")
     private Finca finca;
 
-    @Column(name = "creado_en", nullable = false, updatable = false)
-    private LocalDateTime creadoEn;
-
-    @PrePersist
-    protected void onCreate() {
-        creadoEn = LocalDateTime.now();
-    }
 }

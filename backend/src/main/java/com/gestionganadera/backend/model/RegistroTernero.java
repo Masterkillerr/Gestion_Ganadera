@@ -6,31 +6,33 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Entity
-@Table(name = "alimentaciones")
+@Table(name = "registro_terneros")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Alimentacion {
+public class RegistroTernero {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parto_id")
+    private Parto parto;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "animal_id")
     private Animal animal;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "alimento_id")
-    private Alimento alimento;
+    @Column(name = "peso_nacimiento", precision = 10, scale = 2)
+    private BigDecimal pesoNacimiento;
 
-    @Column(precision = 10, scale = 2)
-    private BigDecimal cantidad;
+    @Column(name = "sexo_nacimiento", length = 20)
+    private String sexoNacimiento;
 
-    @Column(nullable = false)
-    private LocalDate fecha;
+    @Column(name = "condicion_nacimiento", length = 50)
+    private String condicionNacimiento;
 
     @Column(columnDefinition = "TEXT")
     private String observaciones;

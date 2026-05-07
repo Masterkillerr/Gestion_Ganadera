@@ -27,6 +27,12 @@ public class Produccion {
     private String tipo;
 
     @Column(precision = 10, scale = 2)
+    private BigDecimal litros;
+
+    @Column(length = 20)
+    private String turno;
+
+    @Column(precision = 10, scale = 2)
     private BigDecimal valor;
 
     @Column(nullable = false)
