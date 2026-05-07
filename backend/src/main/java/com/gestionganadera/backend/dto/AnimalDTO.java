@@ -12,24 +12,38 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class AnimalDTO {
     private Integer id;
-    private String identificador;
+    private String identificadorArete;
+    private String nombre;
+    private String sexo;
     private String especieNombre;
     private String razaNombre;
     private String categoriaNombre;
     private String estado;
-    private BigDecimal peso;
+    private BigDecimal pesoNacimiento;
+    private BigDecimal pesoActual;
     private String loteNombre;
+    private String fotoUrl;
+    private Integer madreId;
+    private Integer padreId;
+    private String fincaNombre;
 
     public static AnimalDTO fromEntity(Animal animal) {
         AnimalDTO dto = new AnimalDTO();
         dto.setId(animal.getId());
-        dto.setIdentificador(animal.getIdentificador());
+        dto.setIdentificadorArete(animal.getIdentificadorArete());
+        dto.setNombre(animal.getNombre());
+        dto.setSexo(animal.getSexo());
         dto.setEspecieNombre(animal.getEspecie() != null ? animal.getEspecie().getNombre() : null);
         dto.setRazaNombre(animal.getRaza() != null ? animal.getRaza().getNombre() : null);
         dto.setCategoriaNombre(animal.getCategoria() != null ? animal.getCategoria().getNombre() : null);
         dto.setEstado(animal.getEstado());
-        dto.setPeso(animal.getPeso());
+        dto.setPesoNacimiento(animal.getPesoNacimiento());
+        dto.setPesoActual(animal.getPesoActual());
         dto.setLoteNombre(animal.getLote() != null ? animal.getLote().getNombre() : null);
+        dto.setFotoUrl(animal.getFotoUrl());
+        dto.setMadreId(animal.getMadre() != null ? animal.getMadre().getId() : null);
+        dto.setPadreId(animal.getPadre() != null ? animal.getPadre().getId() : null);
+        dto.setFincaNombre(animal.getFinca() != null ? animal.getFinca().getNombre() : null);
         return dto;
     }
 }

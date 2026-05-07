@@ -23,6 +23,17 @@ public class Reproduccion {
     @JoinColumn(name = "animal_id")
     private Animal animal;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vaca_id")
+    private Animal vaca;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "toro_id")
+    private Animal toro;
+
+    @Column(name = "fecha_monta")
+    private LocalDate fechaMonta;
+
     @Column(length = 50)
     private String tipo;
 
@@ -31,4 +42,10 @@ public class Reproduccion {
 
     @Column(length = 100)
     private String resultado;
+
+    @Column(name = "fecha_parto_estimada")
+    private LocalDate fechaPartoEstimada;
+
+    @Column(columnDefinition = "TEXT")
+    private String observaciones;
 }

@@ -18,12 +18,22 @@ public class Parto {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reproduccion_id")
+    private Reproduccion reproduccion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "madre_id")
     private Animal madre;
+
+    @Column(name = "fecha_parto", nullable = false)
+    private LocalDate fechaParto;
 
     @Column(nullable = false)
     private LocalDate fecha;
 
     @Column(name = "cantidad_crias")
     private Integer cantidadCrias;
+
+    @Column(columnDefinition = "TEXT")
+    private String observaciones;
 }

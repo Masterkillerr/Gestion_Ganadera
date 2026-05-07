@@ -8,12 +8,11 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "tratamientos")
+@Table(name = "movimientos")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tratamiento {
-
+public class Movimiento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -23,21 +22,19 @@ public class Tratamiento {
     private Animal animal;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "medicamento_id")
-    private Medicamento medicamento;
+    @JoinColumn(name = "lote_origen_id")
+    private Lote loteOrigen;
 
-    @Column(length = 50)
-    private String dosis;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lote_destino_id")
+    private Lote loteDestino;
 
-    @Column(name = "fecha_inicio")
-    private LocalDate fechaInicio;
+    @Column(nullable = false)
+    private LocalDate fecha;
 
-    @Column(name = "fecha_fin")
-    private LocalDate fechaFin;
-
-    @Column(name = "dias_retiro")
-    private Integer diasRetiro;
+    @Column(name = "tipo_movimiento", length = 50)
+    private String tipoMovimiento;
 
     @Column(columnDefinition = "TEXT")
-    private String observaciones;
+    private String motivo;
 }

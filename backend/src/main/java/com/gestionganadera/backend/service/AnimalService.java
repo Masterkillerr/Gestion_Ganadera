@@ -30,15 +30,21 @@ public class AnimalService {
     public Animal update(@NonNull Integer id, @NonNull Animal animal) {
         return animalRepository.findById(id)
                 .map(existing -> {
-                    existing.setIdentificador(animal.getIdentificador());
+                    existing.setIdentificadorArete(animal.getIdentificadorArete());
+                    existing.setNombre(animal.getNombre());
+                    existing.setSexo(animal.getSexo());
                     existing.setEspecie(animal.getEspecie());
                     existing.setRaza(animal.getRaza());
                     existing.setCategoria(animal.getCategoria());
                     existing.setLote(animal.getLote());
                     existing.setFechaNacimiento(animal.getFechaNacimiento());
-                    existing.setPeso(animal.getPeso());
+                    existing.setPesoNacimiento(animal.getPesoNacimiento());
+                    existing.setPesoActual(animal.getPesoActual());
                     existing.setEstado(animal.getEstado());
                     existing.setFinca(animal.getFinca());
+                    existing.setMadre(animal.getMadre());
+                    existing.setPadre(animal.getPadre());
+                    existing.setFotoUrl(animal.getFotoUrl());
                     return animalRepository.save(existing);
                 })
                 .orElseThrow(() -> new RuntimeException("Animal no encontrado"));

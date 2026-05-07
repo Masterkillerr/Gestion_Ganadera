@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface AnimalRepository extends JpaRepository<Animal, Integer> {
-    Optional<Animal> findByIdentificador(String identificador);
+    Optional<Animal> findByIdentificadorArete(String identificadorArete);
 }
