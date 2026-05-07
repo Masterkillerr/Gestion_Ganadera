@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface PartoRepository extends JpaRepository<Parto, Integer> {
-    List<Parto> findByMadreId(Integer madreId);
+    List<Parto> findByReproduccionId(Integer reproduccionId);
 }

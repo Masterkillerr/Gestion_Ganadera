@@ -23,18 +23,13 @@ public class Produccion {
     @JoinColumn(name = "animal_id")
     private Animal animal;
 
-    @Column(length = 50)
-    private String tipo;
-
     @Column(precision = 10, scale = 2)
     private BigDecimal litros;
 
     @Column(length = 20)
     private String turno;
 
-    @Column(precision = 10, scale = 2)
-    private BigDecimal valor;
-
     @Column(nullable = false)
     private LocalDate fecha;
 }
+
