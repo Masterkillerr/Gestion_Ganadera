@@ -8,5 +8,4 @@ import java.util.List;
 
 @Repository
 public interface ReproduccionRepository extends JpaRepository<Reproduccion, Integer> {
-    List<Reproduccion> findByAnimalId(Integer animalId);
 }

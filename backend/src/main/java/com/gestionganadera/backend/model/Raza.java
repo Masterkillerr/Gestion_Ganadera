@@ -18,7 +18,4 @@ public class Raza {
     @Column(nullable = false, length = 100)
     private String nombre;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "especie_id")
-    private Especie especie;
 }

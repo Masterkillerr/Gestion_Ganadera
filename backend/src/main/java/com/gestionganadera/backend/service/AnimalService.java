@@ -33,12 +33,12 @@ public class AnimalService {
                     existing.setIdentificadorArete(animal.getIdentificadorArete());
                     existing.setNombre(animal.getNombre());
                     existing.setSexo(animal.getSexo());
-                    existing.setEspecie(animal.getEspecie());
+
                     existing.setRaza(animal.getRaza());
                     existing.setCategoria(animal.getCategoria());
                     existing.setLote(animal.getLote());
                     existing.setFechaNacimiento(animal.getFechaNacimiento());
-                    existing.setPesoNacimiento(animal.getPesoNacimiento());
+
                     existing.setPesoActual(animal.getPesoActual());
                     existing.setEstado(animal.getEstado());
                     existing.setFinca(animal.getFinca());

@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.List;
+
+
 
 @Entity
 @Table(name = "lotes")
@@ -35,15 +35,9 @@ public class Lote {
     @Column(name = "tipo_pasto", length = 100)
     private String tipoPasto;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "especie_id")
-    private Especie especie;
 
-    @Column(nullable = false)
-    private Integer cantidad;
 
-    @Column(name = "fecha_ingreso")
-    private LocalDate fechaIngreso;
+
 
     @Column(length = 50)
     private String estado;

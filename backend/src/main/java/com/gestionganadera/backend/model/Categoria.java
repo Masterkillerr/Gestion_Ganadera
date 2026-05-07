@@ -21,7 +21,4 @@ public class Categoria {
     @Column(columnDefinition = "TEXT")
     private String descripcion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "especie_id")
-    private Especie especie;
 }

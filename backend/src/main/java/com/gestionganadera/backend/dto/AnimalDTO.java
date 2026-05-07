@@ -15,11 +15,11 @@ public class AnimalDTO {
     private String identificadorArete;
     private String nombre;
     private String sexo;
-    private String especieNombre;
+
     private String razaNombre;
     private String categoriaNombre;
     private String estado;
-    private BigDecimal pesoNacimiento;
+
     private BigDecimal pesoActual;
     private String loteNombre;
     private String fotoUrl;
@@ -33,11 +33,11 @@ public class AnimalDTO {
         dto.setIdentificadorArete(animal.getIdentificadorArete());
         dto.setNombre(animal.getNombre());
         dto.setSexo(animal.getSexo());
-        dto.setEspecieNombre(animal.getEspecie() != null ? animal.getEspecie().getNombre() : null);
+
         dto.setRazaNombre(animal.getRaza() != null ? animal.getRaza().getNombre() : null);
         dto.setCategoriaNombre(animal.getCategoria() != null ? animal.getCategoria().getNombre() : null);
         dto.setEstado(animal.getEstado());
-        dto.setPesoNacimiento(animal.getPesoNacimiento());
+
         dto.setPesoActual(animal.getPesoActual());
         dto.setLoteNombre(animal.getLote() != null ? animal.getLote().getNombre() : null);
         dto.setFotoUrl(animal.getFotoUrl());
