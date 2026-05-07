@@ -31,9 +31,7 @@ public class LoteService {
         return loteRepository.findById(id)
                 .map(existing -> {
                     existing.setNombre(lote.getNombre());
-                    existing.setEspecie(lote.getEspecie());
-                    existing.setCantidad(lote.getCantidad());
-                    existing.setFechaIngreso(lote.getFechaIngreso());
+
                     existing.setEstado(lote.getEstado());
                     return loteRepository.save(existing);
                 })

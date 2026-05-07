@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "animales")
@@ -30,9 +30,7 @@ public class Animal {
     @Column(length = 20)
     private String sexo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "especie_id")
-    private Especie especie;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "raza_id")
@@ -49,8 +47,7 @@ public class Animal {
     @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
 
-    @Column(name = "peso_nacimiento", precision = 10, scale = 2)
-    private BigDecimal pesoNacimiento;
+
 
     @Column(name = "peso_actual", precision = 10, scale = 2)
     private BigDecimal pesoActual;

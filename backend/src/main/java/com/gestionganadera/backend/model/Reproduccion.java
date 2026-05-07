@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "reproducciones")
@@ -19,9 +19,7 @@ public class Reproduccion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "animal_id")
-    private Animal animal;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vaca_id")
@@ -37,8 +35,7 @@ public class Reproduccion {
     @Column(length = 50)
     private String tipo;
 
-    @Column(nullable = false)
-    private LocalDate fecha;
+
 
     @Column(length = 100)
     private String resultado;
