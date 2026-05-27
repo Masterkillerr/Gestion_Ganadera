@@ -9,7 +9,7 @@ services:
     name: gestion-ganadera-backend
     runtime: image
     repo: https://github.com/Masterkillerr/Gestion_Ganadera
-    branch: main
+    branch: master
     dockerfilePath: ./backend/Dockerfile
     # Uses TCP health check by default (more reliable than HTTP for Spring Boot)
     envVars:
