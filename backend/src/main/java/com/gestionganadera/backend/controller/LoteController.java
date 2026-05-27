@@ -1,7 +1,9 @@
 package com.gestionganadera.backend.controller;
 
+import com.gestionganadera.backend.dto.CreateLoteRequest;
 import com.gestionganadera.backend.model.Lote;
 import com.gestionganadera.backend.service.LoteService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -29,18 +31,23 @@ public class LoteController {
     }
 
     @PostMapping
-    public ResponseEntity<Lote> createLote(@RequestBody @NonNull Lote lote) {
-        return ResponseEntity.ok(loteService.save(lote));
+    public ResponseEntity<Lote> createLote(@Valid @RequestBody @NonNull CreateLoteRequest request) {
+        return ResponseEntity.ok(loteService.save(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Lote> updateLote(@PathVariable @NonNull Integer id, @RequestBody @NonNull Lote lote) {
-        return ResponseEntity.ok(loteService.update(id, lote));
+    public ResponseEntity<Lote> updateLote(@PathVariable @NonNull Integer id, @Valid @RequestBody @NonNull CreateLoteRequest request) {
+        return ResponseEntity.ok(loteService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLote(@PathVariable @NonNull Integer id) {
         loteService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/finca/{fincaId}")
+    public ResponseEntity<List<Lote>> getLotesByFinca(@PathVariable @NonNull Integer fincaId) {
+        return ResponseEntity.ok(loteService.findByFincaId(fincaId));
     }
 }

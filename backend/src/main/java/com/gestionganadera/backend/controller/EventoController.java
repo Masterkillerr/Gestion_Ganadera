@@ -1,7 +1,10 @@
 package com.gestionganadera.backend.controller;
 
+import com.gestionganadera.backend.dto.CreateEventoRequest;
+import com.gestionganadera.backend.dto.EventoDTO;
 import com.gestionganadera.backend.model.Evento;
 import com.gestionganadera.backend.service.EventoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -15,14 +18,19 @@ import java.util.List;
 public class EventoController {
     private final EventoService service;
 
+    @GetMapping("/recent")
+    public ResponseEntity<List<EventoDTO>> getRecent() {
+        return ResponseEntity.ok(service.getRecent());
+    }
+
     @GetMapping("/animal/{animalId}")
     public ResponseEntity<List<Evento>> findByAnimalId(@PathVariable @NonNull Integer animalId) {
         return ResponseEntity.ok(service.findByAnimalId(animalId));
     }
 
     @PostMapping
-    public ResponseEntity<Evento> create(@RequestBody @NonNull Evento entity) {
-        return ResponseEntity.ok(service.save(entity));
+    public ResponseEntity<Evento> create(@Valid @RequestBody @NonNull CreateEventoRequest request) {
+        return ResponseEntity.ok(service.save(request));
     }
 
     @DeleteMapping("/{id}")

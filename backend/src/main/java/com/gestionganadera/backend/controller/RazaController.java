@@ -1,7 +1,9 @@
 package com.gestionganadera.backend.controller;
 
+import com.gestionganadera.backend.dto.CreateRazaRequest;
 import com.gestionganadera.backend.model.Raza;
 import com.gestionganadera.backend.service.RazaService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +26,7 @@ public class RazaController {
     }
 
     @PostMapping
-    public ResponseEntity<Raza> createRaza(@RequestBody Raza raza) {
-        return ResponseEntity.ok(razaService.save(raza));
+    public ResponseEntity<Raza> createRaza(@Valid @RequestBody CreateRazaRequest request) {
+        return ResponseEntity.ok(razaService.save(request));
     }
 }

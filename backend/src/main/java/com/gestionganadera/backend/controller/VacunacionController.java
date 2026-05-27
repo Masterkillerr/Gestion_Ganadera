@@ -1,7 +1,9 @@
 package com.gestionganadera.backend.controller;
 
+import com.gestionganadera.backend.dto.CreateVacunacionRequest;
 import com.gestionganadera.backend.model.Vacunacion;
 import com.gestionganadera.backend.service.VacunacionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -21,8 +23,8 @@ public class VacunacionController {
     }
 
     @PostMapping
-    public ResponseEntity<Vacunacion> create(@RequestBody @NonNull Vacunacion entity) {
-        return ResponseEntity.ok(service.save(entity));
+    public ResponseEntity<Vacunacion> create(@Valid @RequestBody @NonNull CreateVacunacionRequest request) {
+        return ResponseEntity.ok(service.save(request));
     }
 
     @DeleteMapping("/{id}")

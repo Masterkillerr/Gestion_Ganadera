@@ -1,7 +1,9 @@
 package com.gestionganadera.backend.controller;
 
+import com.gestionganadera.backend.dto.CreateAlimentacionRequest;
 import com.gestionganadera.backend.model.Alimentacion;
 import com.gestionganadera.backend.service.AlimentacionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -21,8 +23,8 @@ public class AlimentacionController {
     }
 
     @PostMapping
-    public ResponseEntity<Alimentacion> create(@RequestBody @NonNull Alimentacion entity) {
-        return ResponseEntity.ok(service.save(entity));
+    public ResponseEntity<Alimentacion> create(@Valid @RequestBody @NonNull CreateAlimentacionRequest request) {
+        return ResponseEntity.ok(service.save(request));
     }
 
     @DeleteMapping("/{id}")

@@ -1,0 +1,37 @@
+# Render Blueprint — Backend Deployment
+# https://render.com/docs/blueprint-spec
+#
+# After connecting your GitHub repo (Masterkillerr/Gestion_Ganadera) to Render,
+# this file auto-configures the web service.
+
+services:
+  - type: web
+    name: gestion-ganadera-backend
+    runtime: image
+    repo: https://github.com/Masterkillerr/Gestion_Ganadera
+    branch: main
+    dockerfilePath: ./backend/Dockerfile
+    # Uses TCP health check by default (more reliable than HTTP for Spring Boot)
+    envVars:
+      - key: SERVER_PORT
+        value: 8080
+      - key: DB_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_DDL_AUTO
+        value: update
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRATION
+        value: 604800000
+      - key: RECAPTCHA_SECRET
+        sync: false
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+      - key: LOG_LEVEL
+        value: INFO
+      - key: SECURITY_LOG_LEVEL
+        value: INFO
