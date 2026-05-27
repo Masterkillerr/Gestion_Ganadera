@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface ProduccionRepository extends JpaRepository<Produccion, Integer> {
     List<Produccion> findByAnimalId(Integer animalId);
+    List<Produccion> findByAnimalIdIn(List<Integer> animalIds);
+    List<Produccion> findByAnimalIdInOrderByFechaDesc(List<Integer> animalIds);
 }

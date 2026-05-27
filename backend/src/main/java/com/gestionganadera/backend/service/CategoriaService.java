@@ -1,5 +1,6 @@
 package com.gestionganadera.backend.service;
 
+import com.gestionganadera.backend.dto.CreateCategoriaRequest;
 import com.gestionganadera.backend.model.Categoria;
 import com.gestionganadera.backend.repository.CategoriaRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,10 @@ public class CategoriaService {
         return categoriaRepository.findAll();
     }
 
-    public Categoria save(Categoria categoria) {
+    public Categoria save(CreateCategoriaRequest request) {
+        Categoria categoria = new Categoria();
+        categoria.setNombre(request.getNombre());
+        categoria.setDescripcion(request.getDescripcion());
         return categoriaRepository.save(categoria);
     }
 }

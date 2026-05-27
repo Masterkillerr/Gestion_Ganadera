@@ -1,12 +1,10 @@
 package com.gestionganadera.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-
-
 
 @Entity
 @Table(name = "fincas")
@@ -24,4 +22,9 @@ public class Finca {
 
     @Column(columnDefinition = "TEXT")
     private String ubicacion;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "propietario_id")
+    @JsonIgnoreProperties({"authorities", "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "enabled", "password"})
+    private Usuario propietario;
 }

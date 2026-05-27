@@ -1,15 +1,15 @@
 package com.gestionganadera.backend.controller;
 
-import com.gestionganadera.backend.model.Animal;
+import com.gestionganadera.backend.dto.AnimalDTO;
+import com.gestionganadera.backend.dto.CreateAnimalRequest;
 import com.gestionganadera.backend.service.AnimalService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import com.gestionganadera.backend.dto.AnimalDTO;
 import java.util.stream.Collectors;
 
 @RestController
@@ -36,18 +36,34 @@ public class AnimalController {
     }
 
     @PostMapping
-    public ResponseEntity<AnimalDTO> createAnimal(@RequestBody @NonNull Animal animal) {
-        return ResponseEntity.ok(AnimalDTO.fromEntity(animalService.save(animal)));
+    public ResponseEntity<AnimalDTO> createAnimal(@Valid @RequestBody @NonNull CreateAnimalRequest request) {
+        return ResponseEntity.ok(AnimalDTO.fromEntity(animalService.save(request)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AnimalDTO> updateAnimal(@PathVariable @NonNull Integer id, @RequestBody @NonNull Animal animal) {
-        return ResponseEntity.ok(AnimalDTO.fromEntity(animalService.update(id, animal)));
+    public ResponseEntity<AnimalDTO> updateAnimal(@PathVariable @NonNull Integer id, @Valid @RequestBody @NonNull CreateAnimalRequest request) {
+        return ResponseEntity.ok(AnimalDTO.fromEntity(animalService.update(id, request)));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAnimal(@PathVariable @NonNull Integer id) {
         animalService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/lote/{loteId}")
+    public ResponseEntity<List<AnimalDTO>> getAnimalesByLote(@PathVariable @NonNull Integer loteId) {
+        List<AnimalDTO> animales = animalService.findByLoteId(loteId).stream()
+                .map(AnimalDTO::fromEntity)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(animales);
+    }
+
+    @GetMapping("/finca/{fincaId}")
+    public ResponseEntity<List<AnimalDTO>> getAnimalesByFinca(@PathVariable @NonNull Integer fincaId) {
+        List<AnimalDTO> animales = animalService.findByFincaId(fincaId).stream()
+                .map(AnimalDTO::fromEntity)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(animales);
     }
 }

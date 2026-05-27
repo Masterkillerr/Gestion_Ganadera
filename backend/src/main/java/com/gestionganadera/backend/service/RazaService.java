@@ -1,5 +1,6 @@
 package com.gestionganadera.backend.service;
 
+import com.gestionganadera.backend.dto.CreateRazaRequest;
 import com.gestionganadera.backend.model.Raza;
 import com.gestionganadera.backend.repository.RazaRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,9 @@ public class RazaService {
         return razaRepository.findAll();
     }
 
-    public Raza save(Raza raza) {
+    public Raza save(CreateRazaRequest request) {
+        Raza raza = new Raza();
+        raza.setNombre(request.getNombre());
         return razaRepository.save(raza);
     }
 }

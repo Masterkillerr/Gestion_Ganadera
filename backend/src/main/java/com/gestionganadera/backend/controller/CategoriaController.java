@@ -1,7 +1,9 @@
 package com.gestionganadera.backend.controller;
 
+import com.gestionganadera.backend.dto.CreateCategoriaRequest;
 import com.gestionganadera.backend.model.Categoria;
 import com.gestionganadera.backend.service.CategoriaService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +26,7 @@ public class CategoriaController {
     }
 
     @PostMapping
-    public ResponseEntity<Categoria> createCategoria(@RequestBody Categoria categoria) {
-        return ResponseEntity.ok(categoriaService.save(categoria));
+    public ResponseEntity<Categoria> createCategoria(@Valid @RequestBody CreateCategoriaRequest request) {
+        return ResponseEntity.ok(categoriaService.save(request));
     }
 }

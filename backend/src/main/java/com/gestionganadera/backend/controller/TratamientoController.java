@@ -1,7 +1,9 @@
 package com.gestionganadera.backend.controller;
 
+import com.gestionganadera.backend.dto.CreateTratamientoRequest;
 import com.gestionganadera.backend.model.Tratamiento;
 import com.gestionganadera.backend.service.TratamientoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -21,8 +23,8 @@ public class TratamientoController {
     }
 
     @PostMapping
-    public ResponseEntity<Tratamiento> create(@RequestBody @NonNull Tratamiento entity) {
-        return ResponseEntity.ok(service.save(entity));
+    public ResponseEntity<Tratamiento> create(@Valid @RequestBody @NonNull CreateTratamientoRequest request) {
+        return ResponseEntity.ok(service.save(request));
     }
 
     @DeleteMapping("/{id}")

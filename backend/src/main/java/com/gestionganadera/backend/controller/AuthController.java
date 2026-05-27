@@ -2,7 +2,8 @@ package com.gestionganadera.backend.controller;
 
 import com.gestionganadera.backend.dto.LoginRequest;
 import com.gestionganadera.backend.dto.LoginResponse;
-import com.gestionganadera.backend.model.Usuario;
+import com.gestionganadera.backend.dto.RegisterRequest;
+import com.gestionganadera.backend.dto.UsuarioResponse;
 import com.gestionganadera.backend.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Usuario> register(@Valid @RequestBody Usuario usuario) {
-        return ResponseEntity.ok(authService.register(usuario));
+    public ResponseEntity<UsuarioResponse> register(@Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(authService.register(request));
     }
 }
