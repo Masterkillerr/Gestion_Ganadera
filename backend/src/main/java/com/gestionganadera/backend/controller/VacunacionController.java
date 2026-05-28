@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +15,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/vacunaciones")
 @RequiredArgsConstructor
+
+@PreAuthorize("isAuthenticated()")
 public class VacunacionController {
     private final VacunacionService service;
 

@@ -8,6 +8,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +16,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/reproducciones")
 @RequiredArgsConstructor
+
+@PreAuthorize("isAuthenticated()")
 public class ReproduccionController {
 
     private final ReproduccionService reproduccionService;
