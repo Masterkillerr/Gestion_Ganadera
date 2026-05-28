@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import com.gestionganadera.backend.dto.RecaptchaResponse;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +42,7 @@ public class AuthService {
         }
 
         RestTemplate restTemplate = new RestTemplate();
-        String url = "https://www.google.com/recaptcha/api/siteverify?secret=" + recaptchaSecret + "&response=" + recaptchaToken;
+        String url = "https://www.google.com/recaptcha/api/siteverify?secret=" + URLEncoder.encode(recaptchaSecret, StandardCharsets.UTF_8) + "&response=" + URLEncoder.encode(recaptchaToken, StandardCharsets.UTF_8);
 
         RecaptchaResponse recaptchaResponse = restTemplate.postForObject(url, null, RecaptchaResponse.class);
         if (recaptchaResponse == null || !recaptchaResponse.isSuccess() || recaptchaResponse.getScore() < 0.5) {
