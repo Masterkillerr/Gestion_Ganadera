@@ -101,9 +101,9 @@ jobs:
           name: frontend-dist
           path: frontend/dist
 
-      - name: Deploy to Cloudflare Pages
+      - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy frontend/dist --project-name=gestion-ganadera-front --branch=production
+          command: deploy frontend/dist
