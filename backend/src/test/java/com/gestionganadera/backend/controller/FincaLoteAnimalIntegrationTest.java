@@ -228,11 +228,17 @@ class FincaLoteAnimalIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void createAnimal_WithNonExistentLote_ShouldReturn500() {
+        // Arrange — first create a finca and raza to reference
+        Integer razaId = createEntity("/razas", "{\"nombre\":\"Hereford\"}");
+        Integer fincaId = createEntity("/fincas", "{\"nombre\":\"Finca Test\",\"ubicacion\":\"Campo\"}");
+
         // Act — reference a non-existent lote
         ResponseEntity<String> response = restClient.post()
                 .uri("/animales")
                 .headers(withAuth())
-                .body("{\"nombre\":\"Test\",\"loteId\":99999,\"fincaId\":1}")
+                .body(String.format(
+                        "{\"nombre\":\"Test\",\"sexo\":\"Macho\",\"razaId\":%d,\"loteId\":99999,\"fincaId\":%d,\"fechaNacimiento\":\"2024-01-01\"}",
+                        razaId, fincaId))
                 .retrieve()
                 .toEntity(String.class);
 
