@@ -45,7 +45,7 @@ public class AuthService {
         String url = "https://www.google.com/recaptcha/api/siteverify?secret=" + URLEncoder.encode(recaptchaSecret, StandardCharsets.UTF_8) + "&response=" + URLEncoder.encode(recaptchaToken, StandardCharsets.UTF_8);
 
         RecaptchaResponse recaptchaResponse = restTemplate.postForObject(url, null, RecaptchaResponse.class);
-        if (recaptchaResponse == null || !recaptchaResponse.isSuccess() || recaptchaResponse.getScore() < 0.5) {
+        if (recaptchaResponse == null || !recaptchaResponse.isSuccess() || (recaptchaResponse.getScore() != null && recaptchaResponse.getScore() < 0.5)) {
             throw new BadCredentialsException("ReCAPTCHA inválido");
         }
     }
