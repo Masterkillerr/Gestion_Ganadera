@@ -29,7 +29,7 @@ services:
       - key: JWT_EXPIRATION
         value: 604800000
       - key: CORS_ALLOWED_ORIGINS
-        value: https://gestion-ganadera-front.alvaropro-0605.workers.dev
+        value: https://gestion-ganadera-front.alvaropro-0605.workers.dev,http://localhost:5173,http://localhost:5174,http://localhost:5175
       - key: RECAPTCHA_SECRET
         sync: false
       - key: UPLOAD_DIR

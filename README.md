@@ -1,177 +1,190 @@
-# Supabase CLI
+# 🐄 Gestión Ganadera
 
-[![Coverage Status](https://coveralls.io/repos/github/supabase/cli/badge.svg?branch=develop)](https://coveralls.io/github/supabase/cli?branch=develop) [![Bitbucket Pipelines](https://img.shields.io/bitbucket/pipelines/supabase-cli/setup-cli/master?style=flat-square&label=Bitbucket%20Canary)](https://bitbucket.org/supabase-cli/setup-cli/pipelines) [![Gitlab Pipeline Status](https://img.shields.io/gitlab/pipeline-status/sweatybridge%2Fsetup-cli?label=Gitlab%20Canary)
-](https://gitlab.com/sweatybridge/setup-cli/-/pipelines)
+Sistema web integral para la gestión de operaciones ganaderas. Permite administrar ganado, fincas, lotes, reproducción, sanidad, producción lechera y generar reportes con dashboards interactivos.
 
-[Supabase](https://supabase.io) is an open source Firebase alternative. We're building the features of Firebase using enterprise-grade open source tools.
+---
 
-This repository contains all the functionality for Supabase CLI.
+## 🏗️ Estructura del Proyecto (Monorepo)
 
-- [x] Running Supabase locally
-- [x] Managing database migrations
-- [x] Creating and deploying Supabase Functions
-- [x] Generating types directly from your database schema
-- [x] Making authenticated HTTP requests to [Management API](https://supabase.com/docs/reference/api/introduction)
+```
+Gestion_Ganadera/
+├── backend/                     ← Spring Boot API (Java 21, Maven)
+│   ├── src/main/java/.../backend/
+│   │   ├── config/              # Seguridad, JWT, CORS
+│   │   ├── controller/          # REST Controllers
+│   │   ├── dto/                 # Data Transfer Objects
+│   │   ├── model/               # Entidades JPA
+│   │   ├── repository/          # Spring Data JPA
+│   │   ├── service/             # Lógica de negocio
+│   │   └── util/                # Utilidades (JWT, FileUpload)
+│   ├── Dockerfile               # Container para deploy
+│   ├── pom.xml                  # Dependencias Maven
+│   └── .env.example             # Variables de entorno
+│
+├── frontend/                    ← 🌐 Submódulo → Masterkillerr/Gestion_Ganadera_Front
+│   └── (React + Vite + TailwindCSS)
+│       git clone requiere: git submodule init && git submodule update
+│
+├── docs/                        ← 📚 Documentación
+│   ├── ARQUITECTURA.md          # Arquitectura del sistema
+│   ├── DESIGN.md                # Decisiones de diseño
+│   ├── CODE_REVIEW.md           # Historial de code reviews
+│   └── Tarea.md                 # Enunciado del proyecto
+│
+├── infra/                       ← ⚙️ Infraestructura
+│   └── gestion.ddl              # Esquema de base de datos (PostgreSQL)
+│
+├── .github/workflows/ci.yml     ← CI/CD (GitHub Actions)
+├── render.yaml                  ← Render Blueprint (deploy automático)
+├── README.md                    ← Este archivo
+└── LICENSE
+```
 
-## Getting started
+---
 
-### Install the CLI
+## 🛠️ Stack Tecnológico
 
-Available via [NPM](https://www.npmjs.com) as dev dependency. To install:
+### Backend
+| Tecnología | Versión |
+|---|---|
+| Java | 21 |
+| Spring Boot | 4.0.x |
+| Spring Security + JWT | — |
+| Spring Data JPA (Hibernate) | — |
+| PostgreSQL | — |
+| Maven | — |
+| Lombok | — |
+
+### Frontend
+| Tecnología | Versión |
+|---|---|
+| React | 19.x |
+| Vite | — |
+| TailwindCSS | — |
+| Axios | — |
+| React Router | — |
+| Recharts | — |
+
+### Infraestructura
+- **CI/CD:** GitHub Actions (test + build + deploy)
+- **Backend:** Render (Docker)
+- **Frontend:** Cloudflare Workers / GitHub Pages
+
+---
+
+## 🚀 Inicio Rápido
+
+### Prerrequisitos
+- Java 21+
+- Maven
+- PostgreSQL (local o remoto)
+- Node.js 20+
+- Git
+
+### 1. Clonar e inicializar submódulos
 
 ```bash
-npm i supabase --save-dev
+git clone https://github.com/Masterkillerr/Gestion_Ganadera.git
+cd Gestion_Ganadera
+git submodule init
+git submodule update
 ```
 
-When installing with yarn 4, you need to disable experimental fetch with the following nodejs config.
-
-```
-NODE_OPTIONS=--no-experimental-fetch yarn add supabase
-```
-
-> **Note**
-For Bun versions below v1.0.17, you must add `supabase` as a [trusted dependency](https://bun.sh/guides/install/trusted) before running `bun add -D supabase`.
-
-<details>
-  <summary><b>macOS</b></summary>
-
-  Available via [Homebrew](https://brew.sh). To install:
-
-  ```sh
-  brew install supabase/tap/supabase
-  ```
-
-  To install the beta release channel:
-  
-  ```sh
-  brew install supabase/tap/supabase-beta
-  brew link --overwrite supabase-beta
-  ```
-  
-  To upgrade:
-
-  ```sh
-  brew upgrade supabase
-  ```
-</details>
-
-<details>
-  <summary><b>Windows</b></summary>
-
-  Available via [Scoop](https://scoop.sh). To install:
-
-  ```powershell
-  scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
-  scoop install supabase
-  ```
-
-  To upgrade:
-
-  ```powershell
-  scoop update supabase
-  ```
-</details>
-
-<details>
-  <summary><b>Linux</b></summary>
-
-  Available via [Homebrew](https://brew.sh) and Linux packages.
-
-  #### via Homebrew
-
-  To install:
-
-  ```sh
-  brew install supabase/tap/supabase
-  ```
-
-  To upgrade:
-
-  ```sh
-  brew upgrade supabase
-  ```
-
-  #### via Linux packages
-
-  Linux packages are provided in [Releases](https://github.com/supabase/cli/releases). To install, download the `.apk`/`.deb`/`.rpm`/`.pkg.tar.zst` file depending on your package manager and run the respective commands.
-
-  ```sh
-  sudo apk add --allow-untrusted <...>.apk
-  ```
-
-  ```sh
-  sudo dpkg -i <...>.deb
-  ```
-
-  ```sh
-  sudo rpm -i <...>.rpm
-  ```
-
-  ```sh
-  sudo pacman -U <...>.pkg.tar.zst
-  ```
-</details>
-
-<details>
-  <summary><b>Other Platforms</b></summary>
-
-  You can also install the CLI via [go modules](https://go.dev/ref/mod#go-install) without the help of package managers.
-
-  ```sh
-  go install github.com/supabase/cli@latest
-  ```
-
-  Add a symlink to the binary in `$PATH` for easier access:
-
-  ```sh
-  ln -s "$(go env GOPATH)/bin/cli" /usr/bin/supabase
-  ```
-
-  This works on other non-standard Linux distros.
-</details>
-
-<details>
-  <summary><b>Community Maintained Packages</b></summary>
-
-  Available via [pkgx](https://pkgx.sh/). Package script [here](https://github.com/pkgxdev/pantry/blob/main/projects/supabase.com/cli/package.yml).
-  To install in your working directory:
-
-  ```bash
-  pkgx install supabase
-  ```
-
-  Available via [Nixpkgs](https://nixos.org/). Package script [here](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/supabase-cli/default.nix).
-</details>
-
-### Run the CLI
+### 2. Configurar variables de entorno
 
 ```bash
-supabase bootstrap
+cd backend
+cp .env.example .env
+# Editar .env con tus credenciales de base de datos y JWT secret
 ```
 
-Or using npx:
+### 3. Backend
 
 ```bash
-npx supabase bootstrap
+cd backend
+mvn clean install -DskipTests
+mvn spring-boot:run
 ```
 
-The bootstrap command will guide you through the process of setting up a Supabase project using one of the [starter](https://github.com/supabase-community/supabase-samples/blob/main/samples.json) templates.
+La API estará disponible en `http://localhost:8080/api`.
 
-## Docs
+### 4. Frontend
 
-Command & config reference can be found [here](https://supabase.com/docs/reference/cli/about).
-
-## Breaking changes
-
-We follow semantic versioning for changes that directly impact CLI commands, flags, and configurations.
-
-However, due to dependencies on other service images, we cannot guarantee that schema migrations, seed.sql, and generated types will always work for the same CLI major version. If you need such guarantees, we encourage you to pin a specific version of CLI in package.json.
-
-## Developing
-
-To run from source:
-
-```sh
-# Go >= 1.22
-go run . help
+```bash
+cd frontend
+npm install
+npm run dev
 ```
+
+La app estará disponible en `http://localhost:5173`.
+
+---
+
+## 🔐 Autenticación
+
+El sistema usa **JWT (JSON Web Tokens)** almacenados en localStorage. Los endpoints protegidos requieren el header:
+
+```
+Authorization: Bearer <token>
+```
+
+### Roles
+- **ADMIN** — Acceso completo al sistema, gestión de usuarios
+- **OPERADOR** — Gestión de ganado, sanidad, reproducción, consultas
+
+---
+
+## 📦 Módulos del Sistema
+
+| Módulo | Descripción |
+|---|---|
+| **Autenticación** | Login/registro con JWT + reCAPTCHA |
+| **Usuarios** | CRUD de usuarios con roles |
+| **Fincas y Lotes** | Organización del terreno |
+| **Ganado** | Registro individual con arete, raza, genealogía |
+| **Reproducción** | Montas, partos, cálculo de fecha estimada |
+| **Sanidad** | Tratamientos, vacunaciones, alertas |
+| **Producción** | Registro diario de leche, estadísticas |
+| **Movimientos** | Trazabilidad de traslados entre lotes |
+| **Dashboard** | Gráficos, KPIs, alertas del sistema |
+
+---
+
+## 🌐 Deploy
+
+### Backend (Render)
+El archivo `render.yaml` configura el deploy automático vía Render Blueprint. El servicio se despliega desde `./backend/Dockerfile`.
+
+### Frontend (Cloudflare Workers)
+El frontend se despliega automáticamente desde el repositorio `Gestion_Ganadera_Front` vía Cloudflare Workers Dashboard.
+
+### CI/CD
+El workflow de GitHub Actions en `.github/workflows/ci.yml` ejecuta:
+1. Tests del backend con Maven
+2. Build del backend
+3. Deploy a Render (si el secret `RENDER_DEPLOY_HOOK_URL` está configurado)
+
+---
+
+## 📚 Documentación Adicional
+
+- **[ARQUITECTURA.md](docs/ARQUITECTURA.md)** — Arquitectura completa, modelo de datos, plan de desarrollo
+- **[DESIGN.md](docs/DESIGN.md)** — Decisiones técnicas y patrones de diseño
+- **[CODE_REVIEW.md](docs/CODE_REVIEW.md)** — Historial de auditorías de código
+- **[gestion.ddl](infra/gestion.ddl)** — Esquema DDL de la base de datos
+
+---
+
+## 🧪 Tests
+
+```bash
+cd backend
+mvn test                    # Todos los tests
+mvn test -Dtest=AnimalControllerTest  # Test específico
+```
+
+---
+
+## 📄 Licencia
+
+Este proyecto es parte de un trabajo académico. Ver `LICENSE` para más detalles.
