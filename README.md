@@ -166,12 +166,18 @@ El workflow de GitHub Actions en `.github/workflows/ci.yml` ejecuta:
 
 ---
 
-## 📚 Documentación Adicional
+## 📚 Documentación
 
 - **[ARQUITECTURA.md](docs/ARQUITECTURA.md)** — Arquitectura completa, modelo de datos, plan de desarrollo
 - **[DESIGN.md](docs/DESIGN.md)** — Decisiones técnicas y patrones de diseño
 - **[CODE_REVIEW.md](docs/CODE_REVIEW.md)** — Historial de auditorías de código
 - **[gestion.ddl](infra/gestion.ddl)** — Esquema DDL de la base de datos
+
+### 🤖 Documentación AI-first (`docs/.ai/`)
+
+- **[`docs/.ai/CONVENTIONS.md`](docs/.ai/CONVENTIONS.md)** — Gotchas, patrones y reglas para que la IA no meta la pata
+
+> Se actualiza manualmente cuando cambian patrones o aparecen nuevos gotchas.
 
 ---
 

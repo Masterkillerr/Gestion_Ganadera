@@ -12,6 +12,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
@@ -108,6 +110,39 @@ class GlobalExceptionHandlerTest {
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         assertEquals(403, response.getBody().getStatus());
         assertEquals("No tienes permisos para acceder a este recurso", response.getBody().getMessage());
+    }
+
+    @Test
+    void handleEntityNotFound_returns404() {
+        EntityNotFoundException ex = mock(EntityNotFoundException.class);
+
+        ResponseEntity<ErrorResponse> response = handler.handleEntityNotFound(ex);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(404, response.getBody().getStatus());
+        assertEquals("Recurso no encontrado", response.getBody().getMessage());
+    }
+
+    @Test
+    void handleSecurityException_returns403() {
+        SecurityException ex = new SecurityException("Acceso denegado al recurso");
+
+        ResponseEntity<ErrorResponse> response = handler.handleSecurityException(ex);
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertEquals(403, response.getBody().getStatus());
+        assertEquals("Acceso denegado", response.getBody().getMessage());
+    }
+
+    @Test
+    void handleDataIntegrityViolation_returns409() {
+        DataIntegrityViolationException ex = mock(DataIntegrityViolationException.class);
+
+        ResponseEntity<ErrorResponse> response = handler.handleDataIntegrityViolation(ex);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals(409, response.getBody().getStatus());
+        assertEquals("La operación viola una restricción de integridad de la base de datos", response.getBody().getMessage());
     }
 
     @Test

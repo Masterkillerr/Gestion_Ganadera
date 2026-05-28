@@ -1,5 +1,6 @@
 package com.gestionganadera.backend.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gestionganadera.backend.model.Role;
 import com.gestionganadera.backend.model.Usuario;
@@ -12,13 +13,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestClient;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.function.Consumer;
 
@@ -122,6 +127,31 @@ public abstract class BaseIntegrationTest {
         "razas", "categorias", "alimentos", "medicamentos", "vacunas",
         "usuarios", "roles"
     };
+
+    // ── Entity creation helper ──
+
+    /**
+     * Creates an entity via POST and returns the generated ID.
+     * Uses ObjectMapper to safely extract the ID from the JSON response.
+     */
+    protected Integer createEntity(String path, String jsonBody) {
+        ResponseEntity<String> response = restClient.post()
+                .uri(path)
+                .headers(withAuth())
+                .body(jsonBody)
+                .retrieve()
+                .toEntity(String.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Failed to create entity at " + path);
+        String body = response.getBody();
+        assertNotNull(body, "Response body should not be null for " + path);
+        try {
+            JsonNode node = objectMapper.readTree(body);
+            return node.get("id").asInt();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse ID from response for " + path + ": " + body, e);
+        }
+    }
 
     // ── Header helpers ──
 

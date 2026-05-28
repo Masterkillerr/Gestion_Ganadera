@@ -93,7 +93,7 @@ class AnimalDTOTest {
         AnimalDTO dto = new AnimalDTO(
             1, "AR-001", "Vaca", "H",
             "Holstein", "Lechera", "Activo",
-            BigDecimal.valueOf(500), "Lote A", null, null, null, "Finca X", null
+            BigDecimal.valueOf(500), "Lote A", null, null, null, "Finca X", null, null
         );
 
         assertEquals(1, dto.getId());
