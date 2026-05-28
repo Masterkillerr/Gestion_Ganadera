@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class RecaptchaResponse {
     private boolean success;
-    private double score;
+    private Double score;
     private String action;
     private String challenge_ts;
     private String hostname;
