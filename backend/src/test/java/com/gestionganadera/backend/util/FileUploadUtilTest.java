@@ -1,5 +1,6 @@
 package com.gestionganadera.backend.util;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.mock.web.MockMultipartFile;
@@ -16,12 +17,32 @@ class FileUploadUtilTest {
     @TempDir
     Path tempDir;
 
+    private FileUploadUtil fileUploadUtil;
+
+    @BeforeEach
+    void setUp() {
+        fileUploadUtil = new FileUploadUtil();
+        // Use reflection to set uploadDir and maxFileSize since @Value won't be injected in tests
+        try {
+            var uploadDirField = FileUploadUtil.class.getDeclaredField("uploadDir");
+            uploadDirField.setAccessible(true);
+            uploadDirField.set(fileUploadUtil, tempDir.toString() + "/");
+
+            var maxFileSizeField = FileUploadUtil.class.getDeclaredField("maxFileSize");
+            maxFileSizeField.setAccessible(true);
+            maxFileSizeField.set(fileUploadUtil, 5 * 1024 * 1024L); // 5MB
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set test fields", e);
+        }
+        fileUploadUtil.init();
+    }
+
     @Test
     void saveFile_allowedExtension_savesSuccessfully() throws IOException {
         MultipartFile file = new MockMultipartFile(
                 "file", "photo.jpg", "image/jpeg", "test-image-content".getBytes());
 
-        FileUploadUtil.saveFile(tempDir.toString(), "photo.jpg", file);
+        fileUploadUtil.saveFile(file);
 
         Path savedPath = tempDir.resolve("photo.jpg");
         assertTrue(Files.exists(savedPath));
@@ -31,10 +52,19 @@ class FileUploadUtilTest {
     @Test
     void saveFile_createsDirectoryIfNotExists() throws IOException {
         Path nestedDir = tempDir.resolve("subdir/uploads");
+        try {
+            var uploadDirField = FileUploadUtil.class.getDeclaredField("uploadDir");
+            uploadDirField.setAccessible(true);
+            uploadDirField.set(fileUploadUtil, nestedDir.toString() + "/");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set uploadDir", e);
+        }
+        fileUploadUtil.init();
+
         MultipartFile file = new MockMultipartFile(
                 "file", "doc.pdf", "application/pdf", "pdf-content".getBytes());
 
-        FileUploadUtil.saveFile(nestedDir.toString(), "doc.pdf", file);
+        fileUploadUtil.saveFile(file);
 
         assertTrue(Files.exists(nestedDir.resolve("doc.pdf")));
     }
@@ -45,7 +75,7 @@ class FileUploadUtilTest {
                 "file", "script.exe", "application/x-msdownload", "bad".getBytes());
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> FileUploadUtil.saveFile(tempDir.toString(), "script.exe", file));
+                () -> fileUploadUtil.saveFile(file));
 
         assertTrue(exception.getMessage().contains("exe"));
     }
@@ -56,7 +86,7 @@ class FileUploadUtilTest {
         MultipartFile file = new MockMultipartFile(
                 "file", "../../etc/passwd.jpg", "image/jpeg", "hack".getBytes());
 
-        FileUploadUtil.saveFile(tempDir.toString(), "../../etc/passwd.jpg", file);
+        fileUploadUtil.saveFile(file);
 
         // File should be saved with just the base name (no path traversal)
         assertTrue(Files.exists(tempDir.resolve("passwd.jpg")));
@@ -74,7 +104,7 @@ class FileUploadUtilTest {
                     "file", fileName, "application/octet-stream", "content".getBytes());
 
             assertDoesNotThrow(() ->
-                    FileUploadUtil.saveFile(tempDir.toString(), fileName, file),
+                            fileUploadUtil.saveFile(file),
                     "Extension ." + ext + " should be allowed");
         }
     }
@@ -85,8 +115,19 @@ class FileUploadUtilTest {
                 "file", "README", "text/plain", "content".getBytes());
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> FileUploadUtil.saveFile(tempDir.toString(), "README", file));
+                () -> fileUploadUtil.saveFile(file));
 
         assertTrue(exception.getMessage().contains("no permitido"));
+    }
+
+    @Test
+    void saveFile_emptyFile_throwsException() {
+        MultipartFile file = new MockMultipartFile(
+                "file", "empty.jpg", "image/jpeg", new byte[0]);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> fileUploadUtil.saveFile(file));
+
+        assertTrue(exception.getMessage().contains("vacío"));
     }
 }
