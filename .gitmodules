@@ -1,0 +1,3 @@
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/Masterkillerr/Gestion_Ganadera_Front.git
