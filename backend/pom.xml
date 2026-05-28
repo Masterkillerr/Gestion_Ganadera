@@ -75,6 +75,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Swagger / OpenAPI -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
         <!-- Environment variables from .env file -->
         <dependency>
             <groupId>me.paulschwarz</groupId>
@@ -106,7 +113,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
     

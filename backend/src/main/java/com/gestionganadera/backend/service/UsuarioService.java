@@ -3,6 +3,8 @@ package com.gestionganadera.backend.service;
 import com.gestionganadera.backend.dto.CreateUsuarioRequest;
 import com.gestionganadera.backend.dto.UpdateProfileRequest;
 import com.gestionganadera.backend.dto.UsuarioDTO;
+import com.gestionganadera.backend.exception.DuplicateEmailException;
+import com.gestionganadera.backend.exception.ResourceNotFoundException;
 import com.gestionganadera.backend.model.Role;
 import com.gestionganadera.backend.model.Usuario;
 import com.gestionganadera.backend.repository.RoleRepository;
@@ -44,7 +46,7 @@ public class UsuarioService {
 
     public UsuarioDTO create(@NonNull CreateUsuarioRequest request) {
         if (usuarioRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("El email ya está registrado");
+            throw new DuplicateEmailException("El email ya está registrado");
         }
 
         Usuario usuario = new Usuario();
@@ -54,7 +56,7 @@ public class UsuarioService {
 
         if (request.getRol() != null) {
             Role role = roleRepository.findByNombre(request.getRol())
-                    .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + request.getRol()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Rol no encontrado: " + request.getRol()));
             usuario.setRole(role);
         }
 
@@ -69,7 +71,7 @@ public class UsuarioService {
                     }
                     if (request.getEmail() != null && !request.getEmail().equals(existing.getEmail())) {
                         if (usuarioRepository.existsByEmail(request.getEmail())) {
-                            throw new RuntimeException("El email ya está registrado");
+                            throw new DuplicateEmailException("El email ya está registrado");
                         }
                         existing.setEmail(request.getEmail());
                     }
@@ -78,19 +80,18 @@ public class UsuarioService {
                     }
                     if (request.getRol() != null) {
                         Role role = roleRepository.findByNombre(request.getRol())
-                                .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + request.getRol()));
+                                .orElseThrow(() -> new ResourceNotFoundException("Rol no encontrado: " + request.getRol()));
                         existing.setRole(role);
                     }
                     return UsuarioDTO.fromEntity(usuarioRepository.save(existing));
-                })
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                }).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
     }
 
     public void delete(@NonNull UUID id) {
         usuarioRepository.findById(id)
                 .ifPresentOrElse(
                     usuario -> usuarioRepository.deleteById(id),
-                    () -> { throw new RuntimeException("Usuario no encontrado"); }
+                    () -> { throw new ResourceNotFoundException("Usuario no encontrado"); }
                 );
     }
 
@@ -106,7 +107,7 @@ public class UsuarioService {
         }
         if (request.getEmail() != null && !request.getEmail().equals(currentUser.getEmail())) {
             if (usuarioRepository.existsByEmail(request.getEmail())) {
-                throw new RuntimeException("El email ya está registrado");
+                throw new DuplicateEmailException("El email ya está registrado");
             }
             currentUser.setEmail(request.getEmail());
         }

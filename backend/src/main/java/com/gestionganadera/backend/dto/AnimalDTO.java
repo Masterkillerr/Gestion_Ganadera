@@ -27,6 +27,7 @@ public class AnimalDTO {
     private Integer padreId;
     private String fincaNombre;
     private Integer loteId;
+    private String fechaNacimiento;
 
     public static AnimalDTO fromEntity(Animal animal) {
         AnimalDTO dto = new AnimalDTO();
@@ -46,6 +47,7 @@ public class AnimalDTO {
         dto.setMadreId(animal.getMadre() != null ? animal.getMadre().getId() : null);
         dto.setPadreId(animal.getPadre() != null ? animal.getPadre().getId() : null);
         dto.setFincaNombre(animal.getFinca() != null ? animal.getFinca().getNombre() : null);
+        dto.setFechaNacimiento(animal.getFechaNacimiento() != null ? animal.getFechaNacimiento().toString() : null);
         return dto;
     }
 }

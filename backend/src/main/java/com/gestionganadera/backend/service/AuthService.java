@@ -37,6 +37,11 @@ public class AuthService {
     private String recaptchaSecret;
 
     private void validateRecaptcha(String recaptchaToken) {
+        // En desarrollo (sin secret configurado), saltar validación reCAPTCHA
+        if (recaptchaSecret == null || recaptchaSecret.isEmpty()) {
+            return;
+        }
+
         if (recaptchaToken == null || recaptchaToken.isEmpty()) {
             throw new BadCredentialsException("Por favor completa el ReCAPTCHA");
         }
