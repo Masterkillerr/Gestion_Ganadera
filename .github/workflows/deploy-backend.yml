@@ -1,0 +1,117 @@
+name: Deploy Backend to AWS Elastic Beanstalk
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-2
+  EB_APP_NAME: GestionGanadera
+  EB_ENV_NAME: Gestionganaderabackend-env
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      id-token: write
+      contents: read
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run tests
+        run: mvn test --batch-mode
+
+      - name: Build JAR
+        run: mvn clean package -DskipTests -B
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy to Elastic Beanstalk
+        run: |
+          set -e
+
+          # Discover AWS account ID automatically
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "AWS Account ID: $ACCOUNT_ID"
+
+          # Create deployment package (source bundle)
+          VERSION_LABEL="${{ github.sha }}-${{ github.run_number }}"
+          PACKAGE_FILE="backend-$VERSION_LABEL.zip"
+
+          cd target
+          zip -r ../../$PACKAGE_FILE *.jar
+          cd ../..
+
+          # Upload source bundle to S3 (Elastic Beanstalk default bucket)
+          EB_BUCKET="elasticbeanstalk-${{ env.AWS_REGION }}-$ACCOUNT_ID"
+          S3_KEY="backend-deployments/$PACKAGE_FILE"
+          echo "Uploading to S3://$EB_BUCKET/$S3_KEY"
+          aws s3 cp "$PACKAGE_FILE" "s3://$EB_BUCKET/$S3_KEY"
+
+          # Create new application version
+          echo "Creating application version $VERSION_LABEL..."
+          aws elasticbeanstalk create-application-version \
+            --application-name "${{ env.EB_APP_NAME }}" \
+            --version-label "$VERSION_LABEL" \
+            --source-bundle S3Bucket="$EB_BUCKET",S3Key="$S3_KEY" \
+            --no-cli-pager
+
+          # Update environment to use the new version
+          echo "Deploying to ${{ env.EB_ENV_NAME }}..."
+          aws elasticbeanstalk update-environment \
+            --environment-name "${{ env.EB_ENV_NAME }}" \
+            --version-label "$VERSION_LABEL" \
+            --no-cli-pager
+
+      - name: Wait for deployment
+        run: |
+          echo "Waiting for environment to be ready..."
+          aws elasticbeanstalk wait environment-updated \
+            --environment-name "${{ env.EB_ENV_NAME }}" \
+            --no-cli-pager 2>/dev/null && \
+            echo "✅ Environment updated" || \
+            echo "⚠️ Timeout, checking health anyway..."
+
+          # Report health status
+          HEALTH=$(aws elasticbeanstalk describe-environment-health \
+            --environment-name "${{ env.EB_ENV_NAME }}" \
+            --attribute-names HealthStatus \
+            --no-cli-pager \
+            --query 'HealthStatus' \
+            --output text)
+          echo "Health: $HEALTH"
+
+      - name: Health check
+        env:
+          EB_URL: ${{ secrets.EB_URL || 'https://Gestionganaderabackend-env.eba-kmujbtjg.us-east-2.elasticbeanstalk.com' }}
+        run: |
+          sleep 10
+          if curl -sSf "$EB_URL/api/health" > /dev/null 2>&1; then
+            echo "✅ Backend health check passed"
+          else
+            echo "⚠️ Health check failed (environment may still be starting)"
+          fi

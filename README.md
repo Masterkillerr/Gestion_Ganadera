@@ -166,7 +166,9 @@ El frontend (React build) se sirve desde un bucket S3 privado con CloudFront com
 La app está disponible en: `https://d3gw8tv95pui9q.cloudfront.net`
 
 ### CI/CD
-GitHub Actions (`.github/workflows/ci.yml`) ejecuta tests automáticamente en cada push a `main`/`master`. El deploy a AWS es manual actualmente.
+- **Tests**: `.github/workflows/ci.yml` ejecuta tests automáticamente en cada push/PR.
+- **Backend Deploy**: `.github/workflows/deploy-backend.yml` ejecuta tests, build y deploy automático a **AWS Elastic Beanstalk** al hacer push a `master`/`main` con cambios en `backend/`.
+- **Frontend Deploy**: `frontend/.github/workflows/deploy.yml` despliega a **AWS S3 + CloudFront** (configurado dentro del submódulo).
 
 ---
 
