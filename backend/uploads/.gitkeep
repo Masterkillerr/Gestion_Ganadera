@@ -1,1 +1,2 @@
-# Keep this directory for file uploads
+# Keep uploads directory in Git
+/uploads/.gitkeep

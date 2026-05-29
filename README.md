@@ -35,9 +35,8 @@ Gestion_Ganadera/
 │   └── gestion.ddl              # Esquema de base de datos (PostgreSQL)
 │
 ├── .github/workflows/ci.yml     ← CI/CD (GitHub Actions)
-├── render.yaml                  ← Render Blueprint (deploy automático)
-├── README.md                    ← Este archivo
-└── LICENSE
+├── LICENSE
+└── README.md
 ```
 
 ---
@@ -66,39 +65,25 @@ Gestion_Ganadera/
 | Recharts | — |
 
 ### Infraestructura
-- **CI/CD:** GitHub Actions (test + build + deploy)
-- **Backend:** Render (Docker)
-- **Frontend:** Cloudflare Workers / GitHub Pages
+- **CI/CD:** GitHub Actions (test + build)
+- **Backend:** AWS Elastic Beanstalk (Java 21, Corretto)
+- **Frontend:** AWS S3 (static hosting) + CloudFront CDN
+- **Base de datos:** AWS RDS PostgreSQL
 
 ---
 
 ## 🚀 Inicio Rápido
 
-### Prerrequisitos
+### Opción 1: Ejecución Directa (Recomendada para desarrollo)
+
+#### Prerrequisitos
 - Java 21+
 - Maven
-- PostgreSQL (local o remoto)
+- PostgreSQL (local o remota)
 - Node.js 20+
 - Git
 
-### 1. Clonar e inicializar submódulos
-
-```bash
-git clone https://github.com/Masterkillerr/Gestion_Ganadera.git
-cd Gestion_Ganadera
-git submodule init
-git submodule update
-```
-
-### 2. Configurar variables de entorno
-
-```bash
-cd backend
-cp .env.example .env
-# Editar .env con tus credenciales de base de datos y JWT secret
-```
-
-### 3. Backend
+#### Backend
 
 ```bash
 cd backend
@@ -108,7 +93,7 @@ mvn spring-boot:run
 
 La API estará disponible en `http://localhost:8080/api`.
 
-### 4. Frontend
+#### Frontend
 
 ```bash
 cd frontend
@@ -117,6 +102,15 @@ npm run dev
 ```
 
 La app estará disponible en `http://localhost:5173`.
+
+### Opción 2: Ejecución con Docker
+
+```bash
+cd backend
+# Copiar .env a .env si no existe
+docker build -t gestion-ganadera-backend .
+docker run -p 8080:8080 --env-file .env gestion-ganadera-backend
+```
 
 ---
 
@@ -152,17 +146,27 @@ Authorization: Bearer <token>
 
 ## 🌐 Deploy
 
-### Backend (Render)
-El archivo `render.yaml` configura el deploy automático vía Render Blueprint. El servicio se despliega desde `./backend/Dockerfile`.
+### Backend (AWS Elastic Beanstalk)
+El backend se despliega en **Elastic Beanstalk** (Amazon Linux 2023, Corretto 21). El entorno se llama `Gestionganaderabackend-env`.
 
-### Frontend (Cloudflare Workers)
-El frontend se despliega automáticamente desde el repositorio `Gestion_Ganadera_Front` vía Cloudflare Workers Dashboard.
+1. Build del backend: `mvn clean package -DskipTests`
+2. Deploy: Subir el `.jar` generado en `target/` a Elastic Beanstalk (EB CLI o consola AWS).
+
+El servicio está disponible en:
+- **URL**: `https://Gestionganaderabackend-env.eba-kmujbtjg.us-east-2.elasticbeanstalk.com/api`
+- **Health**: Monitorear desde EB Dashboard.
+
+### Frontend (AWS S3 + CloudFront)
+El frontend (React build) se sirve desde un bucket S3 privado con CloudFront como CDN.
+
+1. Build: `npm run build` en la carpeta `frontend/`
+2. Sincronizar: `aws s3 sync dist/ s3://gestion-ganadera-frontend --delete --region us-east-2`
+3. Invalidar cache CloudFront (opcional): `aws cloudfront create-invalidation --distribution-id E36X49KRLGV2TK --paths "/*"`
+
+La app está disponible en: `https://d3gw8tv95pui9q.cloudfront.net`
 
 ### CI/CD
-El workflow de GitHub Actions en `.github/workflows/ci.yml` ejecuta:
-1. Tests del backend con Maven
-2. Build del backend
-3. Deploy a Render (si el secret `RENDER_DEPLOY_HOOK_URL` está configurado)
+GitHub Actions (`.github/workflows/ci.yml`) ejecuta tests automáticamente en cada push a `main`/`master`. El deploy a AWS es manual actualmente.
 
 ---
 
