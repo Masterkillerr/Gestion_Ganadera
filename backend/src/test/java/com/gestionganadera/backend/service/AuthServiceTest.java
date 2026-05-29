@@ -27,7 +27,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -71,7 +70,7 @@ class AuthServiceTest {
         userRole = new Role(1, "USER");
 
         savedUser = new Usuario();
-        savedUser.setId(UUID.randomUUID());
+        savedUser.setId(1);
         savedUser.setNombre("Juan Pérez");
         savedUser.setEmail("juan@example.com");
         savedUser.setPassword("encoded-password");
@@ -81,32 +80,28 @@ class AuthServiceTest {
 
     @Test
     void register_nullRecaptchaToken_throwsBadCredentials() {
-        // Arrange
+        // with secret set, validation runs
         RegisterRequest request = new RegisterRequest();
         request.setNombre("Juan");
         request.setEmail("juan@example.com");
         request.setPassword("password123");
         request.setRecaptchaToken(null);
 
-        // Act & Assert
         BadCredentialsException exception = assertThrows(BadCredentialsException.class,
                 () -> authService.register(request));
         assertEquals("Por favor completa el ReCAPTCHA", exception.getMessage());
 
-        // Verify no user was saved
         verify(usuarioRepository, never()).save(any());
     }
 
     @Test
     void register_emptyRecaptchaToken_throwsBadCredentials() {
-        // Arrange
         RegisterRequest request = new RegisterRequest();
         request.setNombre("Juan");
         request.setEmail("juan@example.com");
         request.setPassword("password123");
-        request.setRecaptchaToken(""); // empty token
+        request.setRecaptchaToken("");
 
-        // Act & Assert
         BadCredentialsException exception = assertThrows(BadCredentialsException.class,
                 () -> authService.register(request));
         assertEquals("Por favor completa el ReCAPTCHA", exception.getMessage());
@@ -116,10 +111,8 @@ class AuthServiceTest {
 
     @Test
     void register_duplicateEmail_throwsRuntimeException() {
-        // Arrange
         when(usuarioRepository.existsByEmail(validRequest.getEmail())).thenReturn(true);
 
-        // Mock RestTemplate construction for validateRecaptcha
         RecaptchaResponse recaptchaResponse = new RecaptchaResponse();
         recaptchaResponse.setSuccess(true);
 
@@ -129,7 +122,6 @@ class AuthServiceTest {
                             .thenReturn(recaptchaResponse);
                 })) {
 
-            // Act & Assert
             RuntimeException exception = assertThrows(RuntimeException.class,
                     () -> authService.register(validRequest));
             assertEquals("El email ya está registrado", exception.getMessage());
@@ -141,13 +133,11 @@ class AuthServiceTest {
 
     @Test
     void register_success_returnsUsuarioResponse() {
-        // Arrange
         when(usuarioRepository.existsByEmail(validRequest.getEmail())).thenReturn(false);
         when(roleRepository.findByNombre("USER")).thenReturn(Optional.of(userRole));
         when(passwordEncoder.encode(validRequest.getPassword())).thenReturn("encoded-password");
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(savedUser);
 
-        // Mock RestTemplate construction for validateRecaptcha
         RecaptchaResponse recaptchaResponse = new RecaptchaResponse();
         recaptchaResponse.setSuccess(true);
 
@@ -157,10 +147,8 @@ class AuthServiceTest {
                             .thenReturn(recaptchaResponse);
                 })) {
 
-            // Act
             UsuarioResponse response = authService.register(validRequest);
 
-            // Assert
             assertNotNull(response);
             assertEquals(savedUser.getId(), response.getId());
             assertEquals("Juan Pérez", response.getNombre());
@@ -169,7 +157,6 @@ class AuthServiceTest {
             assertNotNull(response.getCreadoEn());
         }
 
-        // Verify the interactions
         verify(usuarioRepository).existsByEmail("juan@example.com");
         verify(roleRepository).findByNombre("USER");
         verify(passwordEncoder).encode("password123");
@@ -332,14 +319,12 @@ class AuthServiceTest {
 
     @Test
     void register_success_createsRoleIfNotFound() {
-        // Arrange
         when(usuarioRepository.existsByEmail(validRequest.getEmail())).thenReturn(false);
         when(roleRepository.findByNombre("USER")).thenReturn(Optional.empty());
         when(roleRepository.save(any(Role.class))).thenReturn(userRole);
         when(passwordEncoder.encode(validRequest.getPassword())).thenReturn("encoded-password");
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(savedUser);
 
-        // Mock RestTemplate construction for validateRecaptcha
         RecaptchaResponse recaptchaResponse = new RecaptchaResponse();
         recaptchaResponse.setSuccess(true);
 
@@ -349,14 +334,11 @@ class AuthServiceTest {
                             .thenReturn(recaptchaResponse);
                 })) {
 
-            // Act
             UsuarioResponse response = authService.register(validRequest);
 
-            // Assert
             assertNotNull(response);
             assertEquals("Juan Pérez", response.getNombre());
 
-            // Verify role was created
             verify(roleRepository).save(argThat(role -> role.getNombre().equals("USER")));
         }
     }

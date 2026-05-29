@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,8 +69,9 @@ class AnimalControllerTest {
     void createAnimal_returnsCreated() {
         CreateAnimalRequest request = new CreateAnimalRequest();
         request.setNombre("Nuevo");
-        request.setSexo("H");
-        request.setEstado("Activo");
+        request.setIdentificadorArete("AR-001");
+        request.setRazaId(1);
+        request.setFechaNacimiento(LocalDate.of(2024, 1, 1));
 
         Animal saved = new Animal();
         saved.setId(2);
@@ -86,8 +89,9 @@ class AnimalControllerTest {
     void updateAnimal_returnsUpdated() {
         CreateAnimalRequest request = new CreateAnimalRequest();
         request.setNombre("Modificado");
-        request.setSexo("M");
-        request.setEstado("Vendido");
+        request.setIdentificadorArete("AR-001");
+        request.setRazaId(1);
+        request.setFechaNacimiento(LocalDate.of(2024, 1, 1));
 
         Animal updated = new Animal();
         updated.setId(1);

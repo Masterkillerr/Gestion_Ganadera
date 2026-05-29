@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "registro_terneros")
+@Table(name = "registro_ternero")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,22 +18,23 @@ public class RegistroTernero {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parto_id")
+    @JoinColumn(name = "id_parto", nullable = false)
     private Parto parto;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "animal_id")
-    private Animal animal;
+    @JoinColumn(name = "id_sexo")
+    private Sexo sexo;
 
-    @Column(name = "peso_nacimiento", precision = 10, scale = 2)
-    private BigDecimal pesoNacimiento;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_condicion_nacimiento")
+    private CondicionNacimiento condicionNacimiento;
 
-    @Column(name = "sexo_nacimiento", length = 20)
-    private String sexoNacimiento;
+    @Column(name = "identificador_arete", length = 100)
+    private String identificadorArete;
 
-    @Column(name = "condicion_nacimiento", length = 50)
-    private String condicionNacimiento;
+    @Column(name = "peso_nacimiento_kg", precision = 10, scale = 2)
+    private BigDecimal pesoNacimientoKg;
 
     @Column(columnDefinition = "TEXT")
-    private String observaciones;
+    private String observacion;
 }

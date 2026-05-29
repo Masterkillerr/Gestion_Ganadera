@@ -2,9 +2,7 @@ package com.gestionganadera.backend.model;
 
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,28 +44,6 @@ class SimpleEntitiesTest {
         Raza raza = new Raza(2, "Brahmán");
         assertEquals(2, raza.getId());
         assertEquals("Brahmán", raza.getNombre());
-    }
-
-    // --- Categoria ---
-
-    @Test
-    void categoria_constructorAndSetters_work() {
-        Categoria categoria = new Categoria();
-        categoria.setId(1);
-        categoria.setNombre("Vaca Lechera");
-        categoria.setDescripcion("Alta producción de leche");
-
-        assertEquals(1, categoria.getId());
-        assertEquals("Vaca Lechera", categoria.getNombre());
-        assertEquals("Alta producción de leche", categoria.getDescripcion());
-    }
-
-    @Test
-    void categoria_allArgsConstructor_works() {
-        Categoria categoria = new Categoria(2, "Toro Reproductor", null);
-        assertEquals(2, categoria.getId());
-        assertEquals("Toro Reproductor", categoria.getNombre());
-        assertNull(categoria.getDescripcion());
     }
 
     // --- Medicamento ---
@@ -112,63 +88,63 @@ class SimpleEntitiesTest {
 
     @Test
     void tratamiento_constructorAndSetters_work() {
-        Animal animal = new Animal();
-        animal.setId(1);
+        Evento evento = new Evento();
+        evento.setId(1);
         Medicamento medicamento = new Medicamento();
         medicamento.setId(1);
 
         Tratamiento tratamiento = new Tratamiento();
         tratamiento.setId(1);
-        tratamiento.setAnimal(animal);
+        tratamiento.setEvento(evento);
         tratamiento.setMedicamento(medicamento);
-        tratamiento.setDosis("10ml");
+        tratamiento.setDosisMl("10ml");
         tratamiento.setFechaInicio(LocalDate.of(2025, 1, 1));
         tratamiento.setFechaFin(LocalDate.of(2025, 1, 15));
-        tratamiento.setDiasRetiro(30);
-        tratamiento.setObservaciones("Aplicación única");
+        tratamiento.setObservacion("Aplicación única");
 
         assertEquals(1, tratamiento.getId());
-        assertEquals(animal, tratamiento.getAnimal());
+        assertEquals(evento, tratamiento.getEvento());
         assertEquals(medicamento, tratamiento.getMedicamento());
-        assertEquals("10ml", tratamiento.getDosis());
+        assertEquals("10ml", tratamiento.getDosisMl());
         assertEquals(LocalDate.of(2025, 1, 1), tratamiento.getFechaInicio());
         assertEquals(LocalDate.of(2025, 1, 15), tratamiento.getFechaFin());
-        assertEquals(30, tratamiento.getDiasRetiro());
-        assertEquals("Aplicación única", tratamiento.getObservaciones());
+        assertEquals("Aplicación única", tratamiento.getObservacion());
     }
 
     @Test
     void tratamiento_allArgsConstructor_works() {
-        Tratamiento t = new Tratamiento(1, null, null, "5ml",
-                LocalDate.of(2025, 2, 1), LocalDate.of(2025, 2, 10), 15, "Test");
+        Evento evento = new Evento();
+        evento.setId(1);
+        Medicamento medicamento = new Medicamento();
+        medicamento.setId(1);
+        Tratamiento t = new Tratamiento(1, evento, medicamento,
+                LocalDate.of(2025, 2, 1), LocalDate.of(2025, 2, 10), "5ml", "Test");
 
         assertEquals(1, t.getId());
-        assertEquals("5ml", t.getDosis());
-        assertEquals(15, t.getDiasRetiro());
+        assertEquals("5ml", t.getDosisMl());
+        assertEquals("Test", t.getObservacion());
     }
 
     // --- Vacunacion ---
 
     @Test
     void vacunacion_constructorAndSetters_work() {
-        Animal animal = new Animal();
-        animal.setId(1);
+        Evento evento = new Evento();
+        evento.setId(1);
         Vacuna vacuna = new Vacuna(1, "Rabia");
 
         Vacunacion vacunacion = new Vacunacion();
         vacunacion.setId(1);
-        vacunacion.setAnimal(animal);
+        vacunacion.setEvento(evento);
         vacunacion.setVacuna(vacuna);
-        vacunacion.setFecha(LocalDate.of(2025, 1, 10));
         vacunacion.setProximaDosis(LocalDate.of(2025, 7, 10));
-        vacunacion.setObservaciones("Primera dosis");
+        vacunacion.setObservacion("Primera dosis");
 
         assertEquals(1, vacunacion.getId());
-        assertEquals(animal, vacunacion.getAnimal());
+        assertEquals(evento, vacunacion.getEvento());
         assertEquals(vacuna, vacunacion.getVacuna());
-        assertEquals(LocalDate.of(2025, 1, 10), vacunacion.getFecha());
         assertEquals(LocalDate.of(2025, 7, 10), vacunacion.getProximaDosis());
-        assertEquals("Primera dosis", vacunacion.getObservaciones());
+        assertEquals("Primera dosis", vacunacion.getObservacion());
     }
 
     // --- Alimentacion ---
@@ -177,22 +153,19 @@ class SimpleEntitiesTest {
     void alimentacion_constructorAndSetters_work() {
         Animal animal = new Animal();
         animal.setId(1);
-        Alimento alimento = new Alimento(1, "Concentrado");
+        Dieta dieta = new Dieta();
+        dieta.setId(1);
 
         Alimentacion alimentacion = new Alimentacion();
         alimentacion.setId(1);
         alimentacion.setAnimal(animal);
-        alimentacion.setAlimento(alimento);
-        alimentacion.setCantidad(BigDecimal.valueOf(5.5));
-        alimentacion.setFecha(LocalDate.of(2025, 2, 1));
-        alimentacion.setObservaciones("Ración matutina");
+        alimentacion.setDieta(dieta);
+        alimentacion.setObservacion("Ración matutina");
 
         assertEquals(1, alimentacion.getId());
         assertEquals(animal, alimentacion.getAnimal());
-        assertEquals(alimento, alimentacion.getAlimento());
-        assertEquals(BigDecimal.valueOf(5.5), alimentacion.getCantidad());
-        assertEquals(LocalDate.of(2025, 2, 1), alimentacion.getFecha());
-        assertEquals("Ración matutina", alimentacion.getObservaciones());
+        assertEquals(dieta, alimentacion.getDieta());
+        assertEquals("Ración matutina", alimentacion.getObservacion());
     }
 
     // --- Produccion ---
@@ -201,18 +174,17 @@ class SimpleEntitiesTest {
     void produccion_constructorAndSetters_work() {
         Animal animal = new Animal();
         animal.setId(1);
+        TurnoProduccion turno = new TurnoProduccion(1, "Mañana");
 
         Produccion produccion = new Produccion();
         produccion.setId(1);
         produccion.setAnimal(animal);
-        produccion.setLitros(BigDecimal.valueOf(25.5));
-        produccion.setTurno("Mañana");
+        produccion.setTurnoProduccion(turno);
         produccion.setFecha(LocalDate.of(2025, 3, 1));
 
         assertEquals(1, produccion.getId());
         assertEquals(animal, produccion.getAnimal());
-        assertEquals(BigDecimal.valueOf(25.5), produccion.getLitros());
-        assertEquals("Mañana", produccion.getTurno());
+        assertEquals(turno, produccion.getTurnoProduccion());
         assertEquals(LocalDate.of(2025, 3, 1), produccion.getFecha());
     }
 }

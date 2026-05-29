@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,39 +19,74 @@ class EntityRelationshipsTest {
     private Animal toro;
     private Animal cria;
     private Raza raza;
-    private Categoria categoria;
+    private Sexo sexoHembra;
+    private Sexo sexoMacho;
+    private EstadoAnimal estado;
+    private TipoEvento tipoEvento;
+    private Evento evento;
+    private Reproduccion reproduccion;
+    private Parto parto;
 
     @BeforeEach
     void setUp() {
-        propietario = new Usuario(UUID.randomUUID(), "Dueño", "dueno@finca.com", "pass", new Role(1, "USER"), LocalDateTime.now());
-        finca = new Finca(1, "Finca El Porvenir", "Campo Hermoso", propietario);
+        propietario = new Usuario();
+        propietario.setId(1);
+        propietario.setNombre("Dueño");
+        propietario.setEmail("dueno@finca.com");
+        propietario.setPassword("pass");
+        Role role = new Role(1, "USER");
+        propietario.setRole(role);
+        propietario.setCreadoEn(LocalDateTime.now());
+
+        finca = new Finca(1, "Finca El Porvenir", "Campo Hermoso");
         lote = new Lote(1, "Lote A", finca, BigDecimal.valueOf(50), 100, "Pasto estrella", "Activo");
         raza = new Raza(1, "Holstein");
-        categoria = new Categoria(1, "Vaca Lechera", "Alta producción");
-        vaca = new Animal(10, "AR-010", "Vaca Lechera", "H", raza, categoria, lote, LocalDate.of(2020, 1, 1), BigDecimal.valueOf(500), "Activo", null, null, null, null, finca);
-        toro = new Animal(11, "AR-011", "Toro Bravo", "M", null, null, lote, LocalDate.of(2019, 5, 1), BigDecimal.valueOf(800), "Activo", null, null, null, null, finca);
-        cria = new Animal(12, "AR-012", "Ternero", "M", null, null, lote, LocalDate.of(2024, 3, 1), BigDecimal.valueOf(80), "Activo", null, null, vaca, toro, finca);
+        sexoHembra = new Sexo(1, "Hembra");
+        sexoMacho = new Sexo(2, "Macho");
+        estado = new EstadoAnimal(1, "Saludable");
+
+        vaca = new Animal();
+        vaca.setId(10);
+        vaca.setIdentificadorArete("AR-010");
+        vaca.setNombre("Vaca Lechera");
+        vaca.setSexo(sexoHembra);
+        vaca.setEstadoAnimal(estado);
+        vaca.setRaza(raza);
+        vaca.setFechaNacimiento(LocalDate.of(2020, 1, 1));
+        vaca.setPesoActualKg(BigDecimal.valueOf(500));
+
+        toro = new Animal();
+        toro.setId(11);
+        toro.setIdentificadorArete("AR-011");
+        toro.setNombre("Toro Bravo");
+        toro.setSexo(sexoMacho);
+        toro.setFechaNacimiento(LocalDate.of(2019, 5, 1));
+        toro.setPesoActualKg(BigDecimal.valueOf(800));
+
+        cria = new Animal();
+        cria.setId(12);
+        cria.setIdentificadorArete("AR-012");
+        cria.setNombre("Ternero");
+        cria.setSexo(sexoMacho);
+        cria.setFechaNacimiento(LocalDate.of(2024, 3, 1));
+        cria.setPesoActualKg(BigDecimal.valueOf(80));
+        cria.setMadre(vaca);
+        cria.setPadre(toro);
+
+        tipoEvento = new TipoEvento(1, "Reproducción");
+        evento = new Evento();
+        evento.setId(1);
+        evento.setAnimal(vaca);
+        evento.setTipoEvento(tipoEvento);
+        evento.setDescripcion("Monta natural");
     }
 
-    // --- Finca + Propietario relationship ---
+    // --- Finca ---
 
     @Test
-    void finca_withPropietario_setsRelationship() {
-        assertEquals(propietario, finca.getPropietario());
+    void finca_setsFields() {
         assertEquals("Finca El Porvenir", finca.getNombre());
         assertEquals("Campo Hermoso", finca.getUbicacion());
-    }
-
-    @Test
-    void finca_noArgsConstructor_thenSetters() {
-        Finca f = new Finca();
-        f.setId(2);
-        f.setNombre("Nueva Finca");
-        f.setPropietario(propietario);
-
-        assertEquals(2, f.getId());
-        assertEquals("Nueva Finca", f.getNombre());
-        assertEquals(propietario, f.getPropietario());
     }
 
     // --- Lote + Finca relationship ---
@@ -64,30 +99,15 @@ class EntityRelationshipsTest {
         assertEquals("Activo", lote.getEstado());
     }
 
-    @Test
-    void lote_noArgsConstructor_thenSetters() {
-        Lote l = new Lote();
-        l.setId(2);
-        l.setNombre("Lote B");
-        l.setFinca(finca);
-        l.setEstado("Mantenimiento");
-
-        assertEquals(2, l.getId());
-        assertEquals("Lote B", l.getNombre());
-        assertEquals(finca, l.getFinca());
-        assertEquals("Mantenimiento", l.getEstado());
-    }
-
-    // --- Animal relationships (Raza, Categoria, Lote, Finca, Madre, Padre) ---
+    // --- Animal relationships (Raza, Sexo, EstadoAnimal, Madre, Padre) ---
 
     @Test
     void animal_withAllRelationships_setsCorrectly() {
         assertEquals(raza, vaca.getRaza());
-        assertEquals(categoria, vaca.getCategoria());
-        assertEquals(lote, vaca.getLote());
-        assertEquals(finca, vaca.getFinca());
+        assertEquals(sexoHembra, vaca.getSexo());
+        assertEquals(estado, vaca.getEstadoAnimal());
         assertEquals("Holstein", vaca.getRaza().getNombre());
-        assertEquals("Vaca Lechera", vaca.getCategoria().getNombre());
+        assertEquals("Hembra", vaca.getSexo().getNombre());
     }
 
     @Test
@@ -103,40 +123,37 @@ class EntityRelationshipsTest {
         simple.setNombre("Simple");
 
         assertNull(simple.getRaza());
-        assertNull(simple.getCategoria());
-        assertNull(simple.getLote());
-        assertNull(simple.getFinca());
+        assertNull(simple.getSexo());
+        assertNull(simple.getEstadoAnimal());
         assertNull(simple.getMadre());
         assertNull(simple.getPadre());
     }
 
-    // --- Reproduccion (vaca + toro) ---
+    // --- Evento relationships ---
 
     @Test
-    void reproduccion_withParents_setsRelationships() {
-        Reproduccion r = new Reproduccion();
-        r.setId(1);
-        r.setVaca(vaca);
-        r.setToro(toro);
-        r.setFechaMonta(LocalDate.of(2024, 6, 1));
-        r.setTipo("Natural");
-
-        assertEquals(vaca, r.getVaca());
-        assertEquals(toro, r.getToro());
-        assertEquals(LocalDate.of(2024, 6, 1), r.getFechaMonta());
-        assertEquals("Natural", r.getTipo());
+    void evento_withAnimalAndTipo_setsRelationships() {
+        assertEquals(vaca, evento.getAnimal());
+        assertEquals(tipoEvento, evento.getTipoEvento());
     }
 
-    @Test
-    void reproduccion_withResult_updatesFields() {
-        Reproduccion r = new Reproduccion();
-        r.setResultado("Exitosa");
-        r.setFechaPartoEstimada(LocalDate.of(2025, 3, 1));
-        r.setObservaciones("Sin complicaciones");
+    // --- Reproduccion (with Evento, TipoReproduccion, ResultadoReproduccion) ---
 
-        assertEquals("Exitosa", r.getResultado());
+    @Test
+    void reproduccion_withAllRelationships_setsCorrectly() {
+        Reproduccion r = new Reproduccion();
+        r.setId(1);
+        r.setEvento(evento);
+        r.setVaca(vaca);
+        r.setToro(toro);
+        r.setFechaPartoEstimada(LocalDate.of(2025, 3, 1));
+        r.setObservacion("Sin complicaciones");
+
+        assertEquals(evento, r.getEvento());
+        assertEquals(vaca, r.getVaca());
+        assertEquals(toro, r.getToro());
         assertEquals(LocalDate.of(2025, 3, 1), r.getFechaPartoEstimada());
-        assertEquals("Sin complicaciones", r.getObservaciones());
+        assertEquals("Sin complicaciones", r.getObservacion());
     }
 
     // --- Parto + Reproduccion relationship ---
@@ -147,70 +164,47 @@ class EntityRelationshipsTest {
         reproduccion.setId(1);
         reproduccion.setVaca(vaca);
 
+        Evento partoEvento = new Evento();
+        partoEvento.setId(2);
+        partoEvento.setAnimal(vaca);
+
         Parto parto = new Parto();
         parto.setId(1);
+        parto.setEvento(partoEvento);
         parto.setReproduccion(reproduccion);
-        parto.setFechaParto(LocalDate.of(2025, 3, 15));
         parto.setCantidadCrias(1);
-        parto.setObservaciones("Parto normal");
+        parto.setObservacion("Parto normal");
 
         assertEquals(reproduccion, parto.getReproduccion());
-        assertEquals(LocalDate.of(2025, 3, 15), parto.getFechaParto());
+        assertEquals(partoEvento, parto.getEvento());
         assertEquals(1, parto.getCantidadCrias());
-        assertEquals("Parto normal", parto.getObservaciones());
-    }
-
-    // --- RegistroTernero + Parto + Animal relationships ---
-
-    @Test
-    void registroTernero_withPartoAndAnimal_setsRelationships() {
-        Reproduccion reproduccion = new Reproduccion();
-        reproduccion.setId(1);
-
-        Parto parto = new Parto();
-        parto.setId(1);
-        parto.setReproduccion(reproduccion);
-
-        Animal ternero = new Animal();
-        ternero.setId(20);
-        ternero.setNombre("Ternero 001");
-
-        RegistroTernero registro = new RegistroTernero();
-        registro.setId(1);
-        registro.setParto(parto);
-        registro.setAnimal(ternero);
-        registro.setPesoNacimiento(BigDecimal.valueOf(35.5));
-        registro.setSexoNacimiento("M");
-        registro.setCondicionNacimiento("Saludable");
-
-        assertEquals(parto, registro.getParto());
-        assertEquals(ternero, registro.getAnimal());
-        assertEquals(BigDecimal.valueOf(35.5), registro.getPesoNacimiento());
-        assertEquals("M", registro.getSexoNacimiento());
-        assertEquals("Saludable", registro.getCondicionNacimiento());
+        assertEquals("Parto normal", parto.getObservacion());
     }
 
     // --- Movimiento with Lote relationships ---
 
     @Test
     void movimiento_withLotes_setsRelationships() {
+        Evento movEvento = new Evento();
+        movEvento.setId(3);
+        movEvento.setAnimal(vaca);
+
         Lote loteOrigen = new Lote(1, "Lote A", finca, null, null, null, null);
         Lote loteDestino = new Lote(2, "Lote B", finca, null, null, null, null);
+        TipoMovimiento tipoMov = new TipoMovimiento(1, "Traslado");
 
         Movimiento movimiento = new Movimiento();
         movimiento.setId(1);
-        movimiento.setAnimal(vaca);
+        movimiento.setEvento(movEvento);
+        movimiento.setTipoMovimiento(tipoMov);
         movimiento.setLoteOrigen(loteOrigen);
         movimiento.setLoteDestino(loteDestino);
-        movimiento.setFecha(LocalDate.of(2025, 1, 15));
-        movimiento.setTipoMovimiento("Traslado");
         movimiento.setMotivo("Mejor pastura");
 
-        assertEquals(vaca, movimiento.getAnimal());
+        assertEquals(movEvento, movimiento.getEvento());
         assertEquals(loteOrigen, movimiento.getLoteOrigen());
         assertEquals(loteDestino, movimiento.getLoteDestino());
-        assertEquals(LocalDate.of(2025, 1, 15), movimiento.getFecha());
-        assertEquals("Traslado", movimiento.getTipoMovimiento());
+        assertEquals("Traslado", movimiento.getTipoMovimiento().getNombre());
         assertEquals("Mejor pastura", movimiento.getMotivo());
     }
 }

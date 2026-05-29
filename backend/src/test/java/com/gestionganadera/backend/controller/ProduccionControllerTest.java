@@ -74,7 +74,7 @@ class ProduccionControllerTest {
         CreateProduccionRequest request = new CreateProduccionRequest();
         request.setAnimalId(100);
         request.setLitros(BigDecimal.valueOf(10));
-        request.setTurno("Manana");
+        request.setTurnoProduccionId(1);
         request.setFecha(LocalDate.now());
 
         ProduccionDTO saved = new ProduccionDTO();
@@ -95,14 +95,13 @@ class ProduccionControllerTest {
         CreateProduccionRequest request = new CreateProduccionRequest();
         request.setAnimalId(100);
         request.setLitros(BigDecimal.valueOf(15));
-        request.setTurno("Tarde");
+        request.setTurnoProduccionId(1);
         request.setFecha(LocalDate.of(2025, 2, 1));
 
         ProduccionDTO updated = new ProduccionDTO();
         updated.setId(1);
         updated.setAnimalId(100);
         updated.setLitros(BigDecimal.valueOf(15));
-        updated.setTurno("Tarde");
         updated.setFecha(LocalDate.of(2025, 2, 1));
         when(service.update(1, request)).thenReturn(updated);
 
@@ -111,7 +110,6 @@ class ProduccionControllerTest {
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
         assertEquals(BigDecimal.valueOf(15), response.getBody().getLitros());
-        assertEquals("Tarde", response.getBody().getTurno());
     }
 
     @Test

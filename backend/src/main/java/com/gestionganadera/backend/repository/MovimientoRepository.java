@@ -8,6 +8,5 @@ import java.util.List;
 
 @Repository
 public interface MovimientoRepository extends JpaRepository<Movimiento, Integer> {
-    List<Movimiento> findTop10ByAnimalFincaIdInOrderByFechaDesc(List<Integer> fincaIds);
-    List<Movimiento> findByAnimalFincaIdInOrderByFechaDesc(List<Integer> fincaIds);
+    List<Movimiento> findByEventoId(Integer eventoId);
 }

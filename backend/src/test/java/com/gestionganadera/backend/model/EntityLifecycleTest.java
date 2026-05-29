@@ -10,56 +10,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class EntityLifecycleTest {
 
-    // --- Alerta @PrePersist tests ---
-
-    @Test
-    void alerta_onCreate_setsFechaAndDefaultsLeida() {
-        Alerta alerta = new Alerta();
-        assertNull(alerta.getFecha());
-        assertFalse(alerta.getLeida()); // field default
-
-        alerta.onCreate();
-
-        assertNotNull(alerta.getFecha());
-        assertTrue(alerta.getFecha().isBefore(LocalDateTime.now().plusSeconds(1)));
-        assertFalse(alerta.getLeida());
-    }
-
-    @Test
-    void alerta_onCreate_doesNotOverrideExistingFecha() {
-        LocalDateTime customFecha = LocalDateTime.of(2024, 1, 1, 10, 0);
-        Alerta alerta = new Alerta();
-        alerta.setFecha(customFecha);
-
-        alerta.onCreate();
-
-        assertEquals(customFecha, alerta.getFecha());
-    }
-
-    @Test
-    void alerta_constructorAndSetters_work() {
-        Alerta alerta = new Alerta();
-        alerta.setId(1);
-        alerta.setTipo("Salud");
-        alerta.setMensaje("Revisión necesaria");
-        alerta.setLeida(true);
-
-        assertEquals(1, alerta.getId());
-        assertEquals("Salud", alerta.getTipo());
-        assertEquals("Revisión necesaria", alerta.getMensaje());
-        assertTrue(alerta.getLeida());
-    }
-
-    @Test
-    void alerta_allArgsConstructor_works() {
-        Alerta alerta = new Alerta(1, "Salud", "Mensaje", null, LocalDateTime.now(), false);
-
-        assertEquals(1, alerta.getId());
-        assertEquals("Salud", alerta.getTipo());
-        assertEquals("Mensaje", alerta.getMensaje());
-        assertNotNull(alerta.getFecha());
-    }
-
     // --- Evento @PrePersist tests ---
 
     @Test
@@ -88,23 +38,10 @@ class EntityLifecycleTest {
     void evento_constructorAndSetters_work() {
         Evento evento = new Evento();
         evento.setId(1);
-        evento.setTipo("Reproduccion");
         evento.setDescripcion("Inseminación exitosa");
 
         assertEquals(1, evento.getId());
-        assertEquals("Reproduccion", evento.getTipo());
         assertEquals("Inseminación exitosa", evento.getDescripcion());
-    }
-
-    @Test
-    void evento_allArgsConstructor_works() {
-        LocalDateTime now = LocalDateTime.now();
-        Evento evento = new Evento(1, null, "Salud", "Revisión", now);
-
-        assertEquals(1, evento.getId());
-        assertEquals("Salud", evento.getTipo());
-        assertEquals("Revisión", evento.getDescripcion());
-        assertEquals(now, evento.getFecha());
     }
 
     // --- Animal @PrePersist tests ---
@@ -133,36 +70,63 @@ class EntityLifecycleTest {
 
     @Test
     void animal_constructorAndSetters_work() {
+        Sexo sexo = new Sexo(1, "Hembra");
+        EstadoAnimal estado = new EstadoAnimal(1, "Saludable");
+
         Animal animal = new Animal();
         animal.setId(1);
         animal.setNombre("Vaca Lola");
         animal.setIdentificadorArete("AR-001");
-        animal.setSexo("H");
-        animal.setEstado("Activo");
+        animal.setSexo(sexo);
+        animal.setEstadoAnimal(estado);
 
         assertEquals(1, animal.getId());
         assertEquals("Vaca Lola", animal.getNombre());
         assertEquals("AR-001", animal.getIdentificadorArete());
-        assertEquals("H", animal.getSexo());
-        assertEquals("Activo", animal.getEstado());
+        assertEquals("Hembra", animal.getSexo().getNombre());
+        assertEquals("Saludable", animal.getEstadoAnimal().getNombre());
     }
 
     @Test
-    void animal_allArgsConstructor_works() {
-        Animal animal = new Animal(
-            1, "AR-001", "Vaca Lola", "H",
-            null, null, null,
-            LocalDate.of(2023, 1, 15),
-            BigDecimal.valueOf(450), "Activo", null, null,
-            null, null, null
-        );
+    void animal_creadoEn_autoSetOnCreate() {
+        Animal animal = new Animal();
+        animal.onCreate();
 
-        assertEquals(1, animal.getId());
-        assertEquals("AR-001", animal.getIdentificadorArete());
-        assertEquals("Vaca Lola", animal.getNombre());
-        assertEquals("H", animal.getSexo());
-        assertEquals(LocalDate.of(2023, 1, 15), animal.getFechaNacimiento());
-        assertEquals(BigDecimal.valueOf(450), animal.getPesoActual());
-        assertEquals("Activo", animal.getEstado());
+        assertNotNull(animal.getCreadoEn());
+    }
+
+    // --- Alimentacion @PrePersist tests ---
+
+    @Test
+    void alimentacion_onCreate_setsFecha() {
+        Alimentacion a = new Alimentacion();
+        assertNull(a.getFecha());
+
+        a.onCreate();
+
+        assertNotNull(a.getFecha());
+    }
+
+    @Test
+    void alimentacion_onCreate_doesNotOverrideExistingFecha() {
+        LocalDateTime custom = LocalDateTime.of(2024, 1, 1, 10, 0);
+        Alimentacion a = new Alimentacion();
+        a.setFecha(custom);
+
+        a.onCreate();
+
+        assertEquals(custom, a.getFecha());
+    }
+
+    // --- Usuario @PrePersist tests ---
+
+    @Test
+    void usuario_onCreate_setsCreadoEn() {
+        Usuario usuario = new Usuario();
+        assertNull(usuario.getCreadoEn());
+
+        usuario.onCreate();
+
+        assertNotNull(usuario.getCreadoEn());
     }
 }

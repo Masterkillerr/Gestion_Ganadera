@@ -5,24 +5,19 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateMovimientoRequest {
     @NotNull
-    private Integer animalId;
+    private Integer eventoId;
+
+    private Integer tipoMovimientoId;
 
     private Integer loteOrigenId;
 
     @NotNull
     private Integer loteDestinoId;
-
-    @NotNull
-    private LocalDate fecha;
-
-    private String tipoMovimiento;
 
     private String motivo;
 }

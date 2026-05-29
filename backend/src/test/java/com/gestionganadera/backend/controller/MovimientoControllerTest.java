@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -72,10 +71,10 @@ class MovimientoControllerTest {
     @Test
     void create_returns200() {
         CreateMovimientoRequest request = new CreateMovimientoRequest();
-        request.setAnimalId(1);
+        request.setEventoId(1);
+        request.setTipoMovimientoId(1);
         request.setLoteDestinoId(2);
-        request.setFecha(LocalDate.of(2026, 5, 28));
-        request.setTipoMovimiento("Traslado");
+        request.setMotivo("Traslado");
 
         MovimientoDTO saved = createDTO(3);
         when(movimientoService.create(request)).thenReturn(saved);
@@ -90,9 +89,8 @@ class MovimientoControllerTest {
     @Test
     void update_returns200() {
         CreateMovimientoRequest request = new CreateMovimientoRequest();
-        request.setAnimalId(1);
+        request.setEventoId(1);
         request.setLoteDestinoId(3);
-        request.setFecha(LocalDate.of(2026, 6, 1));
         request.setMotivo("Cambio de lote");
 
         MovimientoDTO updated = createDTO(1);

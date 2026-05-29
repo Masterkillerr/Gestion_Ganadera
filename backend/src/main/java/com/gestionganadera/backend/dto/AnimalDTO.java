@@ -15,18 +15,12 @@ public class AnimalDTO {
     private String identificadorArete;
     private String nombre;
     private String sexo;
-
+    private String estadoAnimal;
     private String razaNombre;
-    private String categoriaNombre;
-    private String estado;
-
-    private BigDecimal pesoActual;
-    private String loteNombre;
+    private BigDecimal pesoActualKg;
     private String fotoUrl;
     private Integer madreId;
     private Integer padreId;
-    private String fincaNombre;
-    private Integer loteId;
     private String fechaNacimiento;
 
     public static AnimalDTO fromEntity(Animal animal) {
@@ -34,19 +28,13 @@ public class AnimalDTO {
         dto.setId(animal.getId());
         dto.setIdentificadorArete(animal.getIdentificadorArete());
         dto.setNombre(animal.getNombre());
-        dto.setSexo(animal.getSexo());
-
+        dto.setSexo(animal.getSexo() != null ? animal.getSexo().getNombre() : null);
+        dto.setEstadoAnimal(animal.getEstadoAnimal() != null ? animal.getEstadoAnimal().getNombre() : null);
         dto.setRazaNombre(animal.getRaza() != null ? animal.getRaza().getNombre() : null);
-        dto.setCategoriaNombre(animal.getCategoria() != null ? animal.getCategoria().getNombre() : null);
-        dto.setEstado(animal.getEstado());
-
-        dto.setPesoActual(animal.getPesoActual());
-        dto.setLoteNombre(animal.getLote() != null ? animal.getLote().getNombre() : null);
-        dto.setLoteId(animal.getLote() != null ? animal.getLote().getId() : null);
+        dto.setPesoActualKg(animal.getPesoActualKg());
         dto.setFotoUrl(animal.getFotoUrl());
         dto.setMadreId(animal.getMadre() != null ? animal.getMadre().getId() : null);
         dto.setPadreId(animal.getPadre() != null ? animal.getPadre().getId() : null);
-        dto.setFincaNombre(animal.getFinca() != null ? animal.getFinca().getNombre() : null);
         dto.setFechaNacimiento(animal.getFechaNacimiento() != null ? animal.getFechaNacimiento().toString() : null);
         return dto;
     }

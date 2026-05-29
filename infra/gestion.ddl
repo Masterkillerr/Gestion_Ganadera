@@ -1,195 +1,236 @@
 -- WARNING: This schema is for context only and is not meant to be run.
--- Table order and constraints may not be valid for execution.
+-- Adapted from the real PostgreSQL database (Hibernate-generated) on 2026-05-29.
+-- 28 tables total.
 
-CREATE TABLE public.alertas (
-  id integer NOT NULL DEFAULT nextval('alertas_id_seq'::regclass),
-  animal_id integer,
-  tipo character varying,
-  mensaje text,
-  fecha timestamp without time zone,
-  leida boolean DEFAULT false,
-  CONSTRAINT alertas_pkey PRIMARY KEY (id),
-  CONSTRAINT alertas_animal_id_fkey FOREIGN KEY (animal_id) REFERENCES public.animales(id)
+-- ============================================================
+-- CATÁLOGOS / TABLAS DE REFERENCIA (9)
+-- ============================================================
+
+CREATE TABLE public.sexo (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE
 );
-CREATE TABLE public.alimentaciones (
-  id integer NOT NULL DEFAULT nextval('alimentaciones_id_seq'::regclass),
-  animal_id integer,
-  alimento_id integer,
-  fecha date NOT NULL,
-  cantidad numeric,
-  observaciones text,
-  CONSTRAINT alimentaciones_pkey PRIMARY KEY (id),
-  CONSTRAINT alimentaciones_animal_id_fkey FOREIGN KEY (animal_id) REFERENCES public.animales(id),
-  CONSTRAINT alimentaciones_alimento_id_fkey FOREIGN KEY (alimento_id) REFERENCES public.alimentos(id)
+
+CREATE TABLE public.estado_animal (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE
 );
-CREATE TABLE public.alimentos (
-  id integer NOT NULL DEFAULT nextval('alimentos_id_seq'::regclass),
-  nombre character varying NOT NULL,
-  CONSTRAINT alimentos_pkey PRIMARY KEY (id)
+
+CREATE TABLE public.condicion_nacimiento (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE
 );
-CREATE TABLE public.animales (
-  id integer NOT NULL DEFAULT nextval('animales_id_seq'::regclass),
-  identificador_arete character varying NOT NULL UNIQUE,
-  nombre character varying,
-  sexo character varying CHECK (sexo::text = ANY (ARRAY['Macho'::character varying, 'Hembra'::character varying]::text[])),
-  fecha_nacimiento date NOT NULL,
-  peso_actual numeric,
-  estado character varying CHECK (estado::text = ANY (ARRAY['Activo'::character varying, 'En tratamiento'::character varying, 'En cuarentena'::character varying, 'Vendido'::character varying, 'Fallecido'::character varying, 'Sacrificado'::character varying]::text[])),
-  foto_url text,
-  creado_en timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-  raza_id integer,
-  categoria_id integer,
-  finca_id integer,
-  lote_id integer,
-  madre_id integer,
-  padre_id integer,
-  CONSTRAINT animales_pkey PRIMARY KEY (id),
-  CONSTRAINT animales_raza_id_fkey FOREIGN KEY (raza_id) REFERENCES public.razas(id),
-  CONSTRAINT animales_categoria_id_fkey FOREIGN KEY (categoria_id) REFERENCES public.categorias(id),
-  CONSTRAINT animales_finca_id_fkey FOREIGN KEY (finca_id) REFERENCES public.fincas(id),
-  CONSTRAINT animales_lote_id_fkey FOREIGN KEY (lote_id) REFERENCES public.lotes(id),
-  CONSTRAINT animales_madre_id_fkey FOREIGN KEY (madre_id) REFERENCES public.animales(id),
-  CONSTRAINT animales_padre_id_fkey FOREIGN KEY (padre_id) REFERENCES public.animales(id)
+
+CREATE TABLE public.tipo_evento (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(20) NOT NULL UNIQUE
 );
-CREATE TABLE public.categorias (
-  id integer NOT NULL DEFAULT nextval('categorias_id_seq'::regclass),
-  nombre character varying NOT NULL UNIQUE,
-  descripcion text,
-  CONSTRAINT categorias_pkey PRIMARY KEY (id)
+
+CREATE TABLE public.tipo_movimiento (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(20) NOT NULL UNIQUE
 );
-CREATE TABLE public.eventos (
-  id integer NOT NULL DEFAULT nextval('eventos_id_seq'::regclass),
-  animal_id integer,
-  tipo character varying,
-  descripcion text,
-  fecha timestamp without time zone,
-  CONSTRAINT eventos_pkey PRIMARY KEY (id),
-  CONSTRAINT eventos_animal_id_fkey FOREIGN KEY (animal_id) REFERENCES public.animales(id)
+
+CREATE TABLE public.tipo_reproduccion (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(20) NOT NULL UNIQUE
 );
-CREATE TABLE public.fincas (
-  id integer NOT NULL DEFAULT nextval('fincas_id_seq'::regclass),
-  nombre character varying NOT NULL,
-  ubicacion text,
-  CONSTRAINT fincas_pkey PRIMARY KEY (id)
+
+CREATE TABLE public.resultado_reproduccion (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE
 );
-CREATE TABLE public.lotes (
-  id integer NOT NULL DEFAULT nextval('lotes_id_seq'::regclass),
-  finca_id integer NOT NULL,
-  nombre character varying NOT NULL,
-  hectareas numeric,
-  capacidad_maxima integer,
-  tipo_pasto character varying,
-  estado character varying,
-  CONSTRAINT lotes_pkey PRIMARY KEY (id),
-  CONSTRAINT lotes_finca_id_fkey FOREIGN KEY (finca_id) REFERENCES public.fincas(id)
+
+CREATE TABLE public.turno_produccion (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(20) NOT NULL UNIQUE
 );
-CREATE TABLE public.medicamentos (
-  id integer NOT NULL DEFAULT nextval('medicamentos_id_seq'::regclass),
-  nombre character varying NOT NULL,
-  descripcion text,
-  CONSTRAINT medicamentos_pkey PRIMARY KEY (id)
+
+CREATE TABLE public.rol (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(20) NOT NULL UNIQUE
 );
-CREATE TABLE public.movimientos (
-  id integer NOT NULL DEFAULT nextval('movimientos_id_seq'::regclass),
-  animal_id integer,
-  lote_origen_id integer,
-  lote_destino_id integer,
-  fecha date NOT NULL,
-  tipo_movimiento character varying,
-  motivo text,
-  CONSTRAINT movimientos_pkey PRIMARY KEY (id),
-  CONSTRAINT movimientos_animal_id_fkey FOREIGN KEY (animal_id) REFERENCES public.animales(id),
-  CONSTRAINT movimientos_lote_origen_id_fkey FOREIGN KEY (lote_origen_id) REFERENCES public.lotes(id),
-  CONSTRAINT movimientos_lote_destino_id_fkey FOREIGN KEY (lote_destino_id) REFERENCES public.lotes(id)
+
+-- ============================================================
+-- CATÁLOGOS SIMPLES (4)
+-- ============================================================
+
+CREATE TABLE public.raza (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL
 );
-CREATE TABLE public.partos (
-  id integer NOT NULL DEFAULT nextval('partos_id_seq'::regclass),
-  reproduccion_id integer,
-  fecha_parto date NOT NULL,
-  cantidad_crias integer,
-  observaciones text,
-  CONSTRAINT partos_pkey PRIMARY KEY (id),
-  CONSTRAINT partos_reproduccion_id_fkey FOREIGN KEY (reproduccion_id) REFERENCES public.reproducciones(id)
+
+CREATE TABLE public.alimento (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL
 );
-CREATE TABLE public.producciones (
-  id integer NOT NULL DEFAULT nextval('producciones_id_seq'::regclass),
-  animal_id integer,
-  fecha date NOT NULL,
-  litros numeric,
-  turno character varying,
-  CONSTRAINT producciones_pkey PRIMARY KEY (id),
-  CONSTRAINT producciones_animal_id_fkey FOREIGN KEY (animal_id) REFERENCES public.animales(id)
+
+CREATE TABLE public.medicamento (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT
 );
-CREATE TABLE public.razas (
-  id integer NOT NULL DEFAULT nextval('razas_id_seq'::regclass),
-  nombre character varying NOT NULL UNIQUE,
-  CONSTRAINT razas_pkey PRIMARY KEY (id)
+
+CREATE TABLE public.vacuna (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL
 );
-CREATE TABLE public.registro_terneros (
-  id integer NOT NULL DEFAULT nextval('registro_terneros_id_seq'::regclass),
-  parto_id integer,
-  animal_id integer,
-  peso_nacimiento numeric,
-  sexo_nacimiento character varying,
-  condicion_nacimiento character varying,
-  observaciones text,
-  CONSTRAINT registro_terneros_pkey PRIMARY KEY (id),
-  CONSTRAINT registro_terneros_parto_id_fkey FOREIGN KEY (parto_id) REFERENCES public.partos(id),
-  CONSTRAINT registro_terneros_animal_id_fkey FOREIGN KEY (animal_id) REFERENCES public.animales(id)
+
+-- ============================================================
+-- ENTIDADES PRINCIPALES (4)
+-- ============================================================
+
+CREATE TABLE public.finca (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    ubicacion TEXT
 );
-CREATE TABLE public.reproducciones (
-  id integer NOT NULL DEFAULT nextval('reproducciones_id_seq'::regclass),
-  vaca_id integer NOT NULL,
-  toro_id integer NOT NULL,
-  fecha_monta date NOT NULL,
-  tipo character varying,
-  resultado character varying,
-  fecha_parto_estimada date,
-  observaciones text,
-  CONSTRAINT reproducciones_pkey PRIMARY KEY (id),
-  CONSTRAINT reproducciones_vaca_id_fkey FOREIGN KEY (vaca_id) REFERENCES public.animales(id),
-  CONSTRAINT reproducciones_toro_id_fkey FOREIGN KEY (toro_id) REFERENCES public.animales(id)
+
+CREATE TABLE public.dieta (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT
 );
-CREATE TABLE public.roles (
-  id integer NOT NULL DEFAULT nextval('roles_id_seq'::regclass),
-  nombre character varying NOT NULL UNIQUE,
-  CONSTRAINT roles_pkey PRIMARY KEY (id)
+
+CREATE TABLE public.usuario (
+    id SERIAL PRIMARY KEY,
+    id_rol INTEGER REFERENCES public.rol(id),
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password VARCHAR(255),
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-CREATE TABLE public.tratamientos (
-  id integer NOT NULL DEFAULT nextval('tratamientos_id_seq'::regclass),
-  animal_id integer,
-  medicamento_id integer,
-  fecha_inicio date NOT NULL,
-  fecha_fin date,
-  dosis character varying,
-  dias_retiro integer,
-  observaciones text,
-  CONSTRAINT tratamientos_pkey PRIMARY KEY (id),
-  CONSTRAINT tratamientos_animal_id_fkey FOREIGN KEY (animal_id) REFERENCES public.animales(id),
-  CONSTRAINT tratamientos_medicamento_id_fkey FOREIGN KEY (medicamento_id) REFERENCES public.medicamentos(id)
+
+CREATE TABLE public.animal (
+    id SERIAL PRIMARY KEY,
+    id_sexo INTEGER REFERENCES public.sexo(id),
+    id_estado_animal INTEGER REFERENCES public.estado_animal(id),
+    id_raza INTEGER REFERENCES public.raza(id),
+    id_madre INTEGER REFERENCES public.animal(id),
+    id_padre INTEGER REFERENCES public.animal(id),
+    identificador_arete VARCHAR(100) NOT NULL UNIQUE,
+    nombre VARCHAR(100),
+    fecha_nacimiento DATE NOT NULL,
+    peso_actual_kg NUMERIC(10,2),
+    foto_url TEXT,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-CREATE TABLE public.usuarios (
-  id uuid NOT NULL,
-  nombre character varying NOT NULL,
-  email character varying NOT NULL UNIQUE,
-  creado_en timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-  rol_id integer,
-  CONSTRAINT usuarios_pkey PRIMARY KEY (id),
-  CONSTRAINT usuarios_rol_id_fkey FOREIGN KEY (rol_id) REFERENCES public.roles(id)
+
+-- ============================================================
+-- DEPENDIENTES DE FINCA (1)
+-- ============================================================
+
+CREATE TABLE public.lote (
+    id SERIAL PRIMARY KEY,
+    id_finca INTEGER NOT NULL REFERENCES public.finca(id),
+    nombre VARCHAR(100) NOT NULL,
+    hectareas NUMERIC(10,2),
+    capacidad_maxima INTEGER,
+    tipo_pasto VARCHAR(100),
+    estado VARCHAR(50)
 );
-CREATE TABLE public.vacunaciones (
-  id integer NOT NULL DEFAULT nextval('vacunaciones_id_seq'::regclass),
-  animal_id integer,
-  vacuna_id integer,
-  fecha date NOT NULL,
-  proxima_dosis date,
-  observaciones text,
-  CONSTRAINT vacunaciones_pkey PRIMARY KEY (id),
-  CONSTRAINT vacunaciones_animal_id_fkey FOREIGN KEY (animal_id) REFERENCES public.animales(id),
-  CONSTRAINT vacunaciones_vacuna_id_fkey FOREIGN KEY (vacuna_id) REFERENCES public.vacunas(id)
+
+-- ============================================================
+-- DEPENDIENTES DE DIETA (1)
+-- ============================================================
+
+CREATE TABLE public.dieta_alimento (
+    id SERIAL PRIMARY KEY,
+    id_dieta INTEGER NOT NULL REFERENCES public.dieta(id),
+    id_alimento INTEGER NOT NULL REFERENCES public.alimento(id),
+    cantidad NUMERIC(10,2),
+    unidad VARCHAR(50)
 );
-CREATE TABLE public.vacunas (
-  id integer NOT NULL DEFAULT nextval('vacunas_id_seq'::regclass),
-  nombre character varying NOT NULL,
-  CONSTRAINT vacunas_pkey PRIMARY KEY (id)
+
+-- ============================================================
+-- TABLA CENTRAL DE EVENTOS (1)
+-- ============================================================
+
+CREATE TABLE public.evento (
+    id SERIAL PRIMARY KEY,
+    id_animal INTEGER NOT NULL REFERENCES public.animal(id),
+    id_tipo_evento INTEGER NOT NULL REFERENCES public.tipo_evento(id),
+    fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    descripcion TEXT
+);
+
+-- ============================================================
+-- ACCIONES / SUB-EVENTOS (6)
+-- Todas referencian evento como tabla central
+-- ============================================================
+
+CREATE TABLE public.alimentacion (
+    id SERIAL PRIMARY KEY,
+    id_animal INTEGER NOT NULL REFERENCES public.animal(id),
+    id_dieta INTEGER REFERENCES public.dieta(id),
+    fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    observacion TEXT
+);
+
+CREATE TABLE public.movimiento (
+    id SERIAL PRIMARY KEY,
+    id_evento INTEGER NOT NULL REFERENCES public.evento(id),
+    id_tipo_movimiento INTEGER REFERENCES public.tipo_movimiento(id),
+    id_lote_origen INTEGER REFERENCES public.lote(id),
+    id_lote_destino INTEGER REFERENCES public.lote(id),
+    motivo TEXT
+);
+
+CREATE TABLE public.reproduccion (
+    id SERIAL PRIMARY KEY,
+    id_evento INTEGER NOT NULL REFERENCES public.evento(id),
+    id_vaca INTEGER NOT NULL REFERENCES public.animal(id),
+    id_toro INTEGER NOT NULL REFERENCES public.animal(id),
+    id_tipo_reproduccion INTEGER REFERENCES public.tipo_reproduccion(id),
+    id_resultado_reproduccion INTEGER REFERENCES public.resultado_reproduccion(id),
+    fecha_parto_estimada DATE,
+    observacion TEXT
+);
+
+CREATE TABLE public.parto (
+    id SERIAL PRIMARY KEY,
+    id_evento INTEGER NOT NULL REFERENCES public.evento(id),
+    id_reproduccion INTEGER NOT NULL REFERENCES public.reproduccion(id),
+    cantidad_crias INTEGER,
+    observacion TEXT
+);
+
+CREATE TABLE public.registro_ternero (
+    id SERIAL PRIMARY KEY,
+    id_parto INTEGER NOT NULL REFERENCES public.parto(id),
+    id_sexo INTEGER REFERENCES public.sexo(id),
+    id_condicion_nacimiento INTEGER REFERENCES public.condicion_nacimiento(id),
+    identificador_arete VARCHAR(100),
+    peso_nacimiento_kg NUMERIC(10,2),
+    observacion TEXT
+);
+
+CREATE TABLE public.tratamiento (
+    id SERIAL PRIMARY KEY,
+    id_evento INTEGER NOT NULL REFERENCES public.evento(id),
+    id_medicamento INTEGER NOT NULL REFERENCES public.medicamento(id),
+    fecha_inicio DATE NOT NULL,
+    fecha_fin DATE,
+    dosis_ml VARCHAR(100),
+    observacion TEXT
+);
+
+CREATE TABLE public.vacunacion (
+    id SERIAL PRIMARY KEY,
+    id_evento INTEGER NOT NULL REFERENCES public.evento(id),
+    id_vacuna INTEGER NOT NULL REFERENCES public.vacuna(id),
+    proxima_dosis DATE,
+    observacion TEXT
+);
+
+-- ============================================================
+-- PRODUCCIÓN (1)
+-- ============================================================
+
+CREATE TABLE public.produccion (
+    id SERIAL PRIMARY KEY,
+    id_animal INTEGER NOT NULL REFERENCES public.animal(id),
+    id_turno_produccion INTEGER REFERENCES public.turno_produccion(id),
+    fecha DATE NOT NULL,
+    litros NUMERIC(10,2)
 );

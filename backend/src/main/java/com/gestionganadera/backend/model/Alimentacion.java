@@ -5,11 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "alimentaciones")
+@Table(name = "alimentacion")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,19 +18,23 @@ public class Alimentacion {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "animal_id")
+    @JoinColumn(name = "id_animal", nullable = false)
     private Animal animal;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "alimento_id")
-    private Alimento alimento;
-
-    @Column(precision = 10, scale = 2)
-    private BigDecimal cantidad;
+    @JoinColumn(name = "id_dieta")
+    private Dieta dieta;
 
     @Column(nullable = false)
-    private LocalDate fecha;
+    private LocalDateTime fecha;
 
     @Column(columnDefinition = "TEXT")
-    private String observaciones;
+    private String observacion;
+
+    @PrePersist
+    protected void onCreate() {
+        if (fecha == null) {
+            fecha = LocalDateTime.now();
+        }
+    }
 }

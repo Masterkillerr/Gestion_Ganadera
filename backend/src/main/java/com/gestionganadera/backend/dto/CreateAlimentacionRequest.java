@@ -5,8 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -15,13 +14,10 @@ public class CreateAlimentacionRequest {
     @NotNull
     private Integer animalId;
 
-    @NotNull
-    private Integer alimentoId;
-
-    private BigDecimal cantidad;
+    private Integer dietaId;
 
     @NotNull
-    private LocalDate fecha;
+    private LocalDateTime fecha;
 
-    private String observaciones;
+    private String observacion;
 }

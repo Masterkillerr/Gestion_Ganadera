@@ -52,7 +52,7 @@ class AuthControllerTest {
         request.setPassword("pass123");
         request.setRecaptchaToken("token");
 
-        UsuarioResponse expected = new UsuarioResponse(UUID.randomUUID(), "New User", "new@example.com", "USER", LocalDateTime.now());
+        UsuarioResponse expected = new UsuarioResponse(1, "New User", "new@example.com", "USER", LocalDateTime.now());
         when(authService.register(request)).thenReturn(expected);
 
         ResponseEntity<UsuarioResponse> response = authController.register(request);

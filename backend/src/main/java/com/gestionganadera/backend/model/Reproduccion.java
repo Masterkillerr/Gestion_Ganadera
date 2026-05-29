@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-
 @Entity
-@Table(name = "reproducciones")
+@Table(name = "reproduccion")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,30 +18,29 @@ public class Reproduccion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_evento", nullable = false)
+    private Evento evento;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vaca_id")
+    @JoinColumn(name = "id_vaca", nullable = false)
     private Animal vaca;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "toro_id")
+    @JoinColumn(name = "id_toro", nullable = false)
     private Animal toro;
 
-    @Column(name = "fecha_monta")
-    private LocalDate fechaMonta;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_tipo_reproduccion")
+    private TipoReproduccion tipoReproduccion;
 
-    @Column(length = 50)
-    private String tipo;
-
-
-
-    @Column(length = 100)
-    private String resultado;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_resultado_reproduccion")
+    private ResultadoReproduccion resultadoReproduccion;
 
     @Column(name = "fecha_parto_estimada")
     private LocalDate fechaPartoEstimada;
 
     @Column(columnDefinition = "TEXT")
-    private String observaciones;
+    private String observacion;
 }

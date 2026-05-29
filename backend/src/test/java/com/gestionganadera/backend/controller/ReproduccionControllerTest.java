@@ -32,8 +32,7 @@ class ReproduccionControllerTest {
         dto.setVacaId(1);
         dto.setVacaNombre("Vaca Test");
         dto.setVacaArete("AR-001");
-        dto.setFechaMonta(LocalDate.of(2026, 5, 1));
-        dto.setTipo("Natural");
+        dto.setTipoReproduccion("Natural");
         return dto;
     }
 
@@ -73,15 +72,14 @@ class ReproduccionControllerTest {
 
         assertEquals(200, response.getStatusCode().value());
         assertEquals(1, response.getBody().getId());
-        assertEquals("Natural", response.getBody().getTipo());
+        assertEquals("Natural", response.getBody().getTipoReproduccion());
     }
 
     @Test
     void create_returns201() {
         CreateReproduccionRequest request = new CreateReproduccionRequest();
         request.setVacaId(1);
-        request.setFechaMonta(LocalDate.of(2026, 5, 1));
-        request.setTipo("Natural");
+        request.setTipoReproduccionId(1);
 
         ReproduccionDTO saved = createDTO(3);
         when(reproduccionService.create(request)).thenReturn(saved);
@@ -96,16 +94,16 @@ class ReproduccionControllerTest {
     @Test
     void update_returns200() {
         CreateReproduccionRequest request = new CreateReproduccionRequest();
-        request.setResultado("Exitoso");
+        request.setResultadoReproduccionId(1);
 
         ReproduccionDTO updated = createDTO(1);
-        updated.setResultado("Exitoso");
+        updated.setResultadoReproduccion("Exitoso");
         when(reproduccionService.update(1, request)).thenReturn(updated);
 
         ResponseEntity<ReproduccionDTO> response = controller.update(1, request);
 
         assertEquals(200, response.getStatusCode().value());
-        assertEquals("Exitoso", response.getBody().getResultado());
+        assertEquals("Exitoso", response.getBody().getResultadoReproduccion());
     }
 
     @Test

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,29 +16,28 @@ class SimpleDTOsTest {
     void createAnimalRequest_constructorAndSetters_work() {
         CreateAnimalRequest request = new CreateAnimalRequest();
         request.setNombre("Vaca Lola");
-        request.setSexo("H");
+        request.setSexoId(1);
+        request.setEstadoAnimalId(1);
         request.setRazaId(1);
-        request.setFincaId(1);
         request.setIdentificadorArete("AR-001");
 
         assertEquals("Vaca Lola", request.getNombre());
-        assertEquals("H", request.getSexo());
+        assertEquals(1, request.getSexoId());
         assertEquals(1, request.getRazaId());
-        assertEquals(1, request.getFincaId());
         assertEquals("AR-001", request.getIdentificadorArete());
     }
 
     @Test
     void createAnimalRequest_allArgsConstructor_works() {
         CreateAnimalRequest request = new CreateAnimalRequest(
-            "AR-001", "Vaca", "H", 1, 1, 1,
+            "AR-001", "Vaca", 1, 1, 1,
             LocalDate.of(2023, 1, 1), BigDecimal.valueOf(500),
-            "Activo", null, null, null, 1
+            null, null, null
         );
 
         assertEquals("Vaca", request.getNombre());
         assertEquals(LocalDate.of(2023, 1, 1), request.getFechaNacimiento());
-        assertEquals(BigDecimal.valueOf(500), request.getPesoActual());
+        assertEquals(BigDecimal.valueOf(500), request.getPesoActualKg());
     }
 
     // --- CreateFincaRequest ---
@@ -79,18 +79,6 @@ class SimpleDTOsTest {
         assertEquals("Activo", request.getEstado());
     }
 
-    // --- CreateCategoriaRequest ---
-
-    @Test
-    void createCategoriaRequest_constructorAndSetters_work() {
-        CreateCategoriaRequest request = new CreateCategoriaRequest();
-        request.setNombre("Vaca Lechera");
-        request.setDescripcion("Alta producción");
-
-        assertEquals("Vaca Lechera", request.getNombre());
-        assertEquals("Alta producción", request.getDescripcion());
-    }
-
     // --- CreateRazaRequest ---
 
     @Test
@@ -113,16 +101,14 @@ class SimpleDTOsTest {
     void createAlimentacionRequest_constructorAndSetters_work() {
         CreateAlimentacionRequest request = new CreateAlimentacionRequest();
         request.setAnimalId(1);
-        request.setAlimentoId(1);
-        request.setCantidad(BigDecimal.valueOf(5.5));
-        request.setFecha(LocalDate.of(2025, 1, 1));
-        request.setObservaciones("Ración diaria");
+        request.setDietaId(1);
+        request.setFecha(LocalDateTime.of(2025, 1, 1, 8, 0));
+        request.setObservacion("Ración diaria");
 
         assertEquals(1, request.getAnimalId());
-        assertEquals(1, request.getAlimentoId());
-        assertEquals(BigDecimal.valueOf(5.5), request.getCantidad());
-        assertEquals(LocalDate.of(2025, 1, 1), request.getFecha());
-        assertEquals("Ración diaria", request.getObservaciones());
+        assertEquals(1, request.getDietaId());
+        assertEquals(LocalDateTime.of(2025, 1, 1, 8, 0), request.getFecha());
+        assertEquals("Ración diaria", request.getObservacion());
     }
 
     // --- CreateEventoRequest ---
@@ -131,11 +117,11 @@ class SimpleDTOsTest {
     void createEventoRequest_constructorAndSetters_work() {
         CreateEventoRequest request = new CreateEventoRequest();
         request.setAnimalId(1);
-        request.setTipo("Salud");
+        request.setTipoEventoId(1);
         request.setDescripcion("Vacunación");
 
         assertEquals(1, request.getAnimalId());
-        assertEquals("Salud", request.getTipo());
+        assertEquals(1, request.getTipoEventoId());
         assertEquals("Vacunación", request.getDescripcion());
     }
 
@@ -144,17 +130,15 @@ class SimpleDTOsTest {
     @Test
     void createTratamientoRequest_constructorAndSetters_work() {
         CreateTratamientoRequest request = new CreateTratamientoRequest();
-        request.setAnimalId(1);
+        request.setEventoId(1);
         request.setMedicamentoId(1);
-        request.setDosis("10ml");
+        request.setDosisMl("10ml");
         request.setFechaInicio(LocalDate.of(2025, 1, 1));
         request.setFechaFin(LocalDate.of(2025, 1, 15));
-        request.setDiasRetiro(30);
-        request.setObservaciones("Tratamiento test");
+        request.setObservacion("Tratamiento test");
 
-        assertEquals(1, request.getAnimalId());
-        assertEquals("10ml", request.getDosis());
-        assertEquals(30, request.getDiasRetiro());
+        assertEquals(1, request.getEventoId());
+        assertEquals("10ml", request.getDosisMl());
     }
 
     // --- CreateVacunacionRequest ---
@@ -162,14 +146,12 @@ class SimpleDTOsTest {
     @Test
     void createVacunacionRequest_constructorAndSetters_work() {
         CreateVacunacionRequest request = new CreateVacunacionRequest();
-        request.setAnimalId(1);
+        request.setEventoId(1);
         request.setVacunaId(1);
-        request.setFecha(LocalDate.of(2025, 1, 10));
         request.setProximaDosis(LocalDate.of(2025, 7, 10));
-        request.setObservaciones("Primera dosis");
+        request.setObservacion("Primera dosis");
 
-        assertEquals(1, request.getAnimalId());
-        assertEquals(LocalDate.of(2025, 1, 10), request.getFecha());
+        assertEquals(1, request.getEventoId());
         assertEquals(LocalDate.of(2025, 7, 10), request.getProximaDosis());
     }
 
@@ -180,13 +162,60 @@ class SimpleDTOsTest {
         CreateProduccionRequest request = new CreateProduccionRequest();
         request.setAnimalId(1);
         request.setLitros(BigDecimal.valueOf(25.5));
-        request.setTurno("Mañana");
+        request.setTurnoProduccionId(1);
         request.setFecha(LocalDate.of(2025, 3, 1));
 
         assertEquals(1, request.getAnimalId());
         assertEquals(BigDecimal.valueOf(25.5), request.getLitros());
-        assertEquals("Mañana", request.getTurno());
+        assertEquals(1, request.getTurnoProduccionId());
         assertEquals(LocalDate.of(2025, 3, 1), request.getFecha());
+    }
+
+    // --- CreateReproduccionRequest ---
+
+    @Test
+    void createReproduccionRequest_constructorAndSetters_work() {
+        CreateReproduccionRequest request = new CreateReproduccionRequest();
+        request.setEventoId(1);
+        request.setVacaId(1);
+        request.setToroId(2);
+        request.setTipoReproduccionId(1);
+        request.setResultadoReproduccionId(1);
+        request.setObservacion("Monta natural");
+
+        assertEquals(1, request.getEventoId());
+        assertEquals(1, request.getVacaId());
+        assertEquals("Monta natural", request.getObservacion());
+    }
+
+    // --- CreatePartoRequest ---
+
+    @Test
+    void createPartoRequest_constructorAndSetters_work() {
+        CreatePartoRequest request = new CreatePartoRequest();
+        request.setEventoId(1);
+        request.setReproduccionId(1);
+        request.setCantidadCrias(1);
+        request.setObservacion("Parto normal");
+
+        assertEquals(1, request.getEventoId());
+        assertEquals(1, request.getReproduccionId());
+        assertEquals("Parto normal", request.getObservacion());
+    }
+
+    // --- CreateMovimientoRequest ---
+
+    @Test
+    void createMovimientoRequest_constructorAndSetters_work() {
+        CreateMovimientoRequest request = new CreateMovimientoRequest();
+        request.setEventoId(1);
+        request.setTipoMovimientoId(1);
+        request.setLoteDestinoId(2);
+        request.setMotivo("Traslado");
+
+        assertEquals(1, request.getEventoId());
+        assertEquals(2, request.getLoteDestinoId());
+        assertEquals("Traslado", request.getMotivo());
     }
 
     // --- ErrorResponse ---

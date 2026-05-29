@@ -5,7 +5,6 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,11 +23,11 @@ class UsuarioTest {
 
     @Test
     void allArgsConstructor_createsUsuario() {
-        UUID id = UUID.randomUUID();
+        Integer id = 1;
         Role role = new Role(1, "ADMIN");
         LocalDateTime now = LocalDateTime.now();
 
-        Usuario usuario = new Usuario(id, "Juan Pérez", "juan@example.com", "password123", role, now);
+        Usuario usuario = new Usuario(id, role, "Juan Pérez", "juan@example.com", "password123", now);
 
         assertEquals(id, usuario.getId());
         assertEquals("Juan Pérez", usuario.getNombre());
@@ -41,7 +40,7 @@ class UsuarioTest {
     @Test
     void settersAndGetters_workCorrectly() {
         Usuario usuario = new Usuario();
-        UUID id = UUID.randomUUID();
+        Integer id = 1;
         Role role = new Role(2, "USER");
 
         usuario.setId(id);
@@ -109,12 +108,12 @@ class UsuarioTest {
 
     @Test
     void equalsAndHashCode_sameFields_areConsistent() {
-        UUID id = UUID.randomUUID();
+        Integer id = 1;
         Role role = new Role(1, "USER");
         LocalDateTime now = LocalDateTime.now();
 
-        Usuario u1 = new Usuario(id, "Test", "test@test.com", "pass", role, now);
-        Usuario u2 = new Usuario(id, "Test", "test@test.com", "pass", role, now);
+        Usuario u1 = new Usuario(id, role, "Test", "test@test.com", "pass", now);
+        Usuario u2 = new Usuario(id, role, "Test", "test@test.com", "pass", now);
 
         assertEquals(u1, u2);
         assertEquals(u1.hashCode(), u2.hashCode());

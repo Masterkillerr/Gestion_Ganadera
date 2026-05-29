@@ -1,72 +1,80 @@
 package com.gestionganadera.backend.service;
 
 import com.gestionganadera.backend.dto.CreateTratamientoRequest;
-import com.gestionganadera.backend.model.Animal;
-import com.gestionganadera.backend.model.Finca;
+import com.gestionganadera.backend.model.Evento;
 import com.gestionganadera.backend.model.Medicamento;
 import com.gestionganadera.backend.model.Tratamiento;
-import com.gestionganadera.backend.model.Usuario;
-import com.gestionganadera.backend.repository.AnimalRepository;
-import com.gestionganadera.backend.repository.FincaRepository;
+import com.gestionganadera.backend.repository.EventoRepository;
 import com.gestionganadera.backend.repository.MedicamentoRepository;
 import com.gestionganadera.backend.repository.TratamientoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TratamientoService {
     private final TratamientoRepository repository;
-    private final AnimalRepository animalRepository;
-    private final FincaRepository fincaRepository;
+    private final EventoRepository eventoRepository;
     private final MedicamentoRepository medicamentoRepository;
 
-    private Usuario getCurrentUser() {
-        return (Usuario) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
-    }
-
-    private List<Integer> getUserFincaIds() {
-        return fincaRepository.findByPropietario(getCurrentUser())
-                .stream().map(Finca::getId).collect(Collectors.toList());
-    }
-
-    private Animal getAuthorizedAnimal(Integer animalId) {
-        return animalRepository.findByIdAndFincaIdIn(animalId, getUserFincaIds())
-                .orElseThrow(() -> new EntityNotFoundException("Animal no encontrado o no autorizado"));
+    public List<Tratamiento> findAll() {
+        return repository.findAll();
     }
 
     public List<Tratamiento> findByAnimalId(@NonNull Integer animalId) {
-        getAuthorizedAnimal(animalId);
-        return repository.findByAnimalId(animalId);
+        return repository.findByEventoAnimalId(animalId);
+    }
+
+    public Tratamiento findById(@NonNull Integer id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Tratamiento no encontrado"));
     }
 
     public Tratamiento save(@NonNull CreateTratamientoRequest request) {
-        Animal animal = getAuthorizedAnimal(request.getAnimalId());
+        Evento evento = eventoRepository.findById(request.getEventoId())
+                .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado: " + request.getEventoId()));
         Medicamento medicamento = medicamentoRepository.findById(request.getMedicamentoId())
                 .orElseThrow(() -> new EntityNotFoundException("Medicamento no encontrado: " + request.getMedicamentoId()));
 
         Tratamiento entity = new Tratamiento();
-        entity.setAnimal(animal);
+        entity.setEvento(evento);
         entity.setMedicamento(medicamento);
-        entity.setDosis(request.getDosis());
-        entity.setFechaInicio(request.getFechaInicio());
+        entity.setDosisMl(request.getDosisMl());
+        entity.setFechaInicio(request.getFechaInicio() != null ? request.getFechaInicio() : LocalDate.now());
         entity.setFechaFin(request.getFechaFin());
-        entity.setDiasRetiro(request.getDiasRetiro());
-        entity.setObservaciones(request.getObservaciones());
+        entity.setObservacion(request.getObservacion());
+        return repository.save(entity);
+    }
+
+    @NonNull
+    public Tratamiento update(@NonNull Integer id, @NonNull CreateTratamientoRequest request) {
+        Tratamiento entity = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Tratamiento no encontrado"));
+
+        if (request.getEventoId() != null) {
+            entity.setEvento(eventoRepository.findById(request.getEventoId())
+                    .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado: " + request.getEventoId())));
+        }
+        if (request.getMedicamentoId() != null) {
+            entity.setMedicamento(medicamentoRepository.findById(request.getMedicamentoId())
+                    .orElseThrow(() -> new EntityNotFoundException("Medicamento no encontrado: " + request.getMedicamentoId())));
+        }
+        if (request.getDosisMl() != null) entity.setDosisMl(request.getDosisMl());
+        if (request.getFechaInicio() != null) entity.setFechaInicio(request.getFechaInicio());
+        if (request.getFechaFin() != null) entity.setFechaFin(request.getFechaFin());
+        if (request.getObservacion() != null) entity.setObservacion(request.getObservacion());
+
         return repository.save(entity);
     }
 
     public void delete(@NonNull Integer id) {
         Tratamiento entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Tratamiento no encontrado"));
-        getAuthorizedAnimal(entity.getAnimal().getId());
         repository.deleteById(id);
     }
 }

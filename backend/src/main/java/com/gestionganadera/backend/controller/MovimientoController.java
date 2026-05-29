@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/movimientos")
+@RequestMapping("/movimiento")
 @RequiredArgsConstructor
 @PreAuthorize("isAuthenticated()")
 @Tag(name = "Movimientos", description = "Movimientos y traslados de animales entre lotes")

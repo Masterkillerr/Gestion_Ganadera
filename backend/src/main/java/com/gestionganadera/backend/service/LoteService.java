@@ -1,19 +1,15 @@
 package com.gestionganadera.backend.service;
 
 import com.gestionganadera.backend.dto.CreateLoteRequest;
-import com.gestionganadera.backend.model.Finca;
 import com.gestionganadera.backend.model.Lote;
-import com.gestionganadera.backend.model.Usuario;
 import com.gestionganadera.backend.repository.FincaRepository;
 import com.gestionganadera.backend.repository.LoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,22 +18,12 @@ public class LoteService {
     private final LoteRepository loteRepository;
     private final FincaRepository fincaRepository;
 
-    private Usuario getCurrentUser() {
-        return (Usuario) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
-    }
-
-    private List<Integer> getUserFincaIds() {
-        return fincaRepository.findByPropietario(getCurrentUser())
-                .stream().map(Finca::getId).collect(Collectors.toList());
-    }
-
     public List<Lote> findAll() {
-        return loteRepository.findByFincaIdIn(getUserFincaIds());
+        return loteRepository.findAll();
     }
 
     public Optional<Lote> findById(@NonNull Integer id) {
-        return loteRepository.findByIdAndFincaIdIn(id, getUserFincaIds());
+        return loteRepository.findById(id);
     }
 
     private Lote fromRequest(CreateLoteRequest request) {
@@ -49,9 +35,9 @@ public class LoteService {
         lote.setEstado(request.getEstado());
 
         if (request.getFincaId() != null) {
-            fincaRepository.findByIdAndPropietario(request.getFincaId(), getCurrentUser())
+            fincaRepository.findById(request.getFincaId())
                     .ifPresentOrElse(lote::setFinca,
-                        () -> { throw new RuntimeException("Finca no encontrada o no autorizada"); });
+                        () -> { throw new RuntimeException("Finca no encontrada"); });
         }
         return lote;
     }
@@ -61,8 +47,7 @@ public class LoteService {
     }
 
     public Lote update(@NonNull Integer id, @NonNull CreateLoteRequest request) {
-        List<Integer> userFincaIds = getUserFincaIds();
-        return loteRepository.findByIdAndFincaIdIn(id, userFincaIds)
+        return loteRepository.findById(id)
                 .map(existing -> {
                     existing.setNombre(request.getNombre());
                     existing.setHectareas(request.getHectareas());
@@ -70,9 +55,9 @@ public class LoteService {
                     existing.setTipoPasto(request.getTipoPasto());
                     existing.setEstado(request.getEstado());
                     if (request.getFincaId() != null) {
-                        fincaRepository.findByIdAndPropietario(request.getFincaId(), getCurrentUser())
+                        fincaRepository.findById(request.getFincaId())
                                 .ifPresentOrElse(existing::setFinca,
-                                    () -> { throw new RuntimeException("Finca no encontrada o no autorizada"); });
+                                    () -> { throw new RuntimeException("Finca no encontrada"); });
                     }
                     return loteRepository.save(existing);
                 })
@@ -80,7 +65,7 @@ public class LoteService {
     }
 
     public void delete(@NonNull Integer id) {
-        loteRepository.findByIdAndFincaIdIn(id, getUserFincaIds())
+        loteRepository.findById(id)
                 .ifPresentOrElse(
                     lote -> loteRepository.deleteById(id),
                     () -> { throw new RuntimeException("Lote no encontrado"); }
@@ -88,9 +73,8 @@ public class LoteService {
     }
 
     public List<Lote> findByFincaId(@NonNull Integer fincaId) {
-        Usuario currentUser = getCurrentUser();
-        return fincaRepository.findByIdAndPropietario(fincaId, currentUser)
+        return fincaRepository.findById(fincaId)
                 .map(finca -> loteRepository.findByFincaId(fincaId))
-                .orElseThrow(() -> new RuntimeException("Finca no encontrada o no autorizada"));
+                .orElseThrow(() -> new RuntimeException("Finca no encontrada"));
     }
 }

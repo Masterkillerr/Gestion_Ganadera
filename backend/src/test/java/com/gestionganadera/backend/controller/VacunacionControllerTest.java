@@ -26,26 +26,53 @@ class VacunacionControllerTest {
     private VacunacionController controller;
 
     @Test
-    void findByAnimalId_returnsList() {
-        when(service.findByAnimalId(100)).thenReturn(List.of());
+    void findAll_returnsList() {
+        when(service.findAll()).thenReturn(List.of());
 
-        ResponseEntity<List<Vacunacion>> response = controller.findByAnimalId(100);
+        ResponseEntity<List<Vacunacion>> response = controller.findAll();
 
         assertEquals(200, response.getStatusCode().value());
     }
 
     @Test
+    void findById_returnsVacunacion() {
+        Vacunacion v = new Vacunacion();
+        v.setId(1);
+        when(service.findById(1)).thenReturn(v);
+
+        ResponseEntity<Vacunacion> response = controller.findById(1);
+
+        assertEquals(200, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
     void create_returnsCreated() {
         CreateVacunacionRequest request = new CreateVacunacionRequest();
-        request.setAnimalId(100);
+        request.setEventoId(1);
         request.setVacunaId(1);
-        request.setFecha(LocalDate.now());
 
         Vacunacion saved = new Vacunacion();
         saved.setId(1);
         when(service.save(request)).thenReturn(saved);
 
         ResponseEntity<Vacunacion> response = controller.create(request);
+
+        assertEquals(200, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    void update_returnsUpdated() {
+        CreateVacunacionRequest request = new CreateVacunacionRequest();
+        request.setEventoId(1);
+        request.setVacunaId(1);
+
+        Vacunacion updated = new Vacunacion();
+        updated.setId(1);
+        when(service.update(1, request)).thenReturn(updated);
+
+        ResponseEntity<Vacunacion> response = controller.update(1, request);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());

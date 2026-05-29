@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UsuarioDTO {
-    private String id;
+    private Integer id;
 
     @NotBlank
     private String nombre;
@@ -24,7 +24,7 @@ public class UsuarioDTO {
 
     public static UsuarioDTO fromEntity(Usuario usuario) {
         UsuarioDTO dto = new UsuarioDTO();
-        dto.setId(usuario.getId().toString());
+        dto.setId(usuario.getId());
         dto.setNombre(usuario.getNombre());
         dto.setEmail(usuario.getEmail());
         dto.setRol(usuario.getRole() != null ? usuario.getRole().getNombre() : null);

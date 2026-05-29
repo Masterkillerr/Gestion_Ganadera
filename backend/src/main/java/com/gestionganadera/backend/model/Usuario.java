@@ -13,35 +13,37 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "usuario")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Usuario implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private java.util.UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_rol")
+    private Role role;
 
     @Column(nullable = false, length = 100)
     private String nombre;
 
-    @Column(unique = true, nullable = false, length = 100)
+    @Column(unique = true, nullable = false, length = 150)
     private String email;
 
-    @Column(nullable = false)
+    @Column(length = 255)
     private String password;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "rol_id")
-    private Role role;
 
     @Column(name = "creado_en", nullable = false, updatable = false)
     private LocalDateTime creadoEn;
 
     @PrePersist
     protected void onCreate() {
-        creadoEn = LocalDateTime.now();
+        if (creadoEn == null) {
+            creadoEn = LocalDateTime.now();
+        }
     }
 
     // UserDetails implementation

@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "producciones")
+@Table(name = "produccion")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,16 +20,16 @@ public class Produccion {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "animal_id")
+    @JoinColumn(name = "id_animal", nullable = false)
     private Animal animal;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_turno_produccion")
+    private TurnoProduccion turnoProduccion;
 
     @Column(precision = 10, scale = 2)
     private BigDecimal litros;
 
-    @Column(length = 20)
-    private String turno;
-
     @Column(nullable = false)
     private LocalDate fecha;
 }
-

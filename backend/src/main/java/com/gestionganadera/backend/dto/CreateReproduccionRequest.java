@@ -10,11 +10,11 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateReproduccionRequest {
+    private Integer eventoId;
     private Integer vacaId;
     private Integer toroId;
-    private LocalDate fechaMonta;
-    private String tipo;
-    private String resultado;
+    private Integer tipoReproduccionId;
+    private Integer resultadoReproduccionId;
     private LocalDate fechaPartoEstimada;
-    private String observaciones;
+    private String observacion;
 }

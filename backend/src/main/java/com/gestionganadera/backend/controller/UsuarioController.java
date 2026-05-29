@@ -14,10 +14,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/usuario")
 @RequiredArgsConstructor
 @Tag(name = "Usuarios", description = "Gestión de usuarios del sistema (solo ADMIN)")
 public class UsuarioController {
@@ -34,7 +33,7 @@ public class UsuarioController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Obtener usuario por ID", description = "Solo accesible con rol ADMIN")
-    public ResponseEntity<UsuarioDTO> getUsuarioById(@PathVariable @NonNull UUID id) {
+    public ResponseEntity<UsuarioDTO> getUsuarioById(@PathVariable @NonNull Integer id) {
         return usuarioService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -50,14 +49,14 @@ public class UsuarioController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Actualizar usuario", description = "Solo accesible con rol ADMIN")
-    public ResponseEntity<UsuarioDTO> updateUsuario(@PathVariable @NonNull UUID id, @Valid @RequestBody @NonNull CreateUsuarioRequest request) {
+    public ResponseEntity<UsuarioDTO> updateUsuario(@PathVariable @NonNull Integer id, @Valid @RequestBody @NonNull CreateUsuarioRequest request) {
         return ResponseEntity.ok(usuarioService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Eliminar usuario", description = "Solo accesible con rol ADMIN")
-    public ResponseEntity<Void> deleteUsuario(@PathVariable @NonNull UUID id) {
+    public ResponseEntity<Void> deleteUsuario(@PathVariable @NonNull Integer id) {
         usuarioService.delete(id);
         return ResponseEntity.noContent().build();
     }

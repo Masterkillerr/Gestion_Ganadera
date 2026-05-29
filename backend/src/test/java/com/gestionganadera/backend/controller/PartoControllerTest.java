@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,9 +30,8 @@ class PartoControllerTest {
         dto.setReproduccionId(reproduccionId);
         dto.setVacaNombre("Vaca Test");
         dto.setVacaArete("AR-001");
-        dto.setFechaParto(LocalDate.of(2026, 5, 28));
         dto.setCantidadCrias(1);
-        dto.setObservaciones("Parto normal");
+        dto.setObservacion("Parto normal");
         return dto;
     }
 
@@ -74,7 +72,6 @@ class PartoControllerTest {
     void create_returns201() {
         CreatePartoRequest request = new CreatePartoRequest();
         request.setReproduccionId(1);
-        request.setFechaParto(LocalDate.of(2026, 5, 28));
         request.setCantidadCrias(1);
 
         PartoDTO saved = createDTO(3, 1);

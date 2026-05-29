@@ -4,15 +4,17 @@ import com.gestionganadera.backend.dto.CreateReproduccionRequest;
 import com.gestionganadera.backend.dto.PartosProximosDTO;
 import com.gestionganadera.backend.dto.ReproduccionDTO;
 import com.gestionganadera.backend.model.Animal;
-import com.gestionganadera.backend.model.Finca;
+import com.gestionganadera.backend.model.Evento;
 import com.gestionganadera.backend.model.Reproduccion;
-import com.gestionganadera.backend.model.Usuario;
+import com.gestionganadera.backend.model.ResultadoReproduccion;
+import com.gestionganadera.backend.model.TipoReproduccion;
 import com.gestionganadera.backend.repository.AnimalRepository;
-import com.gestionganadera.backend.repository.FincaRepository;
+import com.gestionganadera.backend.repository.EventoRepository;
 import com.gestionganadera.backend.repository.ReproduccionRepository;
+import com.gestionganadera.backend.repository.ResultadoReproduccionRepository;
+import com.gestionganadera.backend.repository.TipoReproduccionRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,65 +29,44 @@ public class ReproduccionService {
 
     private final ReproduccionRepository reproduccionRepository;
     private final AnimalRepository animalRepository;
-    private final FincaRepository fincaRepository;
-
-    private Usuario getCurrentUser() {
-        return (Usuario) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
-    }
-
-    private List<Integer> getUserFincaIds() {
-        return fincaRepository.findByPropietario(getCurrentUser())
-                .stream().map(Finca::getId).collect(Collectors.toList());
-    }
-
-    private List<Integer> getUserAnimalIds() {
-        List<Integer> fincaIds = getUserFincaIds();
-        if (fincaIds.isEmpty()) return List.of();
-        return animalRepository.findByFincaIdIn(fincaIds)
-                .stream().map(Animal::getId).collect(Collectors.toList());
-    }
-
-    private boolean animalBelongsToUser(Integer animalId) {
-        List<Integer> fincaIds = getUserFincaIds();
-        if (fincaIds.isEmpty()) return false;
-        return animalRepository.findByIdAndFincaIdIn(animalId, fincaIds).isPresent();
-    }
+    private final EventoRepository eventoRepository;
+    private final TipoReproduccionRepository tipoReproduccionRepository;
+    private final ResultadoReproduccionRepository resultadoReproduccionRepository;
 
     public List<ReproduccionDTO> findAll() {
-        List<Integer> animalIds = getUserAnimalIds();
-        if (animalIds.isEmpty()) return List.of();
-        return reproduccionRepository.findByVacaIdInOrderByFechaMontaDesc(animalIds)
+        return reproduccionRepository.findAll()
                 .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     public ReproduccionDTO findById(Integer id) {
         Reproduccion r = reproduccionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Reproducción no encontrada"));
-        if (!animalBelongsToUser(r.getVaca().getId())) {
-            throw new SecurityException("Acceso denegado");
-        }
         return toDTO(r);
     }
 
     @Transactional
     public ReproduccionDTO create(CreateReproduccionRequest request) {
-        if (!animalBelongsToUser(request.getVacaId())) {
-            throw new SecurityException("Acceso denegado");
-        }
+        Evento evento = eventoRepository.findById(request.getEventoId())
+                .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
 
         Reproduccion r = new Reproduccion();
+        r.setEvento(evento);
         r.setVaca(animalRepository.findById(request.getVacaId())
                 .orElseThrow(() -> new EntityNotFoundException("Vaca no encontrada")));
         if (request.getToroId() != null) {
             r.setToro(animalRepository.findById(request.getToroId())
                     .orElseThrow(() -> new EntityNotFoundException("Toro no encontrado")));
         }
-        r.setFechaMonta(request.getFechaMonta());
-        r.setTipo(request.getTipo());
-        r.setResultado(request.getResultado());
+        if (request.getTipoReproduccionId() != null) {
+            r.setTipoReproduccion(tipoReproduccionRepository.findById(request.getTipoReproduccionId())
+                    .orElseThrow(() -> new EntityNotFoundException("Tipo de reproducción no encontrado")));
+        }
+        if (request.getResultadoReproduccionId() != null) {
+            r.setResultadoReproduccion(resultadoReproduccionRepository.findById(request.getResultadoReproduccionId())
+                    .orElseThrow(() -> new EntityNotFoundException("Resultado de reproducción no encontrado")));
+        }
         r.setFechaPartoEstimada(request.getFechaPartoEstimada());
-        r.setObservaciones(request.getObservaciones());
+        r.setObservacion(request.getObservacion());
 
         return toDTO(reproduccionRepository.save(r));
     }
@@ -94,14 +75,12 @@ public class ReproduccionService {
     public ReproduccionDTO update(Integer id, CreateReproduccionRequest request) {
         Reproduccion r = reproduccionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Reproducción no encontrada"));
-        if (!animalBelongsToUser(r.getVaca().getId())) {
-            throw new SecurityException("Acceso denegado");
-        }
 
-        if (request.getVacaId() != null && !request.getVacaId().equals(r.getVaca().getId())) {
-            if (!animalBelongsToUser(request.getVacaId())) {
-                throw new SecurityException("Acceso denegado");
-            }
+        if (request.getEventoId() != null) {
+            r.setEvento(eventoRepository.findById(request.getEventoId())
+                    .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado")));
+        }
+        if (request.getVacaId() != null) {
             r.setVaca(animalRepository.findById(request.getVacaId())
                     .orElseThrow(() -> new EntityNotFoundException("Vaca no encontrada")));
         }
@@ -109,11 +88,16 @@ public class ReproduccionService {
             r.setToro(animalRepository.findById(request.getToroId())
                     .orElseThrow(() -> new EntityNotFoundException("Toro no encontrado")));
         }
-        if (request.getFechaMonta() != null) r.setFechaMonta(request.getFechaMonta());
-        if (request.getTipo() != null) r.setTipo(request.getTipo());
-        if (request.getResultado() != null) r.setResultado(request.getResultado());
+        if (request.getTipoReproduccionId() != null) {
+            r.setTipoReproduccion(tipoReproduccionRepository.findById(request.getTipoReproduccionId())
+                    .orElseThrow(() -> new EntityNotFoundException("Tipo de reproducción no encontrado")));
+        }
+        if (request.getResultadoReproduccionId() != null) {
+            r.setResultadoReproduccion(resultadoReproduccionRepository.findById(request.getResultadoReproduccionId())
+                    .orElseThrow(() -> new EntityNotFoundException("Resultado de reproducción no encontrado")));
+        }
         if (request.getFechaPartoEstimada() != null) r.setFechaPartoEstimada(request.getFechaPartoEstimada());
-        if (request.getObservaciones() != null) r.setObservaciones(request.getObservaciones());
+        if (request.getObservacion() != null) r.setObservacion(request.getObservacion());
 
         return toDTO(reproduccionRepository.save(r));
     }
@@ -122,44 +106,34 @@ public class ReproduccionService {
     public void delete(Integer id) {
         Reproduccion r = reproduccionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Reproducción no encontrada"));
-        if (!animalBelongsToUser(r.getVaca().getId())) {
-            throw new SecurityException("Acceso denegado");
-        }
         reproduccionRepository.delete(r);
     }
 
-    // ── Existing method for upcoming births ──
-
     public List<PartosProximosDTO> getProximosPartos() {
-        List<Integer> fincaIds = getUserFincaIds();
-        if (fincaIds.isEmpty()) return List.of();
-
         LocalDate today = LocalDate.now();
         LocalDate twoMonthsFromNow = today.plusMonths(2);
 
-        List<Integer> animalIds = animalRepository.findByFincaIdIn(fincaIds)
-                .stream().map(Animal::getId).collect(Collectors.toList());
-        if (animalIds.isEmpty()) return List.of();
-
         return reproduccionRepository
-                .findByFechaPartoEstimadaBetweenAndVacaIdIn(today, twoMonthsFromNow, animalIds)
+                .findByFechaPartoEstimadaBetween(today, twoMonthsFromNow)
                 .stream().map(this::toPartosProximosDTO).collect(Collectors.toList());
     }
 
     private ReproduccionDTO toDTO(Reproduccion r) {
         ReproduccionDTO dto = new ReproduccionDTO();
         dto.setId(r.getId());
+        dto.setEventoId(r.getEvento() != null ? r.getEvento().getId() : null);
+        dto.setFechaMonta(r.getEvento() != null && r.getEvento().getFecha() != null
+                ? r.getEvento().getFecha().toLocalDate().toString() : null);
         dto.setVacaId(r.getVaca() != null ? r.getVaca().getId() : null);
         dto.setVacaNombre(r.getVaca() != null ? r.getVaca().getNombre() : null);
         dto.setVacaArete(r.getVaca() != null ? r.getVaca().getIdentificadorArete() : null);
         dto.setToroId(r.getToro() != null ? r.getToro().getId() : null);
         dto.setToroNombre(r.getToro() != null ? r.getToro().getNombre() : null);
         dto.setToroArete(r.getToro() != null ? r.getToro().getIdentificadorArete() : null);
-        dto.setFechaMonta(r.getFechaMonta());
-        dto.setTipo(r.getTipo());
-        dto.setResultado(r.getResultado());
+        dto.setTipoReproduccion(r.getTipoReproduccion() != null ? r.getTipoReproduccion().getNombre() : null);
+        dto.setResultadoReproduccion(r.getResultadoReproduccion() != null ? r.getResultadoReproduccion().getNombre() : null);
         dto.setFechaPartoEstimada(r.getFechaPartoEstimada());
-        dto.setObservaciones(r.getObservaciones());
+        dto.setObservacion(r.getObservacion());
         return dto;
     }
 

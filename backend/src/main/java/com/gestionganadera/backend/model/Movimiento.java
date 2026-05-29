@@ -5,10 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Entity
-@Table(name = "movimientos")
+@Table(name = "movimiento")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,22 +16,20 @@ public class Movimiento {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "animal_id")
-    private Animal animal;
+    @JoinColumn(name = "id_evento", nullable = false)
+    private Evento evento;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lote_origen_id")
+    @JoinColumn(name = "id_tipo_movimiento")
+    private TipoMovimiento tipoMovimiento;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_lote_origen")
     private Lote loteOrigen;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lote_destino_id")
+    @JoinColumn(name = "id_lote_destino")
     private Lote loteDestino;
-
-    @Column(nullable = false)
-    private LocalDate fecha;
-
-    @Column(name = "tipo_movimiento", length = 50)
-    private String tipoMovimiento;
 
     @Column(columnDefinition = "TEXT")
     private String motivo;

@@ -2,22 +2,21 @@ package com.gestionganadera.backend.service;
 
 import com.gestionganadera.backend.dto.CreateVacunacionRequest;
 import com.gestionganadera.backend.model.*;
-import com.gestionganadera.backend.repository.*;
+import com.gestionganadera.backend.repository.EventoRepository;
+import com.gestionganadera.backend.repository.VacunaRepository;
+import com.gestionganadera.backend.repository.VacunacionRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -29,169 +28,115 @@ class VacunacionServiceTest {
     @Mock
     private VacunacionRepository repository;
     @Mock
-    private AnimalRepository animalRepository;
-    @Mock
-    private FincaRepository fincaRepository;
+    private EventoRepository eventoRepository;
     @Mock
     private VacunaRepository vacunaRepository;
 
     @InjectMocks
     private VacunacionService vacunacionService;
 
-    private Usuario currentUser;
-    private Finca finca;
-    private Animal animal;
+    private Evento evento;
     private Vacuna vacuna;
     private Vacunacion vacunacion;
 
     @BeforeEach
     void setUp() {
-        currentUser = createUser("user@example.com", "Test User");
-        finca = createFinca(1, "Mi Finca", currentUser);
-        animal = createAnimal(10, "Vaca Test", finca);
-        vacuna = createVacuna(100, "Aftosa");
-        vacunacion = createVacunacion(1, animal, vacuna);
-        authenticateAs(currentUser);
+        evento = new Evento();
+        evento.setId(1);
+        evento.setFecha(LocalDateTime.now());
+
+        vacuna = new Vacuna();
+        vacuna.setId(1);
+        vacuna.setNombre("Aftosa");
+
+        vacunacion = new Vacunacion();
+        vacunacion.setId(1);
+        vacunacion.setEvento(evento);
+        vacunacion.setVacuna(vacuna);
+        vacunacion.setProximaDosis(LocalDate.of(2025, 7, 10));
+        vacunacion.setObservacion("Vacunacion test");
     }
 
-    @AfterEach
-    void tearDown() {
-        SecurityContextHolder.clearContext();
-    }
-
-    private static Usuario createUser(String email, String nombre) {
-        Usuario u = new Usuario();
-        u.setId(UUID.randomUUID());
-        u.setNombre(nombre);
-        u.setEmail(email);
-        u.setPassword("encoded");
-        u.setRole(new Role(1, "USER"));
-        return u;
-    }
-
-    private static Finca createFinca(Integer id, String nombre, Usuario propietario) {
-        Finca f = new Finca();
-        f.setId(id);
-        f.setNombre(nombre);
-        f.setPropietario(propietario);
-        return f;
-    }
-
-    private static Animal createAnimal(Integer id, String nombre, Finca finca) {
-        Animal a = new Animal();
-        a.setId(id);
-        a.setNombre(nombre);
-        a.setFinca(finca);
-        a.setSexo("H");
-        a.setIdentificadorArete("AR-" + id);
-        a.setEstado("Activo");
-        return a;
-    }
-
-    private static Vacuna createVacuna(Integer id, String nombre) {
-        Vacuna v = new Vacuna();
-        v.setId(id);
-        v.setNombre(nombre);
-        return v;
-    }
-
-    private static Vacunacion createVacunacion(Integer id, Animal animal, Vacuna vacuna) {
-        Vacunacion v = new Vacunacion();
-        v.setId(id);
-        v.setAnimal(animal);
-        v.setVacuna(vacuna);
-        v.setFecha(LocalDate.of(2025, 1, 10));
-        v.setProximaDosis(LocalDate.of(2025, 7, 10));
-        v.setObservaciones("Vacunacion test");
-        return v;
-    }
-
-    private void authenticateAs(Usuario user) {
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
-    }
-
-    // --- findByAnimalId tests ---
+    // --- findAll tests ---
 
     @Test
-    void findByAnimalId_returnsVacunaciones() {
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(animalRepository.findByIdAndFincaIdIn(10, List.of(1))).thenReturn(Optional.of(animal));
-        when(repository.findByAnimalId(10)).thenReturn(List.of(vacunacion));
+    void findAll_returnsAllVacunaciones() {
+        when(repository.findAll()).thenReturn(List.of(vacunacion));
 
-        List<Vacunacion> result = vacunacionService.findByAnimalId(10);
+        List<Vacunacion> result = vacunacionService.findAll();
 
         assertEquals(1, result.size());
         assertEquals("Aftosa", result.get(0).getVacuna().getNombre());
     }
 
     @Test
-    void findByAnimalId_noVacunaciones_returnsEmptyList() {
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(animalRepository.findByIdAndFincaIdIn(10, List.of(1))).thenReturn(Optional.of(animal));
-        when(repository.findByAnimalId(10)).thenReturn(List.of());
+    void findAll_emptyList_whenNoVacunaciones() {
+        when(repository.findAll()).thenReturn(List.of());
 
-        assertTrue(vacunacionService.findByAnimalId(10).isEmpty());
+        assertTrue(vacunacionService.findAll().isEmpty());
+    }
+
+    // --- findById tests ---
+
+    @Test
+    void findById_returnsVacunacion_whenFound() {
+        when(repository.findById(1)).thenReturn(Optional.of(vacunacion));
+
+        Vacunacion result = vacunacionService.findById(1);
+
+        assertNotNull(result);
+        assertEquals("Aftosa", result.getVacuna().getNombre());
     }
 
     @Test
-    void findByAnimalId_unauthorizedAnimal_throws() {
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(animalRepository.findByIdAndFincaIdIn(99, List.of(1))).thenReturn(Optional.empty());
+    void findById_throws_whenNotFound() {
+        when(repository.findById(999)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> vacunacionService.findByAnimalId(99));
-        verify(repository, never()).findByAnimalId(anyInt());
+        assertThrows(EntityNotFoundException.class, () -> vacunacionService.findById(999));
     }
 
     // --- save tests ---
 
     @Test
     void save_createsVacunacion() {
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(animalRepository.findByIdAndFincaIdIn(10, List.of(1))).thenReturn(Optional.of(animal));
-        when(vacunaRepository.findById(100)).thenReturn(Optional.of(vacuna));
+        when(eventoRepository.findById(1)).thenReturn(Optional.of(evento));
+        when(vacunaRepository.findById(1)).thenReturn(Optional.of(vacuna));
 
         CreateVacunacionRequest request = new CreateVacunacionRequest();
-        request.setAnimalId(10);
-        request.setVacunaId(100);
-        request.setFecha(LocalDate.of(2025, 3, 1));
+        request.setEventoId(1);
+        request.setVacunaId(1);
         request.setProximaDosis(LocalDate.of(2025, 9, 1));
-        request.setObservaciones("Refuerzo anual");
+        request.setObservacion("Refuerzo anual");
 
         Vacunacion saved = new Vacunacion();
         saved.setId(2);
-        saved.setAnimal(animal);
+        saved.setEvento(evento);
         saved.setVacuna(vacuna);
-        saved.setFecha(LocalDate.of(2025, 3, 1));
         saved.setProximaDosis(LocalDate.of(2025, 9, 1));
-        saved.setObservaciones("Refuerzo anual");
+        saved.setObservacion("Refuerzo anual");
 
         when(repository.save(any(Vacunacion.class))).thenReturn(saved);
 
         Vacunacion result = vacunacionService.save(request);
 
-        assertEquals(LocalDate.of(2025, 3, 1), result.getFecha());
         assertEquals(LocalDate.of(2025, 9, 1), result.getProximaDosis());
-        assertEquals("Refuerzo anual", result.getObservaciones());
+        assertEquals("Refuerzo anual", result.getObservacion());
         verify(repository).save(any(Vacunacion.class));
     }
 
     @Test
     void save_withoutOptionalFields_savesSuccessfully() {
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(animalRepository.findByIdAndFincaIdIn(10, List.of(1))).thenReturn(Optional.of(animal));
-        when(vacunaRepository.findById(100)).thenReturn(Optional.of(vacuna));
+        when(eventoRepository.findById(1)).thenReturn(Optional.of(evento));
+        when(vacunaRepository.findById(1)).thenReturn(Optional.of(vacuna));
 
         CreateVacunacionRequest request = new CreateVacunacionRequest();
-        request.setAnimalId(10);
-        request.setVacunaId(100);
-        request.setFecha(LocalDate.of(2025, 4, 1));
+        request.setEventoId(1);
+        request.setVacunaId(1);
 
         Vacunacion saved = new Vacunacion();
         saved.setId(3);
-        saved.setAnimal(animal);
+        saved.setEvento(evento);
         saved.setVacuna(vacuna);
-        saved.setFecha(LocalDate.of(2025, 4, 1));
 
         when(repository.save(any(Vacunacion.class))).thenReturn(saved);
 
@@ -199,37 +144,79 @@ class VacunacionServiceTest {
 
         assertNotNull(result);
         assertNull(result.getProximaDosis());
-        assertNull(result.getObservaciones());
+        assertNull(result.getObservacion());
         verify(repository).save(any(Vacunacion.class));
     }
 
     @Test
-    void save_nonExistentVacuna_throws() {
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(animalRepository.findByIdAndFincaIdIn(10, List.of(1))).thenReturn(Optional.of(animal));
-        when(vacunaRepository.findById(999)).thenReturn(Optional.empty());
+    void save_nonExistentEvento_throws() {
+        when(eventoRepository.findById(999)).thenReturn(Optional.empty());
 
         CreateVacunacionRequest request = new CreateVacunacionRequest();
-        request.setAnimalId(10);
-        request.setVacunaId(999);
-        request.setFecha(LocalDate.now());
+        request.setEventoId(999);
+        request.setVacunaId(1);
 
         assertThrows(EntityNotFoundException.class, () -> vacunacionService.save(request));
         verify(repository, never()).save(any());
     }
 
     @Test
-    void save_unauthorizedAnimal_throws() {
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(animalRepository.findByIdAndFincaIdIn(99, List.of(1))).thenReturn(Optional.empty());
+    void save_nonExistentVacuna_throws() {
+        when(eventoRepository.findById(1)).thenReturn(Optional.of(evento));
+        when(vacunaRepository.findById(999)).thenReturn(Optional.empty());
 
         CreateVacunacionRequest request = new CreateVacunacionRequest();
-        request.setAnimalId(99);
-        request.setVacunaId(100);
-        request.setFecha(LocalDate.now());
+        request.setEventoId(1);
+        request.setVacunaId(999);
 
         assertThrows(EntityNotFoundException.class, () -> vacunacionService.save(request));
-        verify(vacunaRepository, never()).findById(anyInt());
+        verify(repository, never()).save(any());
+    }
+
+    // --- update tests ---
+
+    @Test
+    void update_updatesAllFields() {
+        when(repository.findById(1)).thenReturn(Optional.of(vacunacion));
+        when(eventoRepository.findById(2)).thenReturn(Optional.of(evento));
+        when(vacunaRepository.findById(2)).thenReturn(Optional.of(vacuna));
+        when(repository.save(any(Vacunacion.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        CreateVacunacionRequest request = new CreateVacunacionRequest();
+        request.setEventoId(2);
+        request.setVacunaId(2);
+        request.setProximaDosis(LocalDate.of(2026, 1, 1));
+        request.setObservacion("Actualizado");
+
+        Vacunacion result = vacunacionService.update(1, request);
+
+        assertEquals(LocalDate.of(2026, 1, 1), result.getProximaDosis());
+        assertEquals("Actualizado", result.getObservacion());
+        verify(repository).save(any(Vacunacion.class));
+    }
+
+    @Test
+    void update_partialFields_onlyUpdatesProvided() {
+        when(repository.findById(1)).thenReturn(Optional.of(vacunacion));
+        when(repository.save(any(Vacunacion.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        CreateVacunacionRequest request = new CreateVacunacionRequest();
+        request.setObservacion("Solo observacion");
+
+        Vacunacion result = vacunacionService.update(1, request);
+
+        assertEquals("Solo observacion", result.getObservacion());
+        assertEquals(LocalDate.of(2025, 7, 10), result.getProximaDosis()); // unchanged
+        verify(repository).save(any(Vacunacion.class));
+    }
+
+    @Test
+    void update_nonExistent_throws() {
+        when(repository.findById(999)).thenReturn(Optional.empty());
+
+        CreateVacunacionRequest request = new CreateVacunacionRequest();
+
+        assertThrows(EntityNotFoundException.class, () -> vacunacionService.update(999, request));
         verify(repository, never()).save(any());
     }
 
@@ -238,8 +225,6 @@ class VacunacionServiceTest {
     @Test
     void delete_existingVacunacion_deletes() {
         when(repository.findById(1)).thenReturn(Optional.of(vacunacion));
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(animalRepository.findByIdAndFincaIdIn(10, List.of(1))).thenReturn(Optional.of(animal));
 
         vacunacionService.delete(1);
 
@@ -251,16 +236,6 @@ class VacunacionServiceTest {
         when(repository.findById(999)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> vacunacionService.delete(999));
-        verify(repository, never()).deleteById(anyInt());
-    }
-
-    @Test
-    void delete_unauthorizedAnimal_throws() {
-        when(repository.findById(1)).thenReturn(Optional.of(vacunacion));
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(animalRepository.findByIdAndFincaIdIn(10, List.of(1))).thenReturn(Optional.empty());
-
-        assertThrows(EntityNotFoundException.class, () -> vacunacionService.delete(1));
         verify(repository, never()).deleteById(anyInt());
     }
 }
