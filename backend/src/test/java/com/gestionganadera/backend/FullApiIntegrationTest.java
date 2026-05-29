@@ -135,7 +135,7 @@ class FullApiIntegrationTest {
             new CreateFincaRequest("Mi Finca", "Campo Verde"), authHeaders);
 
         ResponseEntity<Finca> createResp = restTemplate.exchange(
-            "/fincas", HttpMethod.POST, entity, Finca.class);
+            "/finca", HttpMethod.POST, entity, Finca.class);
 
         // Controller uses ResponseEntity.ok() → 200
         assertEquals(200, createResp.getStatusCode().value());
@@ -146,7 +146,7 @@ class FullApiIntegrationTest {
         // Verify it's accessible via GET (list)
         HttpEntity<Void> getEntity = new HttpEntity<>(authHeaders);
         ResponseEntity<List<Finca>> getResp = restTemplate.exchange(
-            "/fincas", HttpMethod.GET, getEntity,
+            "/finca", HttpMethod.GET, getEntity,
             new ParameterizedTypeReference<List<Finca>>() {});
 
         assertEquals(200, getResp.getStatusCode().value());
@@ -161,7 +161,7 @@ class FullApiIntegrationTest {
             new CreateFincaRequest("No Auth", "Nowhere"));
 
         ResponseEntity<String> response = restTemplate.exchange(
-            "/fincas", HttpMethod.POST, entity, String.class);
+            "/finca", HttpMethod.POST, entity, String.class);
 
         assertEquals(401, response.getStatusCode().value(),
             "Unauthenticated requests should return 401");
@@ -174,7 +174,7 @@ class FullApiIntegrationTest {
             new CreateFincaRequest("Original", "Original Location"), authHeaders);
 
         ResponseEntity<Finca> createResp = restTemplate.exchange(
-            "/fincas", HttpMethod.POST, createEntity, Finca.class);
+            "/finca", HttpMethod.POST, createEntity, Finca.class);
 
         Integer fincaId = Objects.requireNonNull(createResp.getBody()).getId();
 
@@ -183,7 +183,7 @@ class FullApiIntegrationTest {
             new CreateFincaRequest("Updated", "Updated Location"), authHeaders);
 
         ResponseEntity<Finca> updateResp = restTemplate.exchange(
-            "/fincas/" + fincaId, HttpMethod.PUT, updateEntity, Finca.class);
+            "/finca/" + fincaId, HttpMethod.PUT, updateEntity, Finca.class);
 
         assertEquals(200, updateResp.getStatusCode().value());
         assertEquals("Updated", Objects.requireNonNull(updateResp.getBody()).getNombre());
@@ -197,21 +197,21 @@ class FullApiIntegrationTest {
             new CreateFincaRequest("To Delete", "Location"), authHeaders);
 
         ResponseEntity<Finca> createResp = restTemplate.exchange(
-            "/fincas", HttpMethod.POST, createEntity, Finca.class);
+            "/finca", HttpMethod.POST, createEntity, Finca.class);
 
         Integer fincaId = Objects.requireNonNull(createResp.getBody()).getId();
 
         // Delete it
         HttpEntity<Void> deleteEntity = new HttpEntity<>(authHeaders);
         ResponseEntity<Void> deleteResp = restTemplate.exchange(
-            "/fincas/" + fincaId, HttpMethod.DELETE, deleteEntity, Void.class);
+            "/finca/" + fincaId, HttpMethod.DELETE, deleteEntity, Void.class);
 
         assertEquals(204, deleteResp.getStatusCode().value());
 
         // Verify it's gone
         HttpEntity<Void> getEntity = new HttpEntity<>(authHeaders);
         ResponseEntity<String> getResp = restTemplate.exchange(
-            "/fincas/" + fincaId, HttpMethod.GET, getEntity, String.class);
+            "/finca/" + fincaId, HttpMethod.GET, getEntity, String.class);
 
         assertEquals(404, getResp.getStatusCode().value());
     }
@@ -225,7 +225,7 @@ class FullApiIntegrationTest {
             new CreateFincaRequest("Finca con Lotes", "Ubicación"), authHeaders);
 
         ResponseEntity<Finca> fincaResp = restTemplate.exchange(
-            "/fincas", HttpMethod.POST, fincaEntity, Finca.class);
+            "/finca", HttpMethod.POST, fincaEntity, Finca.class);
 
         Integer fincaId = Objects.requireNonNull(fincaResp.getBody()).getId();
 
@@ -241,7 +241,7 @@ class FullApiIntegrationTest {
         HttpEntity<CreateLoteRequest> loteEntity = new HttpEntity<>(loteReq, authHeaders);
 
         ResponseEntity<Lote> loteResp = restTemplate.exchange(
-            "/lotes", HttpMethod.POST, loteEntity, Lote.class);
+            "/lote", HttpMethod.POST, loteEntity, Lote.class);
 
         // Controller uses ResponseEntity.ok() → 200
         assertEquals(200, loteResp.getStatusCode().value());
@@ -259,13 +259,13 @@ class FullApiIntegrationTest {
         HttpEntity<CreateFincaRequest> finca2 = new HttpEntity<>(
             new CreateFincaRequest("Finca B", "Sur"), authHeaders);
 
-        restTemplate.exchange("/fincas", HttpMethod.POST, finca1, Finca.class);
-        restTemplate.exchange("/fincas", HttpMethod.POST, finca2, Finca.class);
+        restTemplate.exchange("/finca", HttpMethod.POST, finca1, Finca.class);
+        restTemplate.exchange("/finca", HttpMethod.POST, finca2, Finca.class);
 
         // Query all fincas
         HttpEntity<Void> getEntity = new HttpEntity<>(authHeaders);
         ResponseEntity<List<Finca>> getResp = restTemplate.exchange(
-            "/fincas", HttpMethod.GET, getEntity,
+            "/finca", HttpMethod.GET, getEntity,
             new ParameterizedTypeReference<List<Finca>>() {});
 
         assertEquals(200, getResp.getStatusCode().value());
