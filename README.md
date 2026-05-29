@@ -177,12 +177,6 @@ GitHub Actions (`.github/workflows/ci.yml`) ejecuta tests automáticamente en ca
 - **[CODE_REVIEW.md](docs/CODE_REVIEW.md)** — Historial de auditorías de código
 - **[gestion.ddl](infra/gestion.ddl)** — Esquema DDL de la base de datos
 
-### 🤖 Documentación AI-first (`docs/.ai/`)
-
-- **[`docs/.ai/CONVENTIONS.md`](docs/.ai/CONVENTIONS.md)** — Gotchas, patrones y reglas para que la IA no meta la pata
-
-> Se actualiza manualmente cuando cambian patrones o aparecen nuevos gotchas.
-
 ---
 
 ## 🧪 Tests
