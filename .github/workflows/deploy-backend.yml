@@ -10,7 +10,7 @@ on:
 
 env:
   AWS_REGION: us-east-2
-  EB_APP_NAME: GestionGanadera
+  EB_APP_NAME: gestion_ganadera_backend
   EB_ENV_NAME: Gestionganaderabackend-env
 
 jobs:
