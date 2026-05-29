@@ -97,11 +97,10 @@ jobs:
             echo "⚠️ Timeout, checking health anyway..."
 
           # Report health status
-          HEALTH=$(aws elasticbeanstalk describe-environment-health \
-            --environment-name "${{ env.EB_ENV_NAME }}" \
-            --attribute-names HealthStatus \
+          HEALTH=$(aws elasticbeanstalk describe-environments \
+            --environment-names "${{ env.EB_ENV_NAME }}" \
             --no-cli-pager \
-            --query 'HealthStatus' \
+            --query 'Environments[0].Health' \
             --output text)
           echo "Health: $HEALTH"
 
