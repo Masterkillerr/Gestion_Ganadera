@@ -67,9 +67,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // setAllowedOriginPatterns supports wildcards (e.g. https://*.pages.dev),
-        // which is needed for Cloudflare Pages preview deployments where each
-        // branch gets a unique subdomain like <hash>.<project>.pages.dev.
+        // setAllowedOriginPatterns supports wildcards (e.g. https://*.cloudfront.net),
+        // which is needed for AWS CloudFront distributions where the frontend
+        // is served from a custom domain behind CloudFront.
         configuration.setAllowedOriginPatterns(
             Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)
