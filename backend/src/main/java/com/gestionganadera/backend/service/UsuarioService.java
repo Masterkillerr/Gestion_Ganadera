@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,7 +38,7 @@ public class UsuarioService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<UsuarioDTO> findById(@NonNull UUID id) {
+    public Optional<UsuarioDTO> findById(@NonNull Integer id) {
         return usuarioRepository.findById(id)
                 .map(UsuarioDTO::fromEntity);
     }
@@ -63,7 +62,7 @@ public class UsuarioService {
         return UsuarioDTO.fromEntity(usuarioRepository.save(usuario));
     }
 
-    public UsuarioDTO update(@NonNull UUID id, @NonNull CreateUsuarioRequest request) {
+    public UsuarioDTO update(@NonNull Integer id, @NonNull CreateUsuarioRequest request) {
         return usuarioRepository.findById(id)
                 .map(existing -> {
                     if (request.getNombre() != null) {
@@ -87,7 +86,7 @@ public class UsuarioService {
                 }).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
     }
 
-    public void delete(@NonNull UUID id) {
+    public void delete(@NonNull Integer id) {
         usuarioRepository.findById(id)
                 .ifPresentOrElse(
                     usuario -> usuarioRepository.deleteById(id),

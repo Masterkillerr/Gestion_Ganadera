@@ -17,7 +17,7 @@ public class CreateProduccionRequest {
 
     private BigDecimal litros;
 
-    private String turno;
+    private Integer turnoProduccionId;
 
     @NotNull
     private LocalDate fecha;

@@ -2,33 +2,23 @@ package com.gestionganadera.backend.service;
 
 import com.gestionganadera.backend.dto.CreateMovimientoRequest;
 import com.gestionganadera.backend.dto.MovimientoDTO;
-import com.gestionganadera.backend.model.Animal;
-import com.gestionganadera.backend.model.Finca;
-import com.gestionganadera.backend.model.Lote;
-import com.gestionganadera.backend.model.Movimiento;
-import com.gestionganadera.backend.model.Usuario;
-import com.gestionganadera.backend.repository.AnimalRepository;
-import com.gestionganadera.backend.repository.FincaRepository;
-import com.gestionganadera.backend.repository.LoteRepository;
-import com.gestionganadera.backend.repository.MovimientoRepository;
+import com.gestionganadera.backend.model.*;
+import com.gestionganadera.backend.repository.*;
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,98 +27,60 @@ class MovimientoServiceTest {
     @Mock
     private MovimientoRepository movimientoRepository;
     @Mock
-    private FincaRepository fincaRepository;
-    @Mock
-    private AnimalRepository animalRepository;
+    private EventoRepository eventoRepository;
     @Mock
     private LoteRepository loteRepository;
+    @Mock
+    private TipoMovimientoRepository tipoMovimientoRepository;
 
     @InjectMocks
     private MovimientoService movimientoService;
 
-    private Usuario currentUser;
-    private Finca finca;
+    private Animal animal;
+    private Evento evento;
     private Lote loteOrigen;
     private Lote loteDestino;
-    private Animal animal;
+    private TipoMovimiento tipoTraslado;
     private Movimiento movimiento;
 
     @BeforeEach
     void setUp() {
-        currentUser = createUser("user@example.com", "Test User");
-        finca = createFinca(1, "Mi Finca", currentUser);
-        loteOrigen = createLote(10, "Lote Origen", finca);
-        loteDestino = createLote(20, "Lote Destino", finca);
-        animal = createAnimal(100, "Vaca Test", finca);
-        movimiento = createMovimiento(1, animal, loteOrigen, loteDestino);
-        authenticateAs(currentUser);
-    }
+        animal = new Animal();
+        animal.setId(100);
+        animal.setNombre("Vaca Test");
+        animal.setIdentificadorArete("AR-100");
 
-    @AfterEach
-    void tearDown() {
-        SecurityContextHolder.clearContext();
-    }
+        evento = new Evento();
+        evento.setId(1);
+        evento.setAnimal(animal);
+        evento.setFecha(LocalDateTime.of(2026, 5, 28, 10, 0));
 
-    private static Usuario createUser(String email, String nombre) {
-        Usuario u = new Usuario();
-        u.setId(UUID.randomUUID());
-        u.setNombre(nombre);
-        u.setEmail(email);
-        u.setPassword("encoded");
-        return u;
-    }
+        loteOrigen = new Lote();
+        loteOrigen.setId(10);
+        loteOrigen.setNombre("Lote Origen");
 
-    private static Finca createFinca(Integer id, String nombre, Usuario propietario) {
-        Finca f = new Finca();
-        f.setId(id);
-        f.setNombre(nombre);
-        f.setPropietario(propietario);
-        return f;
-    }
+        loteDestino = new Lote();
+        loteDestino.setId(20);
+        loteDestino.setNombre("Lote Destino");
 
-    private static Lote createLote(Integer id, String nombre, Finca finca) {
-        Lote l = new Lote();
-        l.setId(id);
-        l.setNombre(nombre);
-        l.setFinca(finca);
-        return l;
-    }
+        tipoTraslado = new TipoMovimiento();
+        tipoTraslado.setId(1);
+        tipoTraslado.setNombre("Traslado");
 
-    private static Animal createAnimal(Integer id, String nombre, Finca finca) {
-        Animal a = new Animal();
-        a.setId(id);
-        a.setNombre(nombre);
-        a.setIdentificadorArete("AR-" + id);
-        a.setFinca(finca);
-        a.setSexo("H");
-        a.setEstado("Activo");
-        return a;
-    }
-
-    private static Movimiento createMovimiento(Integer id, Animal animal, Lote origen, Lote destino) {
-        Movimiento m = new Movimiento();
-        m.setId(id);
-        m.setAnimal(animal);
-        m.setLoteOrigen(origen);
-        m.setLoteDestino(destino);
-        m.setFecha(LocalDate.of(2026, 5, 28));
-        m.setTipoMovimiento("Traslado");
-        m.setMotivo("Cambio de alimentacion");
-        return m;
-    }
-
-    private void authenticateAs(Usuario user) {
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
+        movimiento = new Movimiento();
+        movimiento.setId(1);
+        movimiento.setEvento(evento);
+        movimiento.setTipoMovimiento(tipoTraslado);
+        movimiento.setLoteOrigen(loteOrigen);
+        movimiento.setLoteDestino(loteDestino);
+        movimiento.setMotivo("Cambio de alimentacion");
     }
 
     // --- getRecent tests ---
 
     @Test
     void getRecent_returnsList() {
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(movimientoRepository.findTop10ByAnimalFincaIdInOrderByFechaDesc(List.of(1)))
-                .thenReturn(List.of(movimiento));
+        when(movimientoRepository.findAll()).thenReturn(List.of(movimiento));
 
         List<MovimientoDTO> result = movimientoService.getRecent();
 
@@ -139,32 +91,17 @@ class MovimientoServiceTest {
     }
 
     @Test
-    void getRecent_empty_whenNoFincas() {
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of());
-
-        List<MovimientoDTO> result = movimientoService.getRecent();
-
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
     void getRecent_empty_whenNoMovimientos() {
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(movimientoRepository.findTop10ByAnimalFincaIdInOrderByFechaDesc(List.of(1)))
-                .thenReturn(List.of());
+        when(movimientoRepository.findAll()).thenReturn(List.of());
 
-        List<MovimientoDTO> result = movimientoService.getRecent();
-
-        assertTrue(result.isEmpty());
+        assertTrue(movimientoService.getRecent().isEmpty());
     }
 
     // --- findAll tests ---
 
     @Test
     void findAll_returnsList() {
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(movimientoRepository.findByAnimalFincaIdInOrderByFechaDesc(List.of(1)))
-                .thenReturn(List.of(movimiento));
+        when(movimientoRepository.findAll()).thenReturn(List.of(movimiento));
 
         List<MovimientoDTO> result = movimientoService.findAll();
 
@@ -172,15 +109,14 @@ class MovimientoServiceTest {
         assertEquals("Vaca Test", result.get(0).getAnimalNombre());
         assertEquals("Lote Origen", result.get(0).getOrigen());
         assertEquals("Lote Destino", result.get(0).getDestino());
+        assertEquals("Traslado", result.get(0).getTipoMovimiento());
     }
 
     @Test
-    void findAll_empty_whenNoFincas() {
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of());
+    void findAll_empty_whenNoMovimientos() {
+        when(movimientoRepository.findAll()).thenReturn(List.of());
 
-        List<MovimientoDTO> result = movimientoService.findAll();
-
-        assertTrue(result.isEmpty());
+        assertTrue(movimientoService.findAll().isEmpty());
     }
 
     // --- findById tests ---
@@ -188,7 +124,6 @@ class MovimientoServiceTest {
     @Test
     void findById_returnsDTO() {
         when(movimientoRepository.findById(1)).thenReturn(Optional.of(movimiento));
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
 
         MovimientoDTO result = movimientoService.findById(1);
 
@@ -205,37 +140,20 @@ class MovimientoServiceTest {
         assertThrows(EntityNotFoundException.class, () -> movimientoService.findById(999));
     }
 
-    @Test
-    void findById_unauthorized_throws() {
-        Finca otraFinca = createFinca(99, "Otra Finca", createUser("other@example.com", "Other"));
-        Animal otroAnimal = createAnimal(200, "Otro", otraFinca);
-        Movimiento otroMov = createMovimiento(2, otroAnimal, loteOrigen, loteDestino);
-
-        when(movimientoRepository.findById(2)).thenReturn(Optional.of(otroMov));
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-
-        assertThrows(EntityNotFoundException.class, () -> movimientoService.findById(2));
-    }
-
     // --- create tests ---
 
     @Test
     void create_createsMovimiento() {
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(animalRepository.findByIdAndFincaIdIn(100, List.of(1))).thenReturn(Optional.of(animal));
-        when(loteRepository.findById(anyInt())).thenAnswer(invocation -> {
-            Integer id = invocation.getArgument(0);
-            if (id.equals(20)) return Optional.of(loteDestino);
-            if (id.equals(10)) return Optional.of(loteOrigen);
-            return Optional.empty();
-        });
+        when(eventoRepository.findById(1)).thenReturn(Optional.of(evento));
+        when(loteRepository.findById(20)).thenReturn(Optional.of(loteDestino));
+        when(loteRepository.findById(10)).thenReturn(Optional.of(loteOrigen));
+        when(tipoMovimientoRepository.findById(1)).thenReturn(Optional.of(tipoTraslado));
 
         CreateMovimientoRequest request = new CreateMovimientoRequest();
-        request.setAnimalId(100);
+        request.setEventoId(1);
         request.setLoteDestinoId(20);
         request.setLoteOrigenId(10);
-        request.setFecha(LocalDate.of(2026, 6, 1));
-        request.setTipoMovimiento("Venta");
+        request.setTipoMovimientoId(1);
         request.setMotivo("Venta a otro productor");
 
         when(movimientoRepository.save(any(Movimiento.class))).thenAnswer(invocation -> {
@@ -249,23 +167,24 @@ class MovimientoServiceTest {
         assertEquals("Vaca Test", result.getAnimalNombre());
         assertEquals("Lote Destino", result.getDestino());
         assertEquals("Lote Origen", result.getOrigen());
+        assertEquals("Traslado", result.getTipoMovimiento());
         verify(movimientoRepository).save(any(Movimiento.class));
     }
 
     @Test
     void create_withoutLoteOrigen_creates() {
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(animalRepository.findByIdAndFincaIdIn(100, List.of(1))).thenReturn(Optional.of(animal));
+        when(eventoRepository.findById(1)).thenReturn(Optional.of(evento));
         when(loteRepository.findById(20)).thenReturn(Optional.of(loteDestino));
 
         CreateMovimientoRequest request = new CreateMovimientoRequest();
-        request.setAnimalId(100);
+        request.setEventoId(1);
         request.setLoteDestinoId(20);
-        request.setFecha(LocalDate.of(2026, 6, 1));
-        request.setTipoMovimiento("Ingreso");
 
-        Movimiento saved = createMovimiento(50, animal, null, loteDestino);
-        when(movimientoRepository.save(any(Movimiento.class))).thenReturn(saved);
+        when(movimientoRepository.save(any(Movimiento.class))).thenAnswer(invocation -> {
+            Movimiento saved = invocation.getArgument(0);
+            saved.setId(50);
+            return saved;
+        });
 
         MovimientoDTO result = movimientoService.create(request);
 
@@ -275,29 +194,40 @@ class MovimientoServiceTest {
     }
 
     @Test
-    void create_unauthorizedAnimal_throws() {
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(animalRepository.findByIdAndFincaIdIn(999, List.of(1))).thenReturn(Optional.empty());
+    void create_nonExistentEvento_throws() {
+        when(eventoRepository.findById(999)).thenReturn(Optional.empty());
 
         CreateMovimientoRequest request = new CreateMovimientoRequest();
-        request.setAnimalId(999);
+        request.setEventoId(999);
         request.setLoteDestinoId(20);
-        request.setFecha(LocalDate.of(2026, 6, 1));
 
         assertThrows(EntityNotFoundException.class, () -> movimientoService.create(request));
         verify(movimientoRepository, never()).save(any());
     }
 
     @Test
-    void create_unauthorizedLote_throws() {
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(animalRepository.findByIdAndFincaIdIn(100, List.of(1))).thenReturn(Optional.of(animal));
-        when(loteRepository.findById(99)).thenReturn(Optional.of(createLote(99, "Ajeno", createFinca(99, "Ajeno", null))));
+    void create_nonExistentLoteDestino_throws() {
+        when(eventoRepository.findById(1)).thenReturn(Optional.of(evento));
+        when(loteRepository.findById(999)).thenReturn(Optional.empty());
 
         CreateMovimientoRequest request = new CreateMovimientoRequest();
-        request.setAnimalId(100);
-        request.setLoteDestinoId(99);
-        request.setFecha(LocalDate.of(2026, 6, 1));
+        request.setEventoId(1);
+        request.setLoteDestinoId(999);
+
+        assertThrows(EntityNotFoundException.class, () -> movimientoService.create(request));
+        verify(movimientoRepository, never()).save(any());
+    }
+
+    @Test
+    void create_nonExistentLoteOrigen_throws() {
+        when(eventoRepository.findById(1)).thenReturn(Optional.of(evento));
+        when(loteRepository.findById(20)).thenReturn(Optional.of(loteDestino));
+        when(loteRepository.findById(999)).thenReturn(Optional.empty());
+
+        CreateMovimientoRequest request = new CreateMovimientoRequest();
+        request.setEventoId(1);
+        request.setLoteDestinoId(20);
+        request.setLoteOrigenId(999);
 
         assertThrows(EntityNotFoundException.class, () -> movimientoService.create(request));
         verify(movimientoRepository, never()).save(any());
@@ -308,26 +238,29 @@ class MovimientoServiceTest {
     @Test
     void update_updatesFields() {
         when(movimientoRepository.findById(1)).thenReturn(Optional.of(movimiento));
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(animalRepository.findByIdAndFincaIdIn(100, List.of(1))).thenReturn(Optional.of(animal));
-        when(animalRepository.findByIdAndFincaIdIn(100, List.of(1))).thenReturn(Optional.of(animal));
+        when(eventoRepository.findById(1)).thenReturn(Optional.of(evento));
         when(loteRepository.findById(20)).thenReturn(Optional.of(loteDestino));
+        when(tipoMovimientoRepository.findById(1)).thenReturn(Optional.of(tipoTraslado));
 
         CreateMovimientoRequest request = new CreateMovimientoRequest();
-        request.setAnimalId(100);
+        request.setEventoId(1);
         request.setLoteDestinoId(20);
-        request.setFecha(LocalDate.of(2026, 6, 15));
-        request.setTipoMovimiento("Traslado");
+        request.setTipoMovimientoId(1);
         request.setMotivo("Nuevo motivo");
 
-        Movimiento updated = createMovimiento(1, animal, loteOrigen, loteDestino);
-        updated.setFecha(LocalDate.of(2026, 6, 15));
+        Movimiento updated = new Movimiento();
+        updated.setId(1);
+        updated.setEvento(evento);
+        updated.setTipoMovimiento(tipoTraslado);
+        updated.setLoteDestino(loteDestino);
         updated.setMotivo("Nuevo motivo");
+
         when(movimientoRepository.save(any(Movimiento.class))).thenReturn(updated);
 
         MovimientoDTO result = movimientoService.update(1, request);
 
         assertEquals("Traslado", result.getTipoMovimiento());
+        assertEquals("Nuevo motivo", result.getMotivo());
         verify(movimientoRepository).save(any(Movimiento.class));
     }
 
@@ -336,9 +269,8 @@ class MovimientoServiceTest {
         when(movimientoRepository.findById(999)).thenReturn(Optional.empty());
 
         CreateMovimientoRequest request = new CreateMovimientoRequest();
-        request.setAnimalId(100);
+        request.setEventoId(1);
         request.setLoteDestinoId(20);
-        request.setFecha(LocalDate.now());
 
         assertThrows(EntityNotFoundException.class, () -> movimientoService.update(999, request));
         verify(movimientoRepository, never()).save(any());
@@ -349,8 +281,6 @@ class MovimientoServiceTest {
     @Test
     void delete_existing_deletes() {
         when(movimientoRepository.findById(1)).thenReturn(Optional.of(movimiento));
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(animalRepository.findByIdAndFincaIdIn(100, List.of(1))).thenReturn(Optional.of(animal));
 
         movimientoService.delete(1);
 
@@ -362,20 +292,6 @@ class MovimientoServiceTest {
         when(movimientoRepository.findById(999)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> movimientoService.delete(999));
-        verify(movimientoRepository, never()).deleteById(anyInt());
-    }
-
-    @Test
-    void delete_unauthorized_throws() {
-        Finca otraFinca = createFinca(99, "Otra Finca", createUser("other@example.com", "Other"));
-        Animal otroAnimal = createAnimal(200, "Otro", otraFinca);
-        Movimiento otroMov = createMovimiento(2, otroAnimal, loteOrigen, loteDestino);
-
-        when(movimientoRepository.findById(2)).thenReturn(Optional.of(otroMov));
-        when(fincaRepository.findByPropietario(currentUser)).thenReturn(List.of(finca));
-        when(animalRepository.findByIdAndFincaIdIn(200, List.of(1))).thenReturn(Optional.empty());
-
-        assertThrows(EntityNotFoundException.class, () -> movimientoService.delete(2));
         verify(movimientoRepository, never()).deleteById(anyInt());
     }
 }

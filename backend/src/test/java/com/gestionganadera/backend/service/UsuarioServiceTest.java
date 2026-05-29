@@ -22,7 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -50,8 +49,8 @@ class UsuarioServiceTest {
     void setUp() {
         roleUser = new Role(1, "USER");
         roleAdmin = new Role(2, "ADMIN");
-        currentUser = createUser(UUID.randomUUID(), "Test User", "test@example.com", roleUser);
-        otroUsuario = createUser(UUID.randomUUID(), "Otro User", "otro@example.com", roleUser);
+        currentUser = createUser(1, "Test User", "test@example.com", roleUser);
+        otroUsuario = createUser(2, "Otro User", "otro@example.com", roleUser);
         authenticateAs(currentUser);
     }
 
@@ -60,7 +59,7 @@ class UsuarioServiceTest {
         SecurityContextHolder.clearContext();
     }
 
-    private static Usuario createUser(UUID id, String nombre, String email, Role role) {
+    private static Usuario createUser(Integer id, String nombre, String email, Role role) {
         Usuario u = new Usuario();
         u.setId(id);
         u.setNombre(nombre);
@@ -99,9 +98,9 @@ class UsuarioServiceTest {
 
     @Test
     void findById_returnsDTO_whenFound() {
-        when(usuarioRepository.findById(otroUsuario.getId())).thenReturn(Optional.of(otroUsuario));
+        when(usuarioRepository.findById(2)).thenReturn(Optional.of(otroUsuario));
 
-        Optional<UsuarioDTO> result = usuarioService.findById(otroUsuario.getId());
+        Optional<UsuarioDTO> result = usuarioService.findById(2);
 
         assertTrue(result.isPresent());
         assertEquals("Otro User", result.get().getNombre());
@@ -110,10 +109,9 @@ class UsuarioServiceTest {
 
     @Test
     void findById_returnsEmpty_whenNotFound() {
-        UUID id = UUID.randomUUID();
-        when(usuarioRepository.findById(id)).thenReturn(Optional.empty());
+        when(usuarioRepository.findById(999)).thenReturn(Optional.empty());
 
-        assertTrue(usuarioService.findById(id).isEmpty());
+        assertTrue(usuarioService.findById(999).isEmpty());
     }
 
     // --- create tests ---
@@ -129,7 +127,7 @@ class UsuarioServiceTest {
         when(passwordEncoder.encode("password123")).thenReturn("encoded_new");
         when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> {
             Usuario saved = invocation.getArgument(0);
-            saved.setId(UUID.randomUUID());
+            saved.setId(10);
             return saved;
         });
 
@@ -168,7 +166,7 @@ class UsuarioServiceTest {
         when(roleRepository.findByNombre("ADMIN")).thenReturn(Optional.of(roleAdmin));
         when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> {
             Usuario saved = invocation.getArgument(0);
-            saved.setId(UUID.randomUUID());
+            saved.setId(11);
             return saved;
         });
 
@@ -204,7 +202,7 @@ class UsuarioServiceTest {
         when(passwordEncoder.encode("default123")).thenReturn("encoded_default");
         when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> {
             Usuario saved = invocation.getArgument(0);
-            saved.setId(UUID.randomUUID());
+            saved.setId(12);
             return saved;
         });
 
@@ -219,8 +217,7 @@ class UsuarioServiceTest {
 
     @Test
     void update_updatesAllFields() {
-        UUID id = otroUsuario.getId();
-        when(usuarioRepository.findById(id)).thenReturn(Optional.of(otroUsuario));
+        when(usuarioRepository.findById(2)).thenReturn(Optional.of(otroUsuario));
         when(passwordEncoder.encode("newpass")).thenReturn("encoded_newpass");
         when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -232,7 +229,7 @@ class UsuarioServiceTest {
 
         when(roleRepository.findByNombre("ADMIN")).thenReturn(Optional.of(roleAdmin));
 
-        UsuarioDTO result = usuarioService.update(id, request);
+        UsuarioDTO result = usuarioService.update(2, request);
 
         assertEquals("Nombre Modificado", result.getNombre());
         assertEquals("modificado@example.com", result.getEmail());
@@ -242,16 +239,13 @@ class UsuarioServiceTest {
 
     @Test
     void update_partialFields_onlyUpdatesProvided() {
-        UUID id = otroUsuario.getId();
-        when(usuarioRepository.findById(id)).thenReturn(Optional.of(otroUsuario));
+        when(usuarioRepository.findById(2)).thenReturn(Optional.of(otroUsuario));
         when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         CreateUsuarioRequest request = new CreateUsuarioRequest();
         request.setNombre("Solo Nombre");
-        request.setEmail("otro@example.com"); // mismo email
-        // sin password, sin rol
 
-        UsuarioDTO result = usuarioService.update(id, request);
+        UsuarioDTO result = usuarioService.update(2, request);
 
         assertEquals("Solo Nombre", result.getNombre());
         verify(usuarioRepository).save(any(Usuario.class));
@@ -261,34 +255,31 @@ class UsuarioServiceTest {
 
     @Test
     void update_throws_whenEmailAlreadyTaken() {
-        UUID id = otroUsuario.getId();
-        when(usuarioRepository.findById(id)).thenReturn(Optional.of(otroUsuario));
+        when(usuarioRepository.findById(2)).thenReturn(Optional.of(otroUsuario));
         when(usuarioRepository.existsByEmail("ocupado@example.com")).thenReturn(true);
 
         CreateUsuarioRequest request = new CreateUsuarioRequest();
         request.setNombre("Otro User");
         request.setEmail("ocupado@example.com");
 
-        assertThrows(DuplicateEmailException.class, () -> usuarioService.update(id, request));
+        assertThrows(DuplicateEmailException.class, () -> usuarioService.update(2, request));
         verify(usuarioRepository, never()).save(any());
     }
 
     @Test
     void update_throws_whenUserNotFound() {
-        UUID id = UUID.randomUUID();
-        when(usuarioRepository.findById(id)).thenReturn(Optional.empty());
+        when(usuarioRepository.findById(999)).thenReturn(Optional.empty());
 
         CreateUsuarioRequest request = new CreateUsuarioRequest();
         request.setNombre("Ghost");
 
-        assertThrows(ResourceNotFoundException.class, () -> usuarioService.update(id, request));
+        assertThrows(ResourceNotFoundException.class, () -> usuarioService.update(999, request));
         verify(usuarioRepository, never()).save(any());
     }
 
     @Test
     void update_withRoleNotFound_throws() {
-        UUID id = otroUsuario.getId();
-        when(usuarioRepository.findById(id)).thenReturn(Optional.of(otroUsuario));
+        when(usuarioRepository.findById(2)).thenReturn(Optional.of(otroUsuario));
 
         CreateUsuarioRequest request = new CreateUsuarioRequest();
         request.setNombre("Otro User");
@@ -296,7 +287,7 @@ class UsuarioServiceTest {
 
         when(roleRepository.findByNombre("INEXISTENTE")).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> usuarioService.update(id, request));
+        assertThrows(ResourceNotFoundException.class, () -> usuarioService.update(2, request));
         verify(usuarioRepository, never()).save(any());
     }
 
@@ -304,20 +295,18 @@ class UsuarioServiceTest {
 
     @Test
     void delete_existingUser_deletes() {
-        UUID id = otroUsuario.getId();
-        when(usuarioRepository.findById(id)).thenReturn(Optional.of(otroUsuario));
+        when(usuarioRepository.findById(2)).thenReturn(Optional.of(otroUsuario));
 
-        usuarioService.delete(id);
+        usuarioService.delete(2);
 
-        verify(usuarioRepository).deleteById(id);
+        verify(usuarioRepository).deleteById(2);
     }
 
     @Test
     void delete_nonExistent_throws() {
-        UUID id = UUID.randomUUID();
-        when(usuarioRepository.findById(id)).thenReturn(Optional.empty());
+        when(usuarioRepository.findById(999)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> usuarioService.delete(id));
+        assertThrows(ResourceNotFoundException.class, () -> usuarioService.delete(999));
         verify(usuarioRepository, never()).deleteById(any());
     }
 
@@ -334,7 +323,7 @@ class UsuarioServiceTest {
 
     @Test
     void getProfile_returnsUserRole() {
-        authenticateAs(createUser(UUID.randomUUID(), "Admin", "admin@example.com", roleAdmin));
+        authenticateAs(createUser(3, "Admin", "admin@example.com", roleAdmin));
 
         UsuarioDTO result = usuarioService.getProfile();
 

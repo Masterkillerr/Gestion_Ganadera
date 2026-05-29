@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/reproducciones")
+@RequestMapping("/reproduccion")
 @RequiredArgsConstructor
 @PreAuthorize("isAuthenticated()")
 @Tag(name = "Reproducción", description = "Registro de montas, inseminaciones y seguimiento de gestación")

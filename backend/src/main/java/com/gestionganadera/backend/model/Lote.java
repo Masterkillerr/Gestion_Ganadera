@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 @Entity
-@Table(name = "lotes")
+@Table(name = "lote")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,7 +25,7 @@ public class Lote {
     private String nombre;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "finca_id")
+    @JoinColumn(name = "id_finca")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "lotes"})
     private Finca finca;
 

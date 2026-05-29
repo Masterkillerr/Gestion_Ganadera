@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,7 +15,9 @@ public class CreateEventoRequest {
     private Integer animalId;
 
     @NotNull
-    private String tipo;
+    private Integer tipoEventoId;
 
     private String descripcion;
+
+    private LocalDateTime fecha;
 }

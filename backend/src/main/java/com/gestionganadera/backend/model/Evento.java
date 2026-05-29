@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "eventos")
+@Table(name = "evento")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,17 +19,18 @@ public class Evento {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "animal_id")
+    @JoinColumn(name = "id_animal", nullable = false)
     private Animal animal;
 
-    @Column(length = 50)
-    private String tipo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_tipo_evento", nullable = false)
+    private TipoEvento tipoEvento;
+
+    @Column(nullable = false)
+    private LocalDateTime fecha;
 
     @Column(columnDefinition = "TEXT")
     private String descripcion;
-
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime fecha;
 
     @PrePersist
     protected void onCreate() {

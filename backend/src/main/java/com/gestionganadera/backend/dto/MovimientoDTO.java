@@ -4,17 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class MovimientoDTO {
     private Integer id;
-    private String fecha;
+    private Integer eventoId;
     private String animalNombre;
     private String animalArete;
+    private String tipoMovimiento;
     private String origen;
     private String destino;
-    private String tipoMovimiento;
+    private String motivo;
+    private String fecha;
 }

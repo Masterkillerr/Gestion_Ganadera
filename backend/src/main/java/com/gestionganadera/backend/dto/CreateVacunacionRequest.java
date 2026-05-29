@@ -12,15 +12,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class CreateVacunacionRequest {
     @NotNull
-    private Integer animalId;
+    private Integer eventoId;
 
     @NotNull
     private Integer vacunaId;
 
-    @NotNull
-    private LocalDate fecha;
-
     private LocalDate proximaDosis;
 
-    private String observaciones;
+    private String observacion;
 }

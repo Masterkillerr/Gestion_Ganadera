@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Table(name = "animales")
+@Table(name = "animal")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,35 +22,39 @@ public class Animal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "identificador_arete", length = 50)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_sexo")
+    private Sexo sexo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_estado_animal")
+    private EstadoAnimal estadoAnimal;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_raza")
+    private Raza raza;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_madre")
+    @JsonIgnoreProperties({"madre", "padre", "hibernateLazyInitializer", "handler"})
+    private Animal madre;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_padre")
+    @JsonIgnoreProperties({"madre", "padre", "hibernateLazyInitializer", "handler"})
+    private Animal padre;
+
+    @Column(name = "identificador_arete", nullable = false, unique = true, length = 100)
     private String identificadorArete;
 
     @Column(length = 100)
     private String nombre;
 
-    @Column(length = 20)
-    private String sexo;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "raza_id")
-    private Raza raza;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoria_id")
-    private Categoria categoria;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lote_id")
-    private Lote lote;
-
-    @Column(name = "fecha_nacimiento")
+    @Column(name = "fecha_nacimiento", nullable = false)
     private LocalDate fechaNacimiento;
 
-    @Column(name = "peso_actual", precision = 10, scale = 2)
-    private BigDecimal pesoActual;
-
-    @Column(length = 50)
-    private String estado;
+    @Column(name = "peso_actual_kg", precision = 10, scale = 2)
+    private BigDecimal pesoActualKg;
 
     @Column(name = "foto_url", columnDefinition = "TEXT")
     private String fotoUrl;
@@ -58,24 +62,9 @@ public class Animal {
     @Column(name = "creado_en", updatable = false)
     private LocalDateTime creadoEn;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "madre_id")
-    @JsonIgnoreProperties({"madre", "padre", "hibernateLazyInitializer", "handler"})
-    private Animal madre;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "padre_id")
-    @JsonIgnoreProperties({"madre", "padre", "hibernateLazyInitializer", "handler"})
-    private Animal padre;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "finca_id")
-    private Finca finca;
-
     @PrePersist
     protected void onCreate() {
         if (creadoEn == null)
             creadoEn = LocalDateTime.now();
     }
-
 }

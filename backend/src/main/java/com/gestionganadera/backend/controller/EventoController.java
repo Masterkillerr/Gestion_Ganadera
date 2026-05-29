@@ -16,12 +16,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/eventos")
+@RequestMapping("/evento")
 @RequiredArgsConstructor
 @PreAuthorize("isAuthenticated()")
 @Tag(name = "Eventos", description = "Registro de eventos y novedades de animales")
 public class EventoController {
     private final EventoService service;
+
+    @GetMapping
+    @Operation(summary = "Listar eventos", description = "Obtiene todos los eventos registrados")
+    public ResponseEntity<List<EventoDTO>> findAll() {
+        return ResponseEntity.ok(service.findAll());
+    }
 
     @GetMapping("/recent")
     @Operation(summary = "Eventos recientes", description = "Obtiene los eventos más recientes")

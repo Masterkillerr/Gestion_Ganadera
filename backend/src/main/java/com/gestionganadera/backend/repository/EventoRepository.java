@@ -9,6 +9,4 @@ import java.util.List;
 @Repository
 public interface EventoRepository extends JpaRepository<Evento, Integer> {
     List<Evento> findByAnimalId(Integer animalId);
-
-    List<Evento> findTop10ByAnimalFincaIdInOrderByFechaDesc(List<Integer> fincaIds);
 }

@@ -10,8 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,9 +38,9 @@ class AlimentacionControllerTest {
     void create_returnsCreated() {
         CreateAlimentacionRequest request = new CreateAlimentacionRequest();
         request.setAnimalId(100);
-        request.setAlimentoId(1);
-        request.setCantidad(BigDecimal.valueOf(5));
-        request.setFecha(LocalDate.now());
+        request.setDietaId(1);
+        request.setFecha(LocalDateTime.now());
+        request.setObservacion("Test");
 
         Alimentacion saved = new Alimentacion();
         saved.setId(1);

@@ -26,20 +26,32 @@ class TratamientoControllerTest {
     private TratamientoController controller;
 
     @Test
-    void findByAnimalId_returnsList() {
-        when(service.findByAnimalId(100)).thenReturn(List.of());
+    void findAll_returnsList() {
+        when(service.findAll()).thenReturn(List.of());
 
-        ResponseEntity<List<Tratamiento>> response = controller.findByAnimalId(100);
+        ResponseEntity<List<Tratamiento>> response = controller.findAll();
 
         assertEquals(200, response.getStatusCode().value());
     }
 
     @Test
+    void findById_returnsTratamiento() {
+        Tratamiento t = new Tratamiento();
+        t.setId(1);
+        when(service.findById(1)).thenReturn(t);
+
+        ResponseEntity<Tratamiento> response = controller.findById(1);
+
+        assertEquals(200, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
     void create_returnsCreated() {
         CreateTratamientoRequest request = new CreateTratamientoRequest();
-        request.setAnimalId(100);
+        request.setEventoId(1);
         request.setMedicamentoId(1);
-        request.setDosis("10ml");
+        request.setDosisMl("10ml");
         request.setFechaInicio(LocalDate.now());
 
         Tratamiento saved = new Tratamiento();
@@ -47,6 +59,21 @@ class TratamientoControllerTest {
         when(service.save(request)).thenReturn(saved);
 
         ResponseEntity<Tratamiento> response = controller.create(request);
+
+        assertEquals(200, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    void update_returnsUpdated() {
+        CreateTratamientoRequest request = new CreateTratamientoRequest();
+        request.setDosisMl("15ml");
+
+        Tratamiento updated = new Tratamiento();
+        updated.setId(1);
+        when(service.update(1, request)).thenReturn(updated);
+
+        ResponseEntity<Tratamiento> response = controller.update(1, request);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());

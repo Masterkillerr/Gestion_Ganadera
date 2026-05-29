@@ -1,4 +1,4 @@
-name: CI + Deploy
+name: CI
 
 on:
   push:
@@ -43,12 +43,3 @@ jobs:
         with:
           name: test-reports
           path: backend/target/surefire-reports
-
-  deploy:
-    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
-    needs: [test]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Render deployment
-        run: |
-          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"

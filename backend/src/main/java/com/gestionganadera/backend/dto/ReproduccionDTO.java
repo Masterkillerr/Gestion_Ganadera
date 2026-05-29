@@ -11,15 +11,16 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ReproduccionDTO {
     private Integer id;
+    private Integer eventoId;
+    private String fechaMonta;
     private Integer vacaId;
     private String vacaNombre;
     private String vacaArete;
     private Integer toroId;
     private String toroNombre;
     private String toroArete;
-    private LocalDate fechaMonta;
-    private String tipo;
-    private String resultado;
+    private String tipoReproduccion;
+    private String resultadoReproduccion;
     private LocalDate fechaPartoEstimada;
-    private String observaciones;
+    private String observacion;
 }

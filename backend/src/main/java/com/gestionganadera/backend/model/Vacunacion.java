@@ -8,9 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "vacunaciones", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"animal_id", "vacuna_id", "fecha"})
-})
+@Table(name = "vacunacion")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,19 +18,16 @@ public class Vacunacion {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "animal_id")
-    private Animal animal;
+    @JoinColumn(name = "id_evento", nullable = false)
+    private Evento evento;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vacuna_id")
+    @JoinColumn(name = "id_vacuna", nullable = false)
     private Vacuna vacuna;
-
-    @Column(nullable = false)
-    private LocalDate fecha;
 
     @Column(name = "proxima_dosis")
     private LocalDate proximaDosis;
 
     @Column(columnDefinition = "TEXT")
-    private String observaciones;
+    private String observacion;
 }

@@ -1,6 +1,7 @@
 package com.gestionganadera.backend.controller;
 
 import com.gestionganadera.backend.dto.CreateEventoRequest;
+import com.gestionganadera.backend.dto.EventoDTO;
 import com.gestionganadera.backend.model.Evento;
 import com.gestionganadera.backend.service.EventoService;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,15 @@ class EventoControllerTest {
     private EventoController controller;
 
     @Test
+    void getRecent_returnsList() {
+        when(service.getRecent()).thenReturn(List.of());
+
+        ResponseEntity<List<EventoDTO>> response = controller.getRecent();
+
+        assertEquals(200, response.getStatusCode().value());
+    }
+
+    @Test
     void findByAnimalId_returnsList() {
         when(service.findByAnimalId(100)).thenReturn(List.of());
 
@@ -37,7 +47,7 @@ class EventoControllerTest {
     void create_returnsCreated() {
         CreateEventoRequest request = new CreateEventoRequest();
         request.setAnimalId(100);
-        request.setTipo("Salud");
+        request.setTipoEventoId(1);
         request.setDescripcion("Revision");
 
         Evento saved = new Evento();

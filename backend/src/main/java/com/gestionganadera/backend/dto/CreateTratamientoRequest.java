@@ -12,18 +12,16 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class CreateTratamientoRequest {
     @NotNull
-    private Integer animalId;
+    private Integer eventoId;
 
     @NotNull
     private Integer medicamentoId;
 
-    private String dosis;
+    private String dosisMl;
 
     private LocalDate fechaInicio;
 
     private LocalDate fechaFin;
 
-    private Integer diasRetiro;
-
-    private String observaciones;
+    private String observacion;
 }

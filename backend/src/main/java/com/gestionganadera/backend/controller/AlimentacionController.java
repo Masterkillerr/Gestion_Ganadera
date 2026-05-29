@@ -15,12 +15,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/alimentaciones")
+@RequestMapping("/alimentacion")
 @RequiredArgsConstructor
 @PreAuthorize("isAuthenticated()")
 @Tag(name = "Alimentaciones", description = "Registro de alimentación diaria de animales")
 public class AlimentacionController {
     private final AlimentacionService service;
+
+    @GetMapping
+    @Operation(summary = "Listar alimentaciones", description = "Obtiene todos los registros de alimentación")
+    public ResponseEntity<List<Alimentacion>> findAll() {
+        return ResponseEntity.ok(service.findAll());
+    }
 
     @GetMapping("/animal/{animalId}")
     @Operation(summary = "Alimentaciones por animal", description = "Obtiene el historial de alimentación de un animal")

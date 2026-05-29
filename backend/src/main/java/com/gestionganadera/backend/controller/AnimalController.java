@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/animales")
+@RequestMapping("/animal")
 @RequiredArgsConstructor
 @PreAuthorize("isAuthenticated()")
 @Tag(name = "Animales", description = "CRUD de animales del inventario ganadero")
@@ -25,7 +25,7 @@ public class AnimalController {
     private final AnimalService animalService;
 
     @GetMapping
-    @Operation(summary = "Listar animales", description = "Obtiene todos los animales del usuario autenticado")
+    @Operation(summary = "Listar animales", description = "Obtiene todos los animales")
     public ResponseEntity<List<AnimalDTO>> getAllAnimales() {
         List<AnimalDTO> animales = animalService.findAll().stream()
                 .map(AnimalDTO::fromEntity)
@@ -59,23 +59,5 @@ public class AnimalController {
     public ResponseEntity<Void> deleteAnimal(@PathVariable @NonNull Integer id) {
         animalService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/lote/{loteId}")
-    @Operation(summary = "Animales por lote", description = "Obtiene animales filtrados por ID de lote")
-    public ResponseEntity<List<AnimalDTO>> getAnimalesByLote(@PathVariable @NonNull Integer loteId) {
-        List<AnimalDTO> animales = animalService.findByLoteId(loteId).stream()
-                .map(AnimalDTO::fromEntity)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(animales);
-    }
-
-    @GetMapping("/finca/{fincaId}")
-    @Operation(summary = "Animales por finca", description = "Obtiene animales filtrados por ID de finca")
-    public ResponseEntity<List<AnimalDTO>> getAnimalesByFinca(@PathVariable @NonNull Integer fincaId) {
-        List<AnimalDTO> animales = animalService.findByFincaId(fincaId).stream()
-                .map(AnimalDTO::fromEntity)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(animales);
     }
 }

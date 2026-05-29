@@ -5,10 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Entity
-@Table(name = "partos")
+@Table(name = "parto")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,16 +16,16 @@ public class Parto {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reproduccion_id")
-    private Reproduccion reproduccion;
+    @JoinColumn(name = "id_evento", nullable = false)
+    private Evento evento;
 
-    @Column(name = "fecha_parto", nullable = false)
-    private LocalDate fechaParto;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_reproduccion", nullable = false)
+    private Reproduccion reproduccion;
 
     @Column(name = "cantidad_crias")
     private Integer cantidadCrias;
 
     @Column(columnDefinition = "TEXT")
-    private String observaciones;
+    private String observacion;
 }
-

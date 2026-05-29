@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/tratamientos")
+@RequestMapping("/tratamiento")
 @RequiredArgsConstructor
 @PreAuthorize("isAuthenticated()")
 @Tag(name = "Tratamientos", description = "Registro de tratamientos veterinarios")
@@ -23,15 +23,34 @@ public class TratamientoController {
     private final TratamientoService service;
 
     @GetMapping("/animal/{animalId}")
-    @Operation(summary = "Tratamientos por animal")
+    @Operation(summary = "Tratamientos por animal", description = "Obtiene el historial de tratamientos de un animal")
     public ResponseEntity<List<Tratamiento>> findByAnimalId(@PathVariable @NonNull Integer animalId) {
         return ResponseEntity.ok(service.findByAnimalId(animalId));
+    }
+
+    @GetMapping
+    @Operation(summary = "Listar tratamientos")
+    public ResponseEntity<List<Tratamiento>> findAll() {
+        return ResponseEntity.ok(service.findAll());
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Obtener tratamiento por ID")
+    public ResponseEntity<Tratamiento> findById(@PathVariable @NonNull Integer id) {
+        return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
     @Operation(summary = "Registrar tratamiento")
     public ResponseEntity<Tratamiento> create(@Valid @RequestBody @NonNull CreateTratamientoRequest request) {
         return ResponseEntity.ok(service.save(request));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Actualizar tratamiento")
+    public ResponseEntity<Tratamiento> update(@PathVariable @NonNull Integer id,
+                                               @Valid @RequestBody @NonNull CreateTratamientoRequest request) {
+        return ResponseEntity.ok(service.update(id, request));
     }
 
     @DeleteMapping("/{id}")
