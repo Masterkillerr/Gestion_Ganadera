@@ -43,9 +43,11 @@ public class MovimientoController {
     public ResponseEntity<java.util.Map<String, Object>> checkCapacity(@PathVariable @NonNull Integer loteId) {
         boolean hasSpace = movimientoService.hasLoteCapacity(loteId);
         int occupancy = movimientoService.getLoteOccupancy(loteId);
+        Integer capacidadMaxima = movimientoService.getLoteCapacidadMaxima(loteId);
         return ResponseEntity.ok(java.util.Map.of(
             "hasSpace", hasSpace,
-            "occupancy", occupancy
+            "occupancy", occupancy,
+            "capacidadMaxima", capacidadMaxima != null ? capacidadMaxima : 0
         ));
     }
 

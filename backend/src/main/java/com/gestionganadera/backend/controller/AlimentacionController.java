@@ -40,6 +40,13 @@ public class AlimentacionController {
         return ResponseEntity.ok(service.save(request));
     }
 
+    @PutMapping("/{id}")
+    @Operation(summary = "Actualizar registro de alimentación")
+    public ResponseEntity<Alimentacion> update(@PathVariable @NonNull Integer id,
+                                               @Valid @RequestBody @NonNull CreateAlimentacionRequest request) {
+        return ResponseEntity.ok(service.update(id, request));
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar registro de alimentación")
     public ResponseEntity<Void> delete(@PathVariable @NonNull Integer id) {

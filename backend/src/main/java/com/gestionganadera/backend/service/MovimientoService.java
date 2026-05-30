@@ -154,6 +154,15 @@ public class MovimientoService {
     }
 
     /**
+     * Obtiene la capacidad máxima de un lote.
+     */
+    public Integer getLoteCapacidadMaxima(@NonNull Integer loteId) {
+        return loteRepository.findById(loteId)
+                .map(Lote::getCapacidadMaxima)
+                .orElse(null);
+    }
+
+    /**
      * Versión simple de toDTO que incluye origenId y destinoId.
      * Usada para el endpoint /animal/{animalId}/ultimo.
      */
