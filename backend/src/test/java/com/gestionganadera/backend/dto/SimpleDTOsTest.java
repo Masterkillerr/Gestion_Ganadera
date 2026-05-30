@@ -54,7 +54,7 @@ class SimpleDTOsTest {
 
     @Test
     void createFincaRequest_allArgsConstructor_works() {
-        CreateFincaRequest request = new CreateFincaRequest("Finca Test", "Ubicación");
+        CreateFincaRequest request = new CreateFincaRequest("Finca Test", "Ubicación", null);
         assertEquals("Finca Test", request.getNombre());
         assertEquals("Ubicación", request.getUbicacion());
     }

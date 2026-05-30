@@ -14,7 +14,9 @@ public class MovimientoDTO {
     private String animalArete;
     private String tipoMovimiento;
     private String origen;
+    private Integer origenId;
     private String destino;
+    private Integer destinoId;
     private String motivo;
     private String fecha;
 }

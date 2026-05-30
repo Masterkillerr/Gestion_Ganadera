@@ -2,6 +2,7 @@ package com.gestionganadera.backend.service;
 
 import com.gestionganadera.backend.dto.CreateMovimientoRequest;
 import com.gestionganadera.backend.dto.MovimientoDTO;
+import com.gestionganadera.backend.model.Animal;
 import com.gestionganadera.backend.model.Evento;
 import com.gestionganadera.backend.model.Lote;
 import com.gestionganadera.backend.model.Movimiento;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -107,6 +109,70 @@ public class MovimientoService {
         Movimiento entity = movimientoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Movimiento no encontrado"));
         movimientoRepository.deleteById(id);
+    }
+
+    /**
+     * Obtiene los animales cuyo último movimiento tiene como destino el lote indicado.
+     */
+    public List<Animal> getAnimalesByLote(@NonNull Integer loteId) {
+        return movimientoRepository.findLatestByLoteDestino(loteId)
+                .stream()
+                .map(m -> m.getEvento().getAnimal())
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Obtiene el último movimiento de un animal.
+     */
+    public Optional<Movimiento> findUltimoByAnimalId(@NonNull Integer animalId) {
+        return movimientoRepository.findUltimoByAnimalId(animalId);
+    }
+
+    /**
+     * Verifica si un lote tiene espacio disponible.
+     * @return true si hay espacio, false si está lleno o no tiene capacidad definida
+     */
+    public boolean hasLoteCapacity(@NonNull Integer loteId) {
+        Lote lote = loteRepository.findById(loteId)
+                .orElseThrow(() -> new EntityNotFoundException("Lote no encontrado"));
+
+        Integer capacidadMaxima = lote.getCapacidadMaxima();
+        if (capacidadMaxima == null || capacidadMaxima <= 0) {
+            // No hay límite definido, siempre hay espacio
+            return true;
+        }
+
+        Integer count = movimientoRepository.countAnimalesByLote(loteId);
+        return count == null || count < capacidadMaxima;
+    }
+
+    /**
+     * Obtiene la ocupación actual de un lote.
+     */
+    public int getLoteOccupancy(@NonNull Integer loteId) {
+        Integer count = movimientoRepository.countAnimalesByLote(loteId);
+        return count != null ? count : 0;
+    }
+
+    /**
+     * Versión simple de toDTO que incluye origenId y destinoId.
+     * Usada para el endpoint /animal/{animalId}/ultimo.
+     */
+    public MovimientoDTO toSimpleDTO(Movimiento m) {
+        MovimientoDTO dto = new MovimientoDTO();
+        dto.setId(m.getId());
+        dto.setEventoId(m.getEvento() != null ? m.getEvento().getId() : null);
+        dto.setAnimalNombre(m.getEvento() != null && m.getEvento().getAnimal() != null ? m.getEvento().getAnimal().getNombre() : null);
+        dto.setAnimalArete(m.getEvento() != null && m.getEvento().getAnimal() != null ? m.getEvento().getAnimal().getIdentificadorArete() : null);
+        dto.setFecha(m.getEvento() != null && m.getEvento().getFecha() != null ? m.getEvento().getFecha().toString() : null);
+        dto.setTipoMovimiento(m.getTipoMovimiento() != null ? m.getTipoMovimiento().getNombre() : null);
+        dto.setOrigen(m.getLoteOrigen() != null ? m.getLoteOrigen().getNombre() : null);
+        dto.setOrigenId(m.getLoteOrigen() != null ? m.getLoteOrigen().getId() : null);
+        dto.setDestino(m.getLoteDestino() != null ? m.getLoteDestino().getNombre() : null);
+        dto.setDestinoId(m.getLoteDestino() != null ? m.getLoteDestino().getId() : null);
+        dto.setMotivo(m.getMotivo());
+        return dto;
     }
 
     private MovimientoDTO toDTO(Movimiento m) {

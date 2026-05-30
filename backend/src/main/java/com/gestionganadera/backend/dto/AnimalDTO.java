@@ -20,7 +20,11 @@ public class AnimalDTO {
     private BigDecimal pesoActualKg;
     private String fotoUrl;
     private Integer madreId;
+    private String madreArete;
+    private String madreNombre;
     private Integer padreId;
+    private String padreArete;
+    private String padreNombre;
     private String fechaNacimiento;
 
     public static AnimalDTO fromEntity(Animal animal) {
@@ -33,8 +37,16 @@ public class AnimalDTO {
         dto.setRazaNombre(animal.getRaza() != null ? animal.getRaza().getNombre() : null);
         dto.setPesoActualKg(animal.getPesoActualKg());
         dto.setFotoUrl(animal.getFotoUrl());
-        dto.setMadreId(animal.getMadre() != null ? animal.getMadre().getId() : null);
-        dto.setPadreId(animal.getPadre() != null ? animal.getPadre().getId() : null);
+        if (animal.getMadre() != null) {
+            dto.setMadreId(animal.getMadre().getId());
+            dto.setMadreArete(animal.getMadre().getIdentificadorArete());
+            dto.setMadreNombre(animal.getMadre().getNombre());
+        }
+        if (animal.getPadre() != null) {
+            dto.setPadreId(animal.getPadre().getId());
+            dto.setPadreArete(animal.getPadre().getIdentificadorArete());
+            dto.setPadreNombre(animal.getPadre().getNombre());
+        }
         dto.setFechaNacimiento(animal.getFechaNacimiento() != null ? animal.getFechaNacimiento().toString() : null);
         return dto;
     }

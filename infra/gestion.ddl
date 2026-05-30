@@ -83,7 +83,8 @@ CREATE TABLE public.vacuna (
 CREATE TABLE public.finca (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
-    ubicacion TEXT
+    ubicacion TEXT,
+    extension NUMERIC(10,2)
 );
 
 CREATE TABLE public.dieta (

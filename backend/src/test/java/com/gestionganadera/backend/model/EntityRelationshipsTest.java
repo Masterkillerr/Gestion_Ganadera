@@ -38,7 +38,7 @@ class EntityRelationshipsTest {
         propietario.setRole(role);
         propietario.setCreadoEn(LocalDateTime.now());
 
-        finca = new Finca(1, "Finca El Porvenir", "Campo Hermoso");
+        finca = new Finca(1, "Finca El Porvenir", "Campo Hermoso", null);
         lote = new Lote(1, "Lote A", finca, BigDecimal.valueOf(50), 100, "Pasto estrella", "Activo");
         raza = new Raza(1, "Holstein");
         sexoHembra = new Sexo(1, "Hembra");

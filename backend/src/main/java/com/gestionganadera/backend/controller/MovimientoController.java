@@ -2,6 +2,7 @@ package com.gestionganadera.backend.controller;
 
 import com.gestionganadera.backend.dto.CreateMovimientoRequest;
 import com.gestionganadera.backend.dto.MovimientoDTO;
+import com.gestionganadera.backend.model.Animal;
 import com.gestionganadera.backend.service.MovimientoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,6 +23,31 @@ import java.util.List;
 public class MovimientoController {
 
     private final MovimientoService movimientoService;
+
+    @GetMapping("/lote/{loteId}/animales")
+    @Operation(summary = "Animales por lote", description = "Obtiene los animales cuyo último movimiento tiene como destino el lote indicado")
+    public ResponseEntity<List<Animal>> getAnimalesByLote(@PathVariable @NonNull Integer loteId) {
+        return ResponseEntity.ok(movimientoService.getAnimalesByLote(loteId));
+    }
+
+    @GetMapping("/animal/{animalId}/ultimo")
+    @Operation(summary = "Último movimiento de un animal", description = "Obtiene el último movimiento registrado de un animal")
+    public ResponseEntity<MovimientoDTO> getUltimoByAnimal(@PathVariable @NonNull Integer animalId) {
+        return movimientoService.findUltimoByAnimalId(animalId)
+                .map(m -> ResponseEntity.ok(movimientoService.toSimpleDTO(m)))
+                .orElse(ResponseEntity.ok(new MovimientoDTO()));
+    }
+
+    @GetMapping("/lote/{loteId}/capacity")
+    @Operation(summary = "Verificar capacidad de lote", description = "Verifica si un lote tiene espacio disponible y devuelve ocupación")
+    public ResponseEntity<java.util.Map<String, Object>> checkCapacity(@PathVariable @NonNull Integer loteId) {
+        boolean hasSpace = movimientoService.hasLoteCapacity(loteId);
+        int occupancy = movimientoService.getLoteOccupancy(loteId);
+        return ResponseEntity.ok(java.util.Map.of(
+            "hasSpace", hasSpace,
+            "occupancy", occupancy
+        ));
+    }
 
     @GetMapping("/recent")
     @Operation(summary = "Movimientos recientes")
