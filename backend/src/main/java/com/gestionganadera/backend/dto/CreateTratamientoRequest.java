@@ -19,6 +19,7 @@ public class CreateTratamientoRequest {
 
     private String dosisMl;
 
+    @NotNull
     private LocalDate fechaInicio;
 
     private LocalDate fechaFin;
