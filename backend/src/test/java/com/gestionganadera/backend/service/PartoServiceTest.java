@@ -3,9 +3,7 @@ package com.gestionganadera.backend.service;
 import com.gestionganadera.backend.dto.CreatePartoRequest;
 import com.gestionganadera.backend.dto.PartoDTO;
 import com.gestionganadera.backend.model.*;
-import com.gestionganadera.backend.repository.EventoRepository;
-import com.gestionganadera.backend.repository.PartoRepository;
-import com.gestionganadera.backend.repository.ReproduccionRepository;
+import com.gestionganadera.backend.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +31,10 @@ class PartoServiceTest {
     private ReproduccionRepository reproduccionRepository;
     @Mock
     private EventoRepository eventoRepository;
+    @Mock
+    private AnimalRepository animalRepository;
+    @Mock
+    private TipoEventoRepository tipoEventoRepository;
 
     @InjectMocks
     private PartoService partoService;
@@ -41,6 +43,7 @@ class PartoServiceTest {
     private Evento evento;
     private Reproduccion reproduccion;
     private Parto parto;
+    private TipoEvento tipoParto;
 
     @BeforeEach
     void setUp() {
@@ -53,6 +56,10 @@ class PartoServiceTest {
         evento.setId(1);
         evento.setAnimal(vaca);
         evento.setFecha(LocalDateTime.of(2026, 5, 28, 10, 0));
+
+        tipoParto = new TipoEvento();
+        tipoParto.setId(2);
+        tipoParto.setNombre("Parto");
 
         reproduccion = new Reproduccion();
         reproduccion.setId(10);
@@ -129,7 +136,7 @@ class PartoServiceTest {
     // --- create tests ---
 
     @Test
-    void create_createsParto() {
+    void create_withEventoId_usesExistingEvento() {
         when(eventoRepository.findById(1)).thenReturn(Optional.of(evento));
         when(reproduccionRepository.findById(10)).thenReturn(Optional.of(reproduccion));
 
@@ -154,12 +161,66 @@ class PartoServiceTest {
     }
 
     @Test
-    void create_eventoNotFound_throws() {
-        when(eventoRepository.findById(999)).thenReturn(Optional.empty());
+    void create_withoutEventoId_createsNewEvento() {
+        when(reproduccionRepository.findById(10)).thenReturn(Optional.of(reproduccion));
+        when(tipoEventoRepository.findAll()).thenReturn(List.of(tipoParto));
+        when(eventoRepository.save(any(Evento.class))).thenAnswer(invocation -> {
+            Evento saved = invocation.getArgument(0);
+            saved.setId(99);
+            return saved;
+        });
 
         CreatePartoRequest request = new CreatePartoRequest();
-        request.setEventoId(999);
         request.setReproduccionId(10);
+        request.setCantidadCrias(1);
+        request.setFechaParto(LocalDate.of(2026, 6, 15));
+
+        when(partoRepository.save(any(Parto.class))).thenAnswer(invocation -> {
+            Parto saved = invocation.getArgument(0);
+            saved.setId(300);
+            return saved;
+        });
+
+        PartoDTO result = partoService.create(request);
+
+        assertEquals(300, result.getId());
+        assertEquals("2026-06-15", result.getFechaParto());
+        verify(eventoRepository).save(any(Evento.class));
+        verify(partoRepository).save(any(Parto.class));
+    }
+
+    @Test
+    void create_withoutEventoId_noTipoParto_usesDefault() {
+        when(reproduccionRepository.findById(10)).thenReturn(Optional.of(reproduccion));
+        when(tipoEventoRepository.findAll()).thenReturn(List.of()); // No "Parto" tipo found
+        when(eventoRepository.save(any(Evento.class))).thenAnswer(invocation -> {
+            Evento saved = invocation.getArgument(0);
+            saved.setId(99);
+            return saved;
+        });
+
+        CreatePartoRequest request = new CreatePartoRequest();
+        request.setReproduccionId(10);
+        request.setCantidadCrias(1);
+
+        when(partoRepository.save(any(Parto.class))).thenAnswer(invocation -> {
+            Parto saved = invocation.getArgument(0);
+            saved.setId(301);
+            return saved;
+        });
+
+        PartoDTO result = partoService.create(request);
+
+        assertEquals(301, result.getId());
+        verify(eventoRepository).save(any(Evento.class));
+    }
+
+    @Test
+    void create_reproduccionNotFound_throws() {
+        when(reproduccionRepository.findById(999)).thenReturn(Optional.empty());
+
+        CreatePartoRequest request = new CreatePartoRequest();
+        request.setReproduccionId(999);
         request.setCantidadCrias(1);
 
         assertThrows(EntityNotFoundException.class, () -> partoService.create(request));
@@ -167,13 +228,13 @@ class PartoServiceTest {
     }
 
     @Test
-    void create_reproduccionNotFound_throws() {
-        when(eventoRepository.findById(1)).thenReturn(Optional.of(evento));
-        when(reproduccionRepository.findById(999)).thenReturn(Optional.empty());
+    void create_eventoProvidedButNotFound_throws() {
+        when(reproduccionRepository.findById(10)).thenReturn(Optional.of(reproduccion));
+        when(eventoRepository.findById(999)).thenReturn(Optional.empty());
 
         CreatePartoRequest request = new CreatePartoRequest();
-        request.setEventoId(1);
-        request.setReproduccionId(999);
+        request.setEventoId(999);
+        request.setReproduccionId(10);
         request.setCantidadCrias(1);
 
         assertThrows(EntityNotFoundException.class, () -> partoService.create(request));
@@ -204,6 +265,23 @@ class PartoServiceTest {
         assertEquals(3, result.getCantidadCrias());
         assertEquals("Triples", result.getObservacion());
         verify(partoRepository).save(any(Parto.class));
+    }
+
+    @Test
+    void update_withFechaParto_updatesEventoFecha() {
+        when(partoRepository.findById(100)).thenReturn(Optional.of(parto));
+        when(eventoRepository.save(any(Evento.class))).thenReturn(evento);
+
+        CreatePartoRequest request = new CreatePartoRequest();
+        request.setFechaParto(LocalDate.of(2026, 7, 1));
+        request.setObservacion("Parto actualizado");
+
+        when(partoRepository.save(any(Parto.class))).thenReturn(parto);
+
+        PartoDTO result = partoService.update(100, request);
+
+        assertEquals("2026-07-01", result.getFechaParto());
+        verify(eventoRepository).save(evento);
     }
 
     @Test
