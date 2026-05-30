@@ -19,7 +19,7 @@ public interface ProduccionRepository extends JpaRepository<Produccion, Integer>
            "FROM Produccion p " +
            "JOIN p.animal a " +
            "JOIN a.sexo s " +
-           "WHERE YEAR(p.fecha) = :year AND UPPER(s.nombre) = 'HEMBRA' " +
+           "WHERE YEAR(p.fecha) = :year AND s.nombre = 'Hembra' " +
            "GROUP BY MONTH(p.fecha)")
     List<ProduccionResumenDTO> getResumenByYear(@Param("year") int year);
 
@@ -28,7 +28,7 @@ public interface ProduccionRepository extends JpaRepository<Produccion, Integer>
            "FROM produccion p " +
            "JOIN animal a ON p.id_animal = a.id " +
            "JOIN sexo s ON a.id_sexo = s.id " +
-           "WHERE UPPER(s.nombre) = 'HEMBRA' " +
+           "WHERE s.nombre = 'Hembra' " +
            "GROUP BY fecha) AS produccion_diaria", nativeQuery = true)
     java.math.BigDecimal getPromedioProduccionDiaria();
 }
