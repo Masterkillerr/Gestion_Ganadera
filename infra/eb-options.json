@@ -11,5 +11,6 @@
   {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "LOG_LEVEL", "Value": "INFO"},
   {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "SECURITY_LOG_LEVEL", "Value": "INFO"},
   {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "SERVER_PORT", "Value": "8080"},
-  {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "UPLOAD_DIR", "Value": "../uploads/"}
+  {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "UPLOAD_DIR", "Value": "../uploads/"},
+  {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "RECAPTCHA_SECRET", "Value": "6LdghgEtAAAAAOpViDN8mDVmmPhFKcX0PpCVaZ52"}
 ]
