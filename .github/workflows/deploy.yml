@@ -67,7 +67,7 @@ jobs:
   deploy-backend:
     if: >
       (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || github.event_name == 'workflow_dispatch')
-      && (github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' || contains(join(github.event.commits.*.modified, ' '), 'backend') || contains(join(github.event.commits.*.added, ' '), 'backend'))
+      && (github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' || contains(join(github.event.commits.*.modified, ' '), 'backend') || contains(join(github.event.commits.*.added, ' '), 'backend') || contains(join(github.event.commits.*.modified, ' '), '.github/workflows') || contains(join(github.event.commits.*.added, ' '), '.github/workflows'))
     needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -185,7 +185,7 @@ jobs:
   deploy-frontend:
     if: >
       (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || github.event_name == 'workflow_dispatch')
-      && (github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' || contains(join(github.event.commits.*.modified, ' '), 'frontend') || contains(join(github.event.commits.*.added, ' '), 'frontend'))
+      && (github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' || contains(join(github.event.commits.*.modified, ' '), 'frontend') || contains(join(github.event.commits.*.added, ' '), 'frontend') || contains(join(github.event.commits.*.modified, ' '), '.github/workflows') || contains(join(github.event.commits.*.added, ' '), '.github/workflows'))
     needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 15
