@@ -89,7 +89,9 @@ class AnimalDTOTest {
             1, "AR-001", "Vaca", "Hembra",
             "Saludable", "Holstein",
             BigDecimal.valueOf(500), "foto.jpg",
-            10, 11, "2023-01-15"
+            10, "AR-MADRE", "Madre Nombre",
+            11, "AR-PADRE", "Padre Nombre",
+            "2023-01-15"
         );
 
         assertEquals(1, dto.getId());
@@ -97,5 +99,10 @@ class AnimalDTOTest {
         assertEquals("Holstein", dto.getRazaNombre());
         assertEquals("Hembra", dto.getSexo());
         assertEquals(10, dto.getMadreId());
+        assertEquals("AR-MADRE", dto.getMadreArete());
+        assertEquals("Madre Nombre", dto.getMadreNombre());
+        assertEquals(11, dto.getPadreId());
+        assertEquals("AR-PADRE", dto.getPadreArete());
+        assertEquals("Padre Nombre", dto.getPadreNombre());
     }
 }
