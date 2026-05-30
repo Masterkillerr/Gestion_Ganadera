@@ -1,8 +1,8 @@
 package com.gestionganadera.backend.service;
 
 import com.gestionganadera.backend.dto.CreateFincaRequest;
+import com.gestionganadera.backend.dto.FincaDTO;
 import com.gestionganadera.backend.dto.FincaStatsDTO;
-import com.gestionganadera.backend.model.Animal;
 import com.gestionganadera.backend.model.Finca;
 import com.gestionganadera.backend.model.Lote;
 import com.gestionganadera.backend.repository.AnimalRepository;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,29 +24,32 @@ public class FincaService {
     private final AnimalRepository animalRepository;
     private final LoteRepository loteRepository;
 
-    public List<Finca> findAll() {
-        return fincaRepository.findAll();
+    public List<FincaDTO> findAll() {
+        return fincaRepository.findAll().stream()
+                .map(FincaDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Finca> findById(@NonNull Integer id) {
-        return fincaRepository.findById(id);
+    public Optional<FincaDTO> findById(@NonNull Integer id) {
+        return fincaRepository.findById(id)
+                .map(FincaDTO::fromEntity);
     }
 
-    public Finca save(@NonNull CreateFincaRequest request) {
+    public FincaDTO save(@NonNull CreateFincaRequest request) {
         Finca finca = new Finca();
         finca.setNombre(request.getNombre());
         finca.setUbicacion(request.getUbicacion());
         finca.setExtension(request.getExtension());
-        return fincaRepository.save(finca);
+        return FincaDTO.fromEntity(fincaRepository.save(finca));
     }
 
-    public Finca update(@NonNull Integer id, @NonNull CreateFincaRequest request) {
+    public FincaDTO update(@NonNull Integer id, @NonNull CreateFincaRequest request) {
         return fincaRepository.findById(id)
                 .map(existing -> {
                     existing.setNombre(request.getNombre());
                     existing.setUbicacion(request.getUbicacion());
                     existing.setExtension(request.getExtension());
-                    return fincaRepository.save(existing);
+                    return FincaDTO.fromEntity(fincaRepository.save(existing));
                 })
                 .orElseThrow(() -> new RuntimeException("Finca no encontrada"));
     }

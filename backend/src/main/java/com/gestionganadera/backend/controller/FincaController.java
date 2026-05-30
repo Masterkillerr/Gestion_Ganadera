@@ -1,8 +1,8 @@
 package com.gestionganadera.backend.controller;
 
 import com.gestionganadera.backend.dto.CreateFincaRequest;
+import com.gestionganadera.backend.dto.FincaDTO;
 import com.gestionganadera.backend.dto.FincaStatsDTO;
-import com.gestionganadera.backend.model.Finca;
 import com.gestionganadera.backend.service.FincaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,13 +26,13 @@ public class FincaController {
 
     @GetMapping
     @Operation(summary = "Listar fincas", description = "Obtiene todas las fincas del usuario autenticado")
-    public ResponseEntity<List<Finca>> getAllFincas() {
+    public ResponseEntity<List<FincaDTO>> getAllFincas() {
         return ResponseEntity.ok(fincaService.findAll());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener finca por ID")
-    public ResponseEntity<Finca> getFincaById(@PathVariable @NonNull Integer id) {
+    public ResponseEntity<FincaDTO> getFincaById(@PathVariable @NonNull Integer id) {
         return fincaService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -40,13 +40,13 @@ public class FincaController {
 
     @PostMapping
     @Operation(summary = "Crear finca", description = "Crea una nueva finca asignada al usuario autenticado")
-    public ResponseEntity<Finca> createFinca(@Valid @RequestBody @NonNull CreateFincaRequest request) {
+    public ResponseEntity<FincaDTO> createFinca(@Valid @RequestBody @NonNull CreateFincaRequest request) {
         return ResponseEntity.ok(fincaService.save(request));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar finca")
-    public ResponseEntity<Finca> updateFinca(@PathVariable @NonNull Integer id, @Valid @RequestBody @NonNull CreateFincaRequest request) {
+    public ResponseEntity<FincaDTO> updateFinca(@PathVariable @NonNull Integer id, @Valid @RequestBody @NonNull CreateFincaRequest request) {
         return ResponseEntity.ok(fincaService.update(id, request));
     }
 
