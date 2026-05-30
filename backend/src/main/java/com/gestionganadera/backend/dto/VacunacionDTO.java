@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -19,6 +20,7 @@ public class VacunacionDTO {
     private String animalArete;
     private Integer vacunaId;
     private String vacunaNombre;
+    private LocalDateTime fecha;
     private LocalDate proximaDosis;
     private String observacion;
 
@@ -38,6 +40,7 @@ public class VacunacionDTO {
             dto.setVacunaId(entity.getVacuna().getId());
             dto.setVacunaNombre(entity.getVacuna().getNombre());
         }
+        dto.setFecha(entity.getEvento() != null ? entity.getEvento().getFecha() : null);
         dto.setProximaDosis(entity.getProximaDosis());
         dto.setObservacion(entity.getObservacion());
         return dto;
