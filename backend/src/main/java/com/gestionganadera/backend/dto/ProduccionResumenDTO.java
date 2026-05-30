@@ -10,8 +10,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProduccionResumenDTO {
-    private int year;
-    private int month;
+    private Integer year;
+    private Integer month;
     private BigDecimal totalLitros;
-    private long cantidad;
+    private Long cantidad;
 }
