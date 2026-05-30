@@ -65,9 +65,7 @@ jobs:
   # JOB 2: Deploy Backend to Elastic Beanstalk
   # ═══════════════════════════════════════
   deploy-backend:
-    if: >
-      (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || github.event_name == 'workflow_dispatch')
-      && (github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' || contains(join(github.event.commits.*.modified, ' '), 'backend') || contains(join(github.event.commits.*.added, ' '), 'backend') || contains(join(github.event.commits.*.modified, ' '), '.github/workflows') || contains(join(github.event.commits.*.added, ' '), '.github/workflows'))
+    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
     needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -183,9 +181,7 @@ jobs:
   # JOB 3: Deploy Frontend to CloudFront
   # ═══════════════════════════════════════
   deploy-frontend:
-    if: >
-      (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || github.event_name == 'workflow_dispatch')
-      && (github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' || contains(join(github.event.commits.*.modified, ' '), 'frontend') || contains(join(github.event.commits.*.added, ' '), 'frontend') || contains(join(github.event.commits.*.modified, ' '), '.github/workflows') || contains(join(github.event.commits.*.added, ' '), '.github/workflows'))
+    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
     needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 15
