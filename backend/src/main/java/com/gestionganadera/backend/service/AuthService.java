@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import com.gestionganadera.backend.dto.RecaptchaResponse;
+import com.gestionganadera.backend.exception.DuplicateResourceException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -74,7 +75,7 @@ public class AuthService {
         validateRecaptcha(request.getRecaptchaToken());
 
         if (usuarioRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("El email ya está registrado");
+            throw new DuplicateResourceException("El email ya está registrado");
         }
 
         Usuario usuario = new Usuario();

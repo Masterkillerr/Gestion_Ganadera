@@ -8,6 +8,7 @@ import com.gestionganadera.backend.repository.AnimalRepository;
 import com.gestionganadera.backend.repository.RazaRepository;
 import com.gestionganadera.backend.repository.SexoRepository;
 import com.gestionganadera.backend.repository.EstadoAnimalRepository;
+import com.gestionganadera.backend.exception.DuplicateResourceException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
@@ -70,42 +71,51 @@ public class AnimalService {
     }
 
     public Animal save(@NonNull CreateAnimalRequest request) {
+        if (animalRepository.findByIdentificadorArete(request.getIdentificadorArete()).isPresent()) {
+            throw new DuplicateResourceException("Ya existe un animal con el arete: " + request.getIdentificadorArete());
+        }
         return animalRepository.save(fromRequest(request));
     }
 
     public Animal update(@NonNull Integer id, @NonNull CreateAnimalRequest request) {
-        return animalRepository.findById(id)
-                .map(existing -> {
-                    existing.setIdentificadorArete(request.getIdentificadorArete());
-                    existing.setNombre(request.getNombre());
-                    existing.setFechaNacimiento(request.getFechaNacimiento());
-                    existing.setPesoActualKg(request.getPesoActualKg());
-                    existing.setFotoUrl(request.getFotoUrl());
-
-                    if (request.getSexoId() != null) {
-                        existing.setSexo(sexoRepository.findById(request.getSexoId())
-                                .orElseThrow(() -> new EntityNotFoundException("Sexo con ID " + request.getSexoId() + " no encontrado")));
-                    }
-                    if (request.getEstadoAnimalId() != null) {
-                        existing.setEstadoAnimal(estadoAnimalRepository.findById(request.getEstadoAnimalId())
-                                .orElseThrow(() -> new EntityNotFoundException("Estado animal con ID " + request.getEstadoAnimalId() + " no encontrado")));
-                    }
-                    if (request.getRazaId() != null) {
-                        existing.setRaza(razaRepository.findById(request.getRazaId())
-                                .orElseThrow(() -> new EntityNotFoundException("Raza con ID " + request.getRazaId() + " no encontrada")));
-                    }
-                    if (request.getMadreId() != null) {
-                        existing.setMadre(animalRepository.findById(request.getMadreId())
-                                .orElseThrow(() -> new EntityNotFoundException("Animal madre con ID " + request.getMadreId() + " no encontrado")));
-                    }
-                    if (request.getPadreId() != null) {
-                        existing.setPadre(animalRepository.findById(request.getPadreId())
-                                .orElseThrow(() -> new EntityNotFoundException("Animal padre con ID " + request.getPadreId() + " no encontrado")));
-                    }
-
-                    return animalRepository.save(existing);
-                })
+        Animal existingAnimal = animalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Animal no encontrado"));
+        
+        // Si el arete cambió, verificar que el nuevo no esté duplicado
+        if (!existingAnimal.getIdentificadorArete().equals(request.getIdentificadorArete())) {
+            if (animalRepository.findByIdentificadorArete(request.getIdentificadorArete()).isPresent()) {
+                throw new DuplicateResourceException("Ya existe otro animal con el arete: " + request.getIdentificadorArete());
+            }
+        }
+
+        existingAnimal.setIdentificadorArete(request.getIdentificadorArete());
+        existingAnimal.setNombre(request.getNombre());
+        existingAnimal.setFechaNacimiento(request.getFechaNacimiento());
+        existingAnimal.setPesoActualKg(request.getPesoActualKg());
+        existingAnimal.setFotoUrl(request.getFotoUrl());
+
+        if (request.getSexoId() != null) {
+            existingAnimal.setSexo(sexoRepository.findById(request.getSexoId())
+                    .orElseThrow(() -> new EntityNotFoundException("Sexo con ID " + request.getSexoId() + " no encontrado")));
+        }
+        if (request.getEstadoAnimalId() != null) {
+            existingAnimal.setEstadoAnimal(estadoAnimalRepository.findById(request.getEstadoAnimalId())
+                    .orElseThrow(() -> new EntityNotFoundException("Estado animal con ID " + request.getEstadoAnimalId() + " no encontrado")));
+        }
+        if (request.getRazaId() != null) {
+            existingAnimal.setRaza(razaRepository.findById(request.getRazaId())
+                    .orElseThrow(() -> new EntityNotFoundException("Raza con ID " + request.getRazaId() + " no encontrada")));
+        }
+        if (request.getMadreId() != null) {
+            existingAnimal.setMadre(animalRepository.findById(request.getMadreId())
+                    .orElseThrow(() -> new EntityNotFoundException("Animal madre con ID " + request.getMadreId() + " no encontrado")));
+        }
+        if (request.getPadreId() != null) {
+            existingAnimal.setPadre(animalRepository.findById(request.getPadreId())
+                    .orElseThrow(() -> new EntityNotFoundException("Animal padre con ID " + request.getPadreId() + " no encontrado")));
+        }
+
+        return animalRepository.save(existingAnimal);
     }
 
     public void delete(@NonNull Integer id) {

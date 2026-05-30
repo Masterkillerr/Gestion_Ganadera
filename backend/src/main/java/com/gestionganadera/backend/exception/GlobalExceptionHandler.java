@@ -1,7 +1,7 @@
 package com.gestionganadera.backend.exception;
 
 import com.gestionganadera.backend.dto.ErrorResponse;
-import com.gestionganadera.backend.exception.DuplicateEmailException;
+import com.gestionganadera.backend.exception.DuplicateResourceException;
 import com.gestionganadera.backend.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,9 +110,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
-    @ExceptionHandler(DuplicateEmailException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateEmail(DuplicateEmailException ex) {
-        log.warn("Duplicate email: {}", ex.getMessage());
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateResource(DuplicateResourceException ex) {
+        log.warn("Duplicate resource: {}", ex.getMessage());
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.CONFLICT.value(),
                 ex.getMessage(),
@@ -123,8 +123,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        log.error("Data integrity violation: {}", ex.getMessage(), ex);
+        log.error("Data integrity violation: {}", ex.getMessage());
+        
+        String rootMsg = ex.getRootCause() != null ? ex.getRootCause().getMessage() : ex.getMessage();
         String message = "La operación viola una restricción de integridad de la base de datos";
+        
+        if (rootMsg != null) {
+            if (rootMsg.contains("duplicate key value")) {
+                message = "Ya existe un registro con ese identificador único";
+            } else if (rootMsg.contains("is still referenced from table")) {
+                message = "No se puede eliminar el registro porque está siendo utilizado por otros elementos";
+            }
+        }
+
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.CONFLICT.value(),
                 message,

@@ -3,7 +3,7 @@ package com.gestionganadera.backend.service;
 import com.gestionganadera.backend.dto.CreateUsuarioRequest;
 import com.gestionganadera.backend.dto.UpdateProfileRequest;
 import com.gestionganadera.backend.dto.UsuarioDTO;
-import com.gestionganadera.backend.exception.DuplicateEmailException;
+import com.gestionganadera.backend.exception.DuplicateResourceException;
 import com.gestionganadera.backend.exception.ResourceNotFoundException;
 import com.gestionganadera.backend.model.Role;
 import com.gestionganadera.backend.model.Usuario;
@@ -149,7 +149,7 @@ class UsuarioServiceTest {
 
         when(usuarioRepository.existsByEmail("existing@example.com")).thenReturn(true);
 
-        assertThrows(DuplicateEmailException.class, () -> usuarioService.create(request));
+        assertThrows(DuplicateResourceException.class, () -> usuarioService.create(request));
         verify(usuarioRepository, never()).save(any());
     }
 
@@ -262,7 +262,7 @@ class UsuarioServiceTest {
         request.setNombre("Otro User");
         request.setEmail("ocupado@example.com");
 
-        assertThrows(DuplicateEmailException.class, () -> usuarioService.update(2, request));
+        assertThrows(DuplicateResourceException.class, () -> usuarioService.update(2, request));
         verify(usuarioRepository, never()).save(any());
     }
 
@@ -374,7 +374,7 @@ class UsuarioServiceTest {
         UpdateProfileRequest request = new UpdateProfileRequest();
         request.setEmail("ocupado@example.com");
 
-        assertThrows(DuplicateEmailException.class, () -> usuarioService.updateProfile(request));
+        assertThrows(DuplicateResourceException.class, () -> usuarioService.updateProfile(request));
         verify(usuarioRepository, never()).save(any());
     }
 

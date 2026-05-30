@@ -3,7 +3,7 @@ package com.gestionganadera.backend.service;
 import com.gestionganadera.backend.dto.CreateUsuarioRequest;
 import com.gestionganadera.backend.dto.UpdateProfileRequest;
 import com.gestionganadera.backend.dto.UsuarioDTO;
-import com.gestionganadera.backend.exception.DuplicateEmailException;
+import com.gestionganadera.backend.exception.DuplicateResourceException;
 import com.gestionganadera.backend.exception.ResourceNotFoundException;
 import com.gestionganadera.backend.model.Role;
 import com.gestionganadera.backend.model.Usuario;
@@ -45,7 +45,7 @@ public class UsuarioService {
 
     public UsuarioDTO create(@NonNull CreateUsuarioRequest request) {
         if (usuarioRepository.existsByEmail(request.getEmail())) {
-            throw new DuplicateEmailException("El email ya está registrado");
+            throw new DuplicateResourceException("El email ya está registrado");
         }
 
         Usuario usuario = new Usuario();
@@ -70,7 +70,7 @@ public class UsuarioService {
                     }
                     if (request.getEmail() != null && !request.getEmail().equals(existing.getEmail())) {
                         if (usuarioRepository.existsByEmail(request.getEmail())) {
-                            throw new DuplicateEmailException("El email ya está registrado");
+                            throw new DuplicateResourceException("El email ya está registrado");
                         }
                         existing.setEmail(request.getEmail());
                     }
@@ -106,7 +106,7 @@ public class UsuarioService {
         }
         if (request.getEmail() != null && !request.getEmail().equals(currentUser.getEmail())) {
             if (usuarioRepository.existsByEmail(request.getEmail())) {
-                throw new DuplicateEmailException("El email ya está registrado");
+                throw new DuplicateResourceException("El email ya está registrado");
             }
             currentUser.setEmail(request.getEmail());
         }
