@@ -83,23 +83,7 @@ public class ProduccionService {
     }
 
     public List<ProduccionResumenDTO> getResumen(@NonNull Integer year) {
-        List<Produccion> all = repository.findAll();
-
-        Map<Integer, BigDecimal> monthlyTotals = new HashMap<>();
-        Map<Integer, Long> monthlyCounts = new HashMap<>();
-
-        for (Produccion p : all) {
-            if (p.getFecha() != null && p.getFecha().getYear() == year && p.getLitros() != null) {
-                int month = p.getFecha().getMonthValue();
-                monthlyTotals.merge(month, p.getLitros(), BigDecimal::add);
-                monthlyCounts.merge(month, 1L, Long::sum);
-            }
-        }
-
-        return monthlyTotals.entrySet().stream()
-                .map(e -> new ProduccionResumenDTO(year, e.getKey(), e.getValue(), monthlyCounts.getOrDefault(e.getKey(), 0L)))
-                .sorted(Comparator.comparingInt(ProduccionResumenDTO::getMonth))
-                .collect(Collectors.toList());
+        return repository.getResumenByYear(year);
     }
 
     private ProduccionDTO toDTO(Produccion p) {

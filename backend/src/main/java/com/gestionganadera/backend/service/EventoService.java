@@ -38,6 +38,10 @@ public class EventoService {
 
     public List<EventoDTO> getRecent() {
         return findAll().stream()
+                .sorted((a, b) -> {
+                    if (a.getFecha() == null || b.getFecha() == null) return 0;
+                    return b.getFecha().compareTo(a.getFecha());
+                })
                 .limit(20)
                 .collect(Collectors.toList());
     }
@@ -69,7 +73,9 @@ public class EventoService {
         EventoDTO dto = new EventoDTO();
         dto.setId(e.getId());
         dto.setFecha(e.getFecha() != null ? e.getFecha().toString() : null);
-        dto.setTipoEvento(e.getTipoEvento() != null ? e.getTipoEvento().getNombre() : null);
+        String tipo = e.getTipoEvento() != null ? e.getTipoEvento().getNombre() : null;
+        dto.setTipo(tipo);
+        dto.setTipoEvento(tipo);
         dto.setDescripcion(e.getDescripcion());
         dto.setAnimalId(e.getAnimal() != null ? e.getAnimal().getId() : null);
         dto.setAnimalNombre(e.getAnimal() != null ? e.getAnimal().getNombre() : null);

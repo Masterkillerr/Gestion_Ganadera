@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.Period;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +17,8 @@ public class AnimalDTO {
     private String identificadorArete;
     private String nombre;
     private String sexo;
-    private String estadoAnimal;
+    private String estado;
+    private String estadoAnimal; // Legacy field for compatibility
     private String razaNombre;
     private BigDecimal pesoActualKg;
     private String fotoUrl;
@@ -26,6 +29,7 @@ public class AnimalDTO {
     private String padreArete;
     private String padreNombre;
     private String fechaNacimiento;
+    private String categoria;
 
     public static AnimalDTO fromEntity(Animal animal) {
         AnimalDTO dto = new AnimalDTO();
@@ -33,7 +37,9 @@ public class AnimalDTO {
         dto.setIdentificadorArete(animal.getIdentificadorArete());
         dto.setNombre(animal.getNombre());
         dto.setSexo(animal.getSexo() != null ? animal.getSexo().getNombre() : null);
-        dto.setEstadoAnimal(animal.getEstadoAnimal() != null ? animal.getEstadoAnimal().getNombre() : null);
+        String estado = animal.getEstadoAnimal() != null ? animal.getEstadoAnimal().getNombre() : null;
+        dto.setEstado(estado);
+        dto.setEstadoAnimal(estado);
         dto.setRazaNombre(animal.getRaza() != null ? animal.getRaza().getNombre() : null);
         dto.setPesoActualKg(animal.getPesoActualKg());
         dto.setFotoUrl(animal.getFotoUrl());
@@ -48,6 +54,17 @@ public class AnimalDTO {
             dto.setPadreNombre(animal.getPadre().getNombre());
         }
         dto.setFechaNacimiento(animal.getFechaNacimiento() != null ? animal.getFechaNacimiento().toString() : null);
+
+        // Calcular categoría automática
+        if (animal.getFechaNacimiento() != null) {
+            long months = Period.between(animal.getFechaNacimiento(), LocalDate.now()).toTotalMonths();
+            if (months <= 12) dto.setCategoria("Ternero");
+            else if (months <= 24) dto.setCategoria("Novillo");
+            else dto.setCategoria("Adulto");
+        } else {
+            dto.setCategoria("Sin Categoría");
+        }
+
         return dto;
     }
 }

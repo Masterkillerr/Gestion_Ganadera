@@ -30,10 +30,8 @@ public class MovimientoService {
 
     public List<MovimientoDTO> getRecent() {
         return movimientoRepository.findAll().stream()
-                .sorted((a, b) -> {
-                    if (a.getEvento() == null || b.getEvento() == null) return 0;
-                    return b.getEvento().getFecha().compareTo(a.getEvento().getFecha());
-                })
+                .filter(m -> m.getEvento() != null && m.getEvento().getFecha() != null)
+                .sorted((a, b) -> b.getEvento().getFecha().compareTo(a.getEvento().getFecha()))
                 .limit(20)
                 .map(this::toDTO).collect(Collectors.toList());
     }
