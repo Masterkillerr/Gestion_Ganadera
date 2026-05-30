@@ -7,6 +7,13 @@ on:
       - 'frontend/**'
       - 'frontend'
       - '.github/workflows/deploy-frontend.yml'
+  pull_request:
+    types: [closed]
+    branches: [master, main]
+    paths:
+      - 'frontend/**'
+      - 'frontend'
+      - '.github/workflows/deploy-frontend.yml'
   workflow_dispatch:
 
 env:
@@ -16,6 +23,7 @@ env:
 
 jobs:
   deploy:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
