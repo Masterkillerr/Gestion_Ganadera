@@ -115,7 +115,10 @@ public class ReproduccionService {
 
         return reproduccionRepository
                 .findByFechaPartoEstimadaBetween(today, twoMonthsFromNow)
-                .stream().map(this::toPartosProximosDTO).collect(Collectors.toList());
+                .stream()
+                .sorted(Comparator.comparing(Reproduccion::getFechaPartoEstimada))
+                .map(this::toPartosProximosDTO)
+                .collect(Collectors.toList());
     }
 
     private ReproduccionDTO toDTO(Reproduccion r) {
