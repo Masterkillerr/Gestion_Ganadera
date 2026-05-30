@@ -8,6 +8,7 @@ import com.gestionganadera.backend.repository.AnimalRepository;
 import com.gestionganadera.backend.repository.RazaRepository;
 import com.gestionganadera.backend.repository.SexoRepository;
 import com.gestionganadera.backend.repository.EstadoAnimalRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -45,19 +46,24 @@ public class AnimalService {
         animal.setFotoUrl(request.getFotoUrl());
 
         if (request.getSexoId() != null) {
-            sexoRepository.findById(request.getSexoId()).ifPresent(animal::setSexo);
+            animal.setSexo(sexoRepository.findById(request.getSexoId())
+                    .orElseThrow(() -> new EntityNotFoundException("Sexo con ID " + request.getSexoId() + " no encontrado")));
         }
         if (request.getEstadoAnimalId() != null) {
-            estadoAnimalRepository.findById(request.getEstadoAnimalId()).ifPresent(animal::setEstadoAnimal);
+            animal.setEstadoAnimal(estadoAnimalRepository.findById(request.getEstadoAnimalId())
+                    .orElseThrow(() -> new EntityNotFoundException("Estado animal con ID " + request.getEstadoAnimalId() + " no encontrado")));
         }
         if (request.getRazaId() != null) {
-            razaRepository.findById(request.getRazaId()).ifPresent(animal::setRaza);
+            animal.setRaza(razaRepository.findById(request.getRazaId())
+                    .orElseThrow(() -> new EntityNotFoundException("Raza con ID " + request.getRazaId() + " no encontrada")));
         }
         if (request.getMadreId() != null) {
-            animalRepository.findById(request.getMadreId()).ifPresent(animal::setMadre);
+            animal.setMadre(animalRepository.findById(request.getMadreId())
+                    .orElseThrow(() -> new EntityNotFoundException("Animal madre con ID " + request.getMadreId() + " no encontrado")));
         }
         if (request.getPadreId() != null) {
-            animalRepository.findById(request.getPadreId()).ifPresent(animal::setPadre);
+            animal.setPadre(animalRepository.findById(request.getPadreId())
+                    .orElseThrow(() -> new EntityNotFoundException("Animal padre con ID " + request.getPadreId() + " no encontrado")));
         }
 
         return animal;
@@ -77,19 +83,24 @@ public class AnimalService {
                     existing.setFotoUrl(request.getFotoUrl());
 
                     if (request.getSexoId() != null) {
-                        sexoRepository.findById(request.getSexoId()).ifPresent(existing::setSexo);
+                        existing.setSexo(sexoRepository.findById(request.getSexoId())
+                                .orElseThrow(() -> new EntityNotFoundException("Sexo con ID " + request.getSexoId() + " no encontrado")));
                     }
                     if (request.getEstadoAnimalId() != null) {
-                        estadoAnimalRepository.findById(request.getEstadoAnimalId()).ifPresent(existing::setEstadoAnimal);
+                        existing.setEstadoAnimal(estadoAnimalRepository.findById(request.getEstadoAnimalId())
+                                .orElseThrow(() -> new EntityNotFoundException("Estado animal con ID " + request.getEstadoAnimalId() + " no encontrado")));
                     }
                     if (request.getRazaId() != null) {
-                        razaRepository.findById(request.getRazaId()).ifPresent(existing::setRaza);
+                        existing.setRaza(razaRepository.findById(request.getRazaId())
+                                .orElseThrow(() -> new EntityNotFoundException("Raza con ID " + request.getRazaId() + " no encontrada")));
                     }
                     if (request.getMadreId() != null) {
-                        animalRepository.findById(request.getMadreId()).ifPresent(existing::setMadre);
+                        existing.setMadre(animalRepository.findById(request.getMadreId())
+                                .orElseThrow(() -> new EntityNotFoundException("Animal madre con ID " + request.getMadreId() + " no encontrado")));
                     }
                     if (request.getPadreId() != null) {
-                        animalRepository.findById(request.getPadreId()).ifPresent(existing::setPadre);
+                        existing.setPadre(animalRepository.findById(request.getPadreId())
+                                .orElseThrow(() -> new EntityNotFoundException("Animal padre con ID " + request.getPadreId() + " no encontrado")));
                     }
 
                     return animalRepository.save(existing);
