@@ -17,9 +17,18 @@ public interface ProduccionRepository extends JpaRepository<Produccion, Integer>
 
     @Query("SELECT new com.gestionganadera.backend.dto.ProduccionResumenDTO(:year, MONTH(p.fecha), SUM(p.litros), COUNT(p)) " +
            "FROM Produccion p " +
-           "WHERE YEAR(p.fecha) = :year " +
+           "JOIN p.animal a " +
+           "JOIN a.sexo s " +
+           "WHERE YEAR(p.fecha) = :year AND s.nombre = 'HEMBRA' " +
            "GROUP BY MONTH(p.fecha)")
     List<ProduccionResumenDTO> getResumenByYear(@Param("year") int year);
-    @Query(value = "SELECT ROUND(AVG(total_diario), 2) FROM (SELECT SUM(litros) AS total_diario FROM produccion GROUP BY fecha) AS produccion_diaria", nativeQuery = true)
+
+    @Query(value = "SELECT ROUND(AVG(total_diario), 2) FROM (" +
+           "SELECT fecha, SUM(p.litros) AS total_diario " +
+           "FROM produccion p " +
+           "JOIN animal a ON p.id_animal = a.id " +
+           "JOIN sexo s ON a.id_sexo = s.id " +
+           "WHERE s.nombre = 'HEMBRA' " +
+           "GROUP BY fecha) AS produccion_diaria", nativeQuery = true)
     java.math.BigDecimal getPromedioProduccionDiaria();
 }
