@@ -2,6 +2,7 @@ package com.gestionganadera.backend.service;
 
 import com.gestionganadera.backend.dto.CreateMovimientoRequest;
 import com.gestionganadera.backend.dto.MovimientoDTO;
+import com.gestionganadera.backend.model.Animal;
 import com.gestionganadera.backend.model.Evento;
 import com.gestionganadera.backend.model.Lote;
 import com.gestionganadera.backend.model.Movimiento;
@@ -107,6 +108,17 @@ public class MovimientoService {
         Movimiento entity = movimientoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Movimiento no encontrado"));
         movimientoRepository.deleteById(id);
+    }
+
+    /**
+     * Obtiene los animales cuyo último movimiento tiene como destino el lote indicado.
+     */
+    public List<Animal> getAnimalesByLote(@NonNull Integer loteId) {
+        return movimientoRepository.findLatestByLoteDestino(loteId)
+                .stream()
+                .map(m -> m.getEvento().getAnimal())
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     private MovimientoDTO toDTO(Movimiento m) {
