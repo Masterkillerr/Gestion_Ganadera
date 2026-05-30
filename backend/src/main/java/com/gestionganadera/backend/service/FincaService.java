@@ -35,6 +35,7 @@ public class FincaService {
         Finca finca = new Finca();
         finca.setNombre(request.getNombre());
         finca.setUbicacion(request.getUbicacion());
+        finca.setExtension(request.getExtension());
         return fincaRepository.save(finca);
     }
 
@@ -43,6 +44,7 @@ public class FincaService {
                 .map(existing -> {
                     existing.setNombre(request.getNombre());
                     existing.setUbicacion(request.getUbicacion());
+                    existing.setExtension(request.getExtension());
                     return fincaRepository.save(existing);
                 })
                 .orElseThrow(() -> new RuntimeException("Finca no encontrada"));

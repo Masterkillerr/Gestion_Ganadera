@@ -21,4 +21,7 @@ public class Finca {
 
     @Column(columnDefinition = "TEXT")
     private String ubicacion;
+
+    @Column(precision = 10, scale = 2)
+    private java.math.BigDecimal extension;
 }
