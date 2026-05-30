@@ -130,7 +130,7 @@ class SecurityIntegrationTest {
     void securedEndpoint_returns401WithoutAuth() {
         // No auth header → JwtAuthenticationFilter doesn't set authentication
         // → ExceptionTranslationFilter sends 401 (AuthenticationException)
-        ResponseEntity<String> response = restTemplate.getForEntity("/fincas", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity("/finca", String.class);
 
         assertEquals(401, response.getStatusCode().value(),
             "Without authentication, secured endpoints should return 401");
@@ -143,7 +143,7 @@ class SecurityIntegrationTest {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         ResponseEntity<String> response = restTemplate.exchange(
-            "/fincas", HttpMethod.GET, entity, String.class);
+            "/finca", HttpMethod.GET, entity, String.class);
 
         assertEquals(401, response.getStatusCode().value());
     }
@@ -155,7 +155,7 @@ class SecurityIntegrationTest {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         ResponseEntity<String> response = restTemplate.exchange(
-            "/fincas", HttpMethod.GET, entity, String.class);
+            "/finca", HttpMethod.GET, entity, String.class);
 
         assertEquals(200, response.getStatusCode().value());
     }
@@ -167,7 +167,7 @@ class SecurityIntegrationTest {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         ResponseEntity<String> response = restTemplate.exchange(
-            "/lotes", HttpMethod.GET, entity, String.class);
+            "/lote", HttpMethod.GET, entity, String.class);
 
         assertEquals(200, response.getStatusCode().value());
     }
@@ -181,7 +181,7 @@ class SecurityIntegrationTest {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         ResponseEntity<String> response = restTemplate.exchange(
-            "/fincas", HttpMethod.GET, entity, String.class);
+            "/finca", HttpMethod.GET, entity, String.class);
 
         HttpHeaders responseHeaders = response.getHeaders();
 
@@ -205,7 +205,7 @@ class SecurityIntegrationTest {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         ResponseEntity<String> response = restTemplate.exchange(
-            "/fincas", HttpMethod.GET, entity, String.class);
+            "/finca", HttpMethod.GET, entity, String.class);
 
         assertEquals(200, response.getStatusCode().value());
     }
@@ -218,7 +218,7 @@ class SecurityIntegrationTest {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         ResponseEntity<String> response = restTemplate.exchange(
-            "/fincas", HttpMethod.GET, entity, String.class);
+            "/finca", HttpMethod.GET, entity, String.class);
 
         // Spring's DefaultCorsProcessor returns 403 for disallowed origins
         assertEquals(403, response.getStatusCode().value(),
@@ -234,7 +234,7 @@ class SecurityIntegrationTest {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         ResponseEntity<String> response = restTemplate.exchange(
-            "/usuarios", HttpMethod.GET, entity, String.class);
+            "/usuario", HttpMethod.GET, entity, String.class);
 
         // @PreAuthorize("hasRole('ADMIN')") should reject USER role → 403 (AccessDeniedException)
         assertEquals(403, response.getStatusCode().value(),

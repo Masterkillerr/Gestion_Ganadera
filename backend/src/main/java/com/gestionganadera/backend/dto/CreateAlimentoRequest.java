@@ -1,18 +1,16 @@
 package com.gestionganadera.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateFincaRequest {
-    @NotBlank
+public class CreateAlimentoRequest {
+    @NotBlank(message = "El nombre del alimento es obligatorio")
+    @Size(max = 100)
     private String nombre;
-    private String ubicacion;
-    private BigDecimal extension;
 }
