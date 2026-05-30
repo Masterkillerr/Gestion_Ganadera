@@ -22,12 +22,28 @@ env:
 
 jobs:
   # ═══════════════════════════════════════
-  # JOB 1: CI — Run backend tests
+  # JOB 1: CI — Run backend tests + Flyway validation
   # ═══════════════════════════════════════
   test:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+
+    # ── PostgreSQL service for Flyway validation ──
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: gestion_ganadera
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
 
     defaults:
       run:
@@ -43,6 +59,15 @@ jobs:
           java-version: "21"
           distribution: "temurin"
           cache: maven
+
+      - name: Validate Flyway migrations
+        run: mvn flyway:migrate flyway:validate -B
+        env:
+          DB_URL: jdbc:postgresql://localhost:5432/gestion_ganadera
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          FLYWAY_ENABLED: "true"
+          DB_DDL_AUTO: none
 
       - name: Build and run tests
         run: mvn test --batch-mode
