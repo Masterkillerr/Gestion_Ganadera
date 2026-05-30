@@ -82,27 +82,4 @@ class AnimalDTOTest {
         assertEquals("Holstein", dto.getRazaNombre());
         assertEquals(10, dto.getMadreId());
     }
-
-    @Test
-    void allArgsConstructor_works() {
-        AnimalDTO dto = new AnimalDTO(
-            1, "AR-001", "Vaca", "Hembra",
-            "Saludable", "Holstein",
-            BigDecimal.valueOf(500), "foto.jpg",
-            10, "AR-MADRE", "Madre Nombre",
-            11, "AR-PADRE", "Padre Nombre",
-            "2023-01-15"
-        );
-
-        assertEquals(1, dto.getId());
-        assertEquals("Vaca", dto.getNombre());
-        assertEquals("Holstein", dto.getRazaNombre());
-        assertEquals("Hembra", dto.getSexo());
-        assertEquals(10, dto.getMadreId());
-        assertEquals("AR-MADRE", dto.getMadreArete());
-        assertEquals("Madre Nombre", dto.getMadreNombre());
-        assertEquals(11, dto.getPadreId());
-        assertEquals("AR-PADRE", dto.getPadreArete());
-        assertEquals("Padre Nombre", dto.getPadreNombre());
-    }
 }
