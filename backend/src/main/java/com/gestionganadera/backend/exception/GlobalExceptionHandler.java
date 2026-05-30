@@ -123,7 +123,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        log.warn("Data integrity violation: {}", ex.getMessage());
+        log.error("Data integrity violation: {}", ex.getMessage(), ex);
         String message = "La operación viola una restricción de integridad de la base de datos";
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.CONFLICT.value(),
