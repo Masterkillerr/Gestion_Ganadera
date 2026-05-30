@@ -9,6 +9,7 @@ import com.gestionganadera.backend.model.Usuario;
 import com.gestionganadera.backend.repository.RoleRepository;
 import com.gestionganadera.backend.repository.UsuarioRepository;
 import com.gestionganadera.backend.service.AuthService;
+import com.gestionganadera.backend.service.EmailService;
 import com.gestionganadera.backend.util.JwtUtil;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -41,8 +42,9 @@ public class TestAuthConfig {
             UsuarioRepository usuarioRepository,
             RoleRepository roleRepository,
             JwtUtil jwtUtil,
-            PasswordEncoder passwordEncoder) {
-        return new AuthService(authenticationManager, usuarioRepository, roleRepository, jwtUtil, passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            EmailService emailService) {
+        return new AuthService(authenticationManager, usuarioRepository, roleRepository, jwtUtil, passwordEncoder, emailService) {
             @Override
             public LoginResponse login(LoginRequest request) {
                 // Bypass recaptcha — authenticate directly
