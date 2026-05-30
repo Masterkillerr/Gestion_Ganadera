@@ -88,6 +88,10 @@ public class ProduccionService {
         return repository.getPromedioProduccionDiaria();
     }
 
+    public List<ProduccionResumenDTO> getResumen(@NonNull Integer year) {
+        return repository.getResumenByYear(year);
+    }
+
 
     public ProduccionDTO toDTO(Produccion p) {
         ProduccionDTO dto = new ProduccionDTO();

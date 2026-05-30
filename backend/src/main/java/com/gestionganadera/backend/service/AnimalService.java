@@ -122,4 +122,11 @@ public class AnimalService {
         return animalRepository.countByEstadoAnimal_Nombre(estado);
     }
 
+    public void delete(@NonNull Integer id) {
+        animalRepository.findById(id)
+                .ifPresentOrElse(
+                    animal -> animalRepository.deleteById(id),
+                    () -> { throw new RuntimeException("Animal no encontrado"); }
+                );
+    }
 }
