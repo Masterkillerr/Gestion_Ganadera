@@ -1,7 +1,7 @@
 package com.gestionganadera.backend.controller;
 
 import com.gestionganadera.backend.dto.CreateDietaAlimentoRequest;
-import com.gestionganadera.backend.model.DietaAlimento;
+import com.gestionganadera.backend.dto.DietaAlimentoDTO;
 import com.gestionganadera.backend.service.DietaAlimentoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,31 +25,31 @@ public class DietaAlimentoController {
 
     @GetMapping
     @Operation(summary = "Listar todas las asignaciones")
-    public ResponseEntity<List<DietaAlimento>> findAll() {
+    public ResponseEntity<List<DietaAlimentoDTO>> findAll() {
         return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/dieta/{dietaId}")
     @Operation(summary = "Listar alimentos de una dieta")
-    public ResponseEntity<List<DietaAlimento>> findByDietaId(@PathVariable @NonNull Integer dietaId) {
+    public ResponseEntity<List<DietaAlimentoDTO>> findByDietaId(@PathVariable @NonNull Integer dietaId) {
         return ResponseEntity.ok(service.findByDietaId(dietaId));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener asignación por ID")
-    public ResponseEntity<DietaAlimento> findById(@PathVariable @NonNull Integer id) {
+    public ResponseEntity<DietaAlimentoDTO> findById(@PathVariable @NonNull Integer id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
     @Operation(summary = "Asignar alimento a dieta")
-    public ResponseEntity<DietaAlimento> create(@Valid @RequestBody @NonNull CreateDietaAlimentoRequest request) {
+    public ResponseEntity<DietaAlimentoDTO> create(@Valid @RequestBody @NonNull CreateDietaAlimentoRequest request) {
         return ResponseEntity.ok(service.create(request));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar asignación")
-    public ResponseEntity<DietaAlimento> update(@PathVariable @NonNull Integer id,
+    public ResponseEntity<DietaAlimentoDTO> update(@PathVariable @NonNull Integer id,
                                                 @Valid @RequestBody @NonNull CreateDietaAlimentoRequest request) {
         return ResponseEntity.ok(service.update(id, request));
     }

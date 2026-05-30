@@ -1,6 +1,7 @@
 package com.gestionganadera.backend.service;
 
 import com.gestionganadera.backend.dto.CreateDietaAlimentoRequest;
+import com.gestionganadera.backend.dto.DietaAlimentoDTO;
 import com.gestionganadera.backend.model.Alimento;
 import com.gestionganadera.backend.model.Dieta;
 import com.gestionganadera.backend.model.DietaAlimento;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,21 +25,26 @@ public class DietaAlimentoService {
     private final DietaRepository dietaRepository;
     private final AlimentoRepository alimentoRepository;
 
-    public List<DietaAlimento> findAll() {
-        return repository.findAll();
+    public List<DietaAlimentoDTO> findAll() {
+        return repository.findAll().stream()
+                .map(DietaAlimentoDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    public List<DietaAlimento> findByDietaId(@NonNull Integer dietaId) {
-        return repository.findByDietaId(dietaId);
+    public List<DietaAlimentoDTO> findByDietaId(@NonNull Integer dietaId) {
+        return repository.findByDietaId(dietaId).stream()
+                .map(DietaAlimentoDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    public DietaAlimento findById(@NonNull Integer id) {
+    public DietaAlimentoDTO findById(@NonNull Integer id) {
         return repository.findById(id)
+                .map(DietaAlimentoDTO::fromEntity)
                 .orElseThrow(() -> new EntityNotFoundException("DietaAlimento no encontrado"));
     }
 
     @Transactional
-    public DietaAlimento create(@NonNull CreateDietaAlimentoRequest request) {
+    public DietaAlimentoDTO create(@NonNull CreateDietaAlimentoRequest request) {
         Dieta dieta = dietaRepository.findById(request.getDietaId())
                 .orElseThrow(() -> new EntityNotFoundException("Dieta no encontrada"));
         Alimento alimento = alimentoRepository.findById(request.getAlimentoId())
@@ -48,11 +55,11 @@ public class DietaAlimentoService {
         entity.setAlimento(alimento);
         entity.setCantidad(request.getCantidad());
         entity.setUnidad(request.getUnidad());
-        return repository.save(entity);
+        return DietaAlimentoDTO.fromEntity(repository.save(entity));
     }
 
     @Transactional
-    public DietaAlimento update(@NonNull Integer id, @NonNull CreateDietaAlimentoRequest request) {
+    public DietaAlimentoDTO update(@NonNull Integer id, @NonNull CreateDietaAlimentoRequest request) {
         DietaAlimento entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("DietaAlimento no encontrado"));
 
@@ -67,7 +74,7 @@ public class DietaAlimentoService {
         if (request.getCantidad() != null) entity.setCantidad(request.getCantidad());
         if (request.getUnidad() != null) entity.setUnidad(request.getUnidad());
 
-        return repository.save(entity);
+        return DietaAlimentoDTO.fromEntity(repository.save(entity));
     }
 
     @Transactional
