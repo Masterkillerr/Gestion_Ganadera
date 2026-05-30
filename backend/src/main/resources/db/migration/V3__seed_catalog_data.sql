@@ -52,8 +52,8 @@ SELECT setval('public.tipo_movimiento_id_seq', COALESCE((SELECT MAX(id) FROM pub
 
 INSERT INTO public.tipo_reproduccion (id, nombre) VALUES
     (1, 'Monta Natural'),
-    (2, 'Inseminación Artificial'),
-    (3, 'Transferencia Embrionaria')
+    (2, 'Inseminación'),
+    (3, 'Transf. Embrionaria')
 ON CONFLICT DO NOTHING;
 SELECT setval('public.tipo_reproduccion_id_seq', COALESCE((SELECT MAX(id) FROM public.tipo_reproduccion), 0) + 1, false);
 
