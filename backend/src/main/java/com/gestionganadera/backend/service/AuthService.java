@@ -34,6 +34,7 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+  private final EmailService emailService;
 
     @Value("${app.recaptcha.secret}")
     private String recaptchaSecret;

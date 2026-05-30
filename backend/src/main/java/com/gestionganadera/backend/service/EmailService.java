@@ -18,7 +18,9 @@ public class EmailService {
   }
 
   public void sendWelcomeEmail(String toEmail, String nombre) {
-    if (fromAddress == null || fromAddress.isBlank()) return;
+    if (fromAddress == null || fromAddress.isBlank() || toEmail == null || toEmail.isBlank()) {
+      return;
+    }
 
     SimpleMailMessage msg = new SimpleMailMessage();
     msg.setFrom(fromAddress);
@@ -26,8 +28,8 @@ public class EmailService {
     msg.setSubject("Bienvenido a GestGan");
     msg.setText(
       "Hola " + nombre + "!\n\n" +
-      "Gracias por registrarte en GestGan, tu sistema de gestión ganadera.\n" +
-      "Ya podés comenzar a registrar tu hato, lotes, producciones y mucho más.\n\n" +
+      "Gracias por registrarte en GestGan, tu sistema de gestion ganadera.\n" +
+      "Ya podes comenzar a registrar tu hato, lotes, producciones y mucho mas.\n\n" +
       "Saludos,\nEquipo GestGan"
     );
     mailSender.send(msg);
