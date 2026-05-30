@@ -1,5 +1,5 @@
 -- WARNING: This schema is for context only and is not meant to be run.
--- Adapted from the real PostgreSQL database (Hibernate-generated) on 2026-05-29.
+-- Adapted from the real PostgreSQL database (Hibernate-generated) on 2026-05-30.
 -- 28 tables total.
 
 -- ============================================================
@@ -8,7 +8,7 @@
 
 CREATE TABLE public.sexo (
     id SERIAL PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL UNIQUE
+    nombre VARCHAR(20) NOT NULL UNIQUE
 );
 
 CREATE TABLE public.estado_animal (
@@ -48,7 +48,7 @@ CREATE TABLE public.turno_produccion (
 
 CREATE TABLE public.rol (
     id SERIAL PRIMARY KEY,
-    nombre VARCHAR(20) NOT NULL UNIQUE
+    nombre VARCHAR(50) NOT NULL UNIQUE
 );
 
 -- ============================================================
@@ -57,7 +57,7 @@ CREATE TABLE public.rol (
 
 CREATE TABLE public.raza (
     id SERIAL PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL
+    nombre VARCHAR(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE public.alimento (
