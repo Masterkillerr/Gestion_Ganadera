@@ -9,6 +9,7 @@ import com.gestionganadera.backend.model.Usuario;
 import com.gestionganadera.backend.repository.RoleRepository;
 import com.gestionganadera.backend.repository.UsuarioRepository;
 import com.gestionganadera.backend.util.JwtUtil;
+import com.gestionganadera.backend.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
