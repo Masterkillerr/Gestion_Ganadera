@@ -30,6 +30,25 @@ public class MovimientoController {
         return ResponseEntity.ok(movimientoService.getAnimalesByLote(loteId));
     }
 
+    @GetMapping("/animal/{animalId}/ultimo")
+    @Operation(summary = "Último movimiento de un animal", description = "Obtiene el último movimiento registrado de un animal")
+    public ResponseEntity<MovimientoDTO> getUltimoByAnimal(@PathVariable @NonNull Integer animalId) {
+        return movimientoService.findUltimoByAnimalId(animalId)
+                .map(m -> ResponseEntity.ok(movimientoService.toSimpleDTO(m)))
+                .orElse(ResponseEntity.ok(new MovimientoDTO()));
+    }
+
+    @GetMapping("/lote/{loteId}/capacity")
+    @Operation(summary = "Verificar capacidad de lote", description = "Verifica si un lote tiene espacio disponible y devuelve ocupación")
+    public ResponseEntity<java.util.Map<String, Object>> checkCapacity(@PathVariable @NonNull Integer loteId) {
+        boolean hasSpace = movimientoService.hasLoteCapacity(loteId);
+        int occupancy = movimientoService.getLoteOccupancy(loteId);
+        return ResponseEntity.ok(java.util.Map.of(
+            "hasSpace", hasSpace,
+            "occupancy", occupancy
+        ));
+    }
+
     @GetMapping("/recent")
     @Operation(summary = "Movimientos recientes")
     public ResponseEntity<List<MovimientoDTO>> getRecent() {
