@@ -21,13 +21,13 @@ public interface MovimientoRepository extends JpaRepository<Movimiento, Integer>
            "ORDER BY m.id DESC LIMIT 1")
     Optional<Movimiento> findUltimoByAnimalId(@Param("animalId") Integer animalId);
 
-    @Query(value = "SELECT l.nombre FROM evento e " +
+    @Query(value = "SELECT l.id FROM evento e " +
            "JOIN movimiento m ON e.id = m.id_evento " +
            "JOIN lote l ON m.id_lote_destino = l.id " +
            "JOIN animal a ON e.id_animal = a.id " +
            "WHERE a.id = :animalId " +
            "ORDER BY e.fecha DESC LIMIT 1", nativeQuery = true)
-    String findUltimoLoteNombreByAnimalId(@Param("animalId") Integer animalId);
+    Integer findUltimoLoteIdByAnimalId(@Param("animalId") Integer animalId);
 
     @Query(value = "SELECT COUNT(a.id) FROM movimiento m " +
            "JOIN evento e ON e.id = m.id_evento " +
