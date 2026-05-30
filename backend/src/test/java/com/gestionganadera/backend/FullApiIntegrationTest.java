@@ -132,7 +132,7 @@ class FullApiIntegrationTest {
     @Test
     void createAndGetFinca_returnsSavedFinca() {
         HttpEntity<CreateFincaRequest> entity = new HttpEntity<>(
-            new CreateFincaRequest("Mi Finca", "Campo Verde"), authHeaders);
+            new CreateFincaRequest("Mi Finca", "Campo Verde", null), authHeaders);
 
         ResponseEntity<Finca> createResp = restTemplate.exchange(
             "/finca", HttpMethod.POST, entity, Finca.class);
@@ -158,7 +158,7 @@ class FullApiIntegrationTest {
     @Test
     void createFinca_withoutAuth_returns401() {
         HttpEntity<CreateFincaRequest> entity = new HttpEntity<>(
-            new CreateFincaRequest("No Auth", "Nowhere"));
+            new CreateFincaRequest("No Auth", "Nowhere", null));
 
         ResponseEntity<String> response = restTemplate.exchange(
             "/finca", HttpMethod.POST, entity, String.class);
@@ -171,7 +171,7 @@ class FullApiIntegrationTest {
     void updateFinca_modifiesExistingFinca() {
         // Create a finca first
         HttpEntity<CreateFincaRequest> createEntity = new HttpEntity<>(
-            new CreateFincaRequest("Original", "Original Location"), authHeaders);
+            new CreateFincaRequest("Original", "Original Location", null), authHeaders);
 
         ResponseEntity<Finca> createResp = restTemplate.exchange(
             "/finca", HttpMethod.POST, createEntity, Finca.class);
@@ -180,7 +180,7 @@ class FullApiIntegrationTest {
 
         // Update it
         HttpEntity<CreateFincaRequest> updateEntity = new HttpEntity<>(
-            new CreateFincaRequest("Updated", "Updated Location"), authHeaders);
+            new CreateFincaRequest("Updated", "Updated Location", null), authHeaders);
 
         ResponseEntity<Finca> updateResp = restTemplate.exchange(
             "/finca/" + fincaId, HttpMethod.PUT, updateEntity, Finca.class);
@@ -194,7 +194,7 @@ class FullApiIntegrationTest {
     void deleteFinca_removesFinca() {
         // Create a finca first
         HttpEntity<CreateFincaRequest> createEntity = new HttpEntity<>(
-            new CreateFincaRequest("To Delete", "Location"), authHeaders);
+            new CreateFincaRequest("To Delete", "Location", null), authHeaders);
 
         ResponseEntity<Finca> createResp = restTemplate.exchange(
             "/finca", HttpMethod.POST, createEntity, Finca.class);
@@ -222,7 +222,7 @@ class FullApiIntegrationTest {
     void createLoteUnderFinca_returnsLote() {
         // Create a finca first
         HttpEntity<CreateFincaRequest> fincaEntity = new HttpEntity<>(
-            new CreateFincaRequest("Finca con Lotes", "Ubicación"), authHeaders);
+            new CreateFincaRequest("Finca con Lotes", "Ubicación", null), authHeaders);
 
         ResponseEntity<Finca> fincaResp = restTemplate.exchange(
             "/finca", HttpMethod.POST, fincaEntity, Finca.class);
@@ -255,9 +255,9 @@ class FullApiIntegrationTest {
     void fullCrudSequence_createMultipleAndQuery() {
         // Create 2 fincas
         HttpEntity<CreateFincaRequest> finca1 = new HttpEntity<>(
-            new CreateFincaRequest("Finca A", "Norte"), authHeaders);
+            new CreateFincaRequest("Finca A", "Norte", null), authHeaders);
         HttpEntity<CreateFincaRequest> finca2 = new HttpEntity<>(
-            new CreateFincaRequest("Finca B", "Sur"), authHeaders);
+            new CreateFincaRequest("Finca B", "Sur", null), authHeaders);
 
         restTemplate.exchange("/finca", HttpMethod.POST, finca1, Finca.class);
         restTemplate.exchange("/finca", HttpMethod.POST, finca2, Finca.class);
