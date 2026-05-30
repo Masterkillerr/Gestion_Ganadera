@@ -1,0 +1,15 @@
+[
+  {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "PORT", "Value": "8080"},
+  {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "DB_URL", "Value": "jdbc:postgresql://ganaderia.cbm6w28ialq0.us-east-2.rds.amazonaws.com:5432/ganaderia"},
+  {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "DB_USERNAME", "Value": "postgres"},
+  {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "DB_PASSWORD", "Value": "VacaVaquera2"},
+  {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "DB_DDL_AUTO", "Value": "none"},
+  {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "DB_SHOW_SQL", "Value": "false"},
+  {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "JWT_SECRET", "Value": "tOBKV78IsdH5cmmF/E2MO7F+4HEKkfmWOz9O7WYpWsJAcY9Bg7RzotfPQh1K9aFyWRhz02Yea9xVi0h+5MAiwA=="},
+  {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "JWT_EXPIRATION", "Value": "604800000"},
+  {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "CORS_ALLOWED_ORIGINS", "Value": "http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176,https://d3gw8tv95pui9q.cloudfront.net"},
+  {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "LOG_LEVEL", "Value": "INFO"},
+  {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "SECURITY_LOG_LEVEL", "Value": "INFO"},
+  {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "SERVER_PORT", "Value": "8080"},
+  {"Namespace": "aws:elasticbeanstalk:application:environment", "OptionName": "UPLOAD_DIR", "Value": "../uploads/"}
+]
