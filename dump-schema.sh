@@ -1,5 +1,5 @@
 #!/bin/bash
-PGPASSWORD=manolo123 pg_dump \
+pg_dump \
   --host=ganaderia.cbm6w28ialq0.us-east-2.rds.amazonaws.com \
   --username=postgres \
   --dbname=ganaderia \
