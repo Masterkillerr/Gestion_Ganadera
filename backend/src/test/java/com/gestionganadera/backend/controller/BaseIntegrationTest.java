@@ -123,7 +123,7 @@ public abstract class BaseIntegrationTest {
     private static final String[] TABLES_TO_CLEAR = {
         "alimentaciones", "vacunaciones", "tratamientos", "reproducciones",
         "registro_terneros", "partos", "producciones", "movimientos",
-        "alertas", "eventos", "animales", "lotes", "fincas",
+        "eventos", "animales", "lotes", "fincas",
         "razas", "categorias", "alimentos", "medicamentos", "vacunas",
         "usuarios", "roles"
     };
