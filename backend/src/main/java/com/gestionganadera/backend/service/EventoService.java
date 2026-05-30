@@ -50,14 +50,12 @@ public class EventoService {
 
     public Evento save(@NonNull CreateEventoRequest request) {
         Animal animal = animalRepository.findById(request.getAnimalId())
-                .orElseThrow(() -> new EntityNotFoundException("Animal no encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Animal con ID " + request.getAnimalId() + " no encontrado"));
 
         Evento entity = new Evento();
         entity.setAnimal(animal);
-        if (request.getTipoEventoId() != null) {
-            tipoEventoRepository.findById(request.getTipoEventoId())
-                    .ifPresent(entity::setTipoEvento);
-        }
+        entity.setTipoEvento(tipoEventoRepository.findById(request.getTipoEventoId())
+                .orElseThrow(() -> new EntityNotFoundException("Tipo de evento con ID " + request.getTipoEventoId() + " no encontrado")));
         entity.setDescripcion(request.getDescripcion());
         if (request.getFecha() != null) {
             entity.setFecha(request.getFecha());

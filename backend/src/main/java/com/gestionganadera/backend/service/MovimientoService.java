@@ -63,8 +63,8 @@ public class MovimientoService {
         }
 
         if (request.getTipoMovimientoId() != null) {
-            tipoMovimientoRepository.findById(request.getTipoMovimientoId())
-                    .ifPresent(entity::setTipoMovimiento);
+            entity.setTipoMovimiento(tipoMovimientoRepository.findById(request.getTipoMovimientoId())
+                    .orElseThrow(() -> new EntityNotFoundException("Tipo de movimiento con ID " + request.getTipoMovimientoId() + " no encontrado")));
         }
 
         entity.setMotivo(request.getMotivo());
@@ -93,8 +93,8 @@ public class MovimientoService {
         }
 
         if (request.getTipoMovimientoId() != null) {
-            tipoMovimientoRepository.findById(request.getTipoMovimientoId())
-                    .ifPresent(existing::setTipoMovimiento);
+            existing.setTipoMovimiento(tipoMovimientoRepository.findById(request.getTipoMovimientoId())
+                    .orElseThrow(() -> new EntityNotFoundException("Tipo de movimiento con ID " + request.getTipoMovimientoId() + " no encontrado")));
         }
 
         existing.setMotivo(request.getMotivo());

@@ -152,24 +152,37 @@ class EventoServiceTest {
     @Test
     void save_withoutDescription_savesSuccessfully() {
         when(animalRepository.findById(10)).thenReturn(Optional.of(animal));
+        when(tipoEventoRepository.findById(1)).thenReturn(Optional.of(tipoSalud));
 
         CreateEventoRequest request = new CreateEventoRequest();
         request.setAnimalId(10);
-        request.setTipoEventoId(null);
+        request.setTipoEventoId(1);
         request.setDescripcion(null);
 
         Evento saved = new Evento();
         saved.setId(3);
         saved.setAnimal(animal);
-        saved.setTipoEvento(null);
+        saved.setTipoEvento(tipoSalud);
 
         when(repository.save(any(Evento.class))).thenReturn(saved);
 
         Evento result = eventoService.save(request);
 
         assertNull(result.getDescripcion());
-        assertNull(result.getTipoEvento());
+        assertNotNull(result.getTipoEvento());
         verify(repository).save(any(Evento.class));
+    }
+
+    @Test
+    void save_nullTipoEventoId_throws() {
+        when(animalRepository.findById(10)).thenReturn(Optional.of(animal));
+
+        CreateEventoRequest request = new CreateEventoRequest();
+        request.setAnimalId(10);
+        request.setTipoEventoId(null);
+
+        assertThrows(EntityNotFoundException.class, () -> eventoService.save(request));
+        verify(repository, never()).save(any());
     }
 
     @Test
