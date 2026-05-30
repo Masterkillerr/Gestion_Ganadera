@@ -21,11 +21,11 @@ public class Lote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 100)
+    @Column(nullable = false, length = 100)
     private String nombre;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_finca")
+    @JoinColumn(name = "id_finca", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "lotes"})
     private Finca finca;
 
