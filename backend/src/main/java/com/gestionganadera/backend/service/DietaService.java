@@ -1,6 +1,7 @@
 package com.gestionganadera.backend.service;
 
 import com.gestionganadera.backend.dto.CreateDietaRequest;
+import com.gestionganadera.backend.dto.DietaDTO;
 import com.gestionganadera.backend.model.Dieta;
 import com.gestionganadera.backend.repository.DietaRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -17,30 +19,33 @@ public class DietaService {
 
     private final DietaRepository repository;
 
-    public List<Dieta> findAll() {
-        return repository.findAll();
+    public List<DietaDTO> findAll() {
+        return repository.findAll().stream()
+                .map(DietaDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    public Dieta findById(@NonNull Integer id) {
+    public DietaDTO findById(@NonNull Integer id) {
         return repository.findById(id)
+                .map(DietaDTO::fromEntity)
                 .orElseThrow(() -> new EntityNotFoundException("Dieta no encontrada"));
     }
 
     @Transactional
-    public Dieta create(@NonNull CreateDietaRequest request) {
+    public DietaDTO create(@NonNull CreateDietaRequest request) {
         Dieta entity = new Dieta();
         entity.setNombre(request.getNombre());
         entity.setDescripcion(request.getDescripcion());
-        return repository.save(entity);
+        return DietaDTO.fromEntity(repository.save(entity));
     }
 
     @Transactional
-    public Dieta update(@NonNull Integer id, @NonNull CreateDietaRequest request) {
+    public DietaDTO update(@NonNull Integer id, @NonNull CreateDietaRequest request) {
         Dieta entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Dieta no encontrada"));
         entity.setNombre(request.getNombre());
         entity.setDescripcion(request.getDescripcion());
-        return repository.save(entity);
+        return DietaDTO.fromEntity(repository.save(entity));
     }
 
     @Transactional

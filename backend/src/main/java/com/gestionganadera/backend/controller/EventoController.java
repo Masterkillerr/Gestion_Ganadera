@@ -2,7 +2,6 @@ package com.gestionganadera.backend.controller;
 
 import com.gestionganadera.backend.dto.CreateEventoRequest;
 import com.gestionganadera.backend.dto.EventoDTO;
-import com.gestionganadera.backend.model.Evento;
 import com.gestionganadera.backend.service.EventoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,14 +36,14 @@ public class EventoController {
 
     @GetMapping("/animal/{animalId}")
     @Operation(summary = "Eventos por animal")
-    public ResponseEntity<List<Evento>> findByAnimalId(@PathVariable @NonNull Integer animalId) {
+    public ResponseEntity<List<EventoDTO>> findByAnimalId(@PathVariable @NonNull Integer animalId) {
         return ResponseEntity.ok(service.findByAnimalId(animalId));
     }
 
     @PostMapping
     @Operation(summary = "Crear evento")
-    public ResponseEntity<Evento> create(@Valid @RequestBody @NonNull CreateEventoRequest request) {
-        return ResponseEntity.ok(service.save(request));
+    public ResponseEntity<EventoDTO> create(@Valid @RequestBody @NonNull CreateEventoRequest request) {
+        return ResponseEntity.ok(service.toDTO(service.save(request)));
     }
 
     @DeleteMapping("/{id}")

@@ -1,6 +1,7 @@
 package com.gestionganadera.backend.service;
 
 import com.gestionganadera.backend.dto.CreateVacunacionRequest;
+import com.gestionganadera.backend.dto.VacunacionDTO;
 import com.gestionganadera.backend.model.Evento;
 import com.gestionganadera.backend.model.Vacuna;
 import com.gestionganadera.backend.model.Vacunacion;
@@ -13,6 +14,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,20 +23,25 @@ public class VacunacionService {
     private final EventoRepository eventoRepository;
     private final VacunaRepository vacunaRepository;
 
-    public List<Vacunacion> findAll() {
-        return repository.findAll();
+    public List<VacunacionDTO> findAll() {
+        return repository.findAll().stream()
+                .map(VacunacionDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    public List<Vacunacion> findByAnimalId(@NonNull Integer animalId) {
-        return repository.findByEventoAnimalId(animalId);
+    public List<VacunacionDTO> findByAnimalId(@NonNull Integer animalId) {
+        return repository.findByEventoAnimalId(animalId).stream()
+                .map(VacunacionDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    public Vacunacion findById(@NonNull Integer id) {
+    public VacunacionDTO findById(@NonNull Integer id) {
         return repository.findById(id)
+                .map(VacunacionDTO::fromEntity)
                 .orElseThrow(() -> new EntityNotFoundException("Vacunación no encontrada"));
     }
 
-    public Vacunacion save(@NonNull CreateVacunacionRequest request) {
+    public VacunacionDTO save(@NonNull CreateVacunacionRequest request) {
         Evento evento = eventoRepository.findById(request.getEventoId())
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado: " + request.getEventoId()));
         Vacuna vacuna = vacunaRepository.findById(request.getVacunaId())
@@ -45,11 +52,11 @@ public class VacunacionService {
         entity.setVacuna(vacuna);
         entity.setProximaDosis(request.getProximaDosis());
         entity.setObservacion(request.getObservacion());
-        return repository.save(entity);
+        return VacunacionDTO.fromEntity(repository.save(entity));
     }
 
     @NonNull
-    public Vacunacion update(@NonNull Integer id, @NonNull CreateVacunacionRequest request) {
+    public VacunacionDTO update(@NonNull Integer id, @NonNull CreateVacunacionRequest request) {
         Vacunacion entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Vacunación no encontrada"));
 
@@ -64,7 +71,7 @@ public class VacunacionService {
         if (request.getProximaDosis() != null) entity.setProximaDosis(request.getProximaDosis());
         if (request.getObservacion() != null) entity.setObservacion(request.getObservacion());
 
-        return repository.save(entity);
+        return VacunacionDTO.fromEntity(repository.save(entity));
     }
 
     public void delete(@NonNull Integer id) {

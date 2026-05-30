@@ -1,7 +1,7 @@
 package com.gestionganadera.backend.controller;
 
 import com.gestionganadera.backend.dto.CreateVacunacionRequest;
-import com.gestionganadera.backend.model.Vacunacion;
+import com.gestionganadera.backend.dto.VacunacionDTO;
 import com.gestionganadera.backend.service.VacunacionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,31 +24,31 @@ public class VacunacionController {
 
     @GetMapping("/animal/{animalId}")
     @Operation(summary = "Vacunaciones por animal", description = "Obtiene el historial de vacunaciones de un animal")
-    public ResponseEntity<List<Vacunacion>> findByAnimalId(@PathVariable @NonNull Integer animalId) {
+    public ResponseEntity<List<VacunacionDTO>> findByAnimalId(@PathVariable @NonNull Integer animalId) {
         return ResponseEntity.ok(service.findByAnimalId(animalId));
     }
 
     @GetMapping
     @Operation(summary = "Listar vacunaciones")
-    public ResponseEntity<List<Vacunacion>> findAll() {
+    public ResponseEntity<List<VacunacionDTO>> findAll() {
         return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener vacunación por ID")
-    public ResponseEntity<Vacunacion> findById(@PathVariable @NonNull Integer id) {
+    public ResponseEntity<VacunacionDTO> findById(@PathVariable @NonNull Integer id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
     @Operation(summary = "Registrar vacunación")
-    public ResponseEntity<Vacunacion> create(@Valid @RequestBody @NonNull CreateVacunacionRequest request) {
+    public ResponseEntity<VacunacionDTO> create(@Valid @RequestBody @NonNull CreateVacunacionRequest request) {
         return ResponseEntity.ok(service.save(request));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar vacunación")
-    public ResponseEntity<Vacunacion> update(@PathVariable @NonNull Integer id,
+    public ResponseEntity<VacunacionDTO> update(@PathVariable @NonNull Integer id,
                                               @Valid @RequestBody @NonNull CreateVacunacionRequest request) {
         return ResponseEntity.ok(service.update(id, request));
     }

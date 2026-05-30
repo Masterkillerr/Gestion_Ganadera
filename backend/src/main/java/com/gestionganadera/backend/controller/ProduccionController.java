@@ -3,7 +3,6 @@ package com.gestionganadera.backend.controller;
 import com.gestionganadera.backend.dto.CreateProduccionRequest;
 import com.gestionganadera.backend.dto.ProduccionDTO;
 import com.gestionganadera.backend.dto.ProduccionResumenDTO;
-import com.gestionganadera.backend.model.Produccion;
 import com.gestionganadera.backend.service.ProduccionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +32,7 @@ public class ProduccionController {
 
     @GetMapping("/animal/{animalId}")
     @Operation(summary = "Producción por animal")
-    public ResponseEntity<List<Produccion>> findByAnimalId(@PathVariable @NonNull Integer animalId) {
+    public ResponseEntity<List<ProduccionDTO>> findByAnimalId(@PathVariable @NonNull Integer animalId) {
         return ResponseEntity.ok(service.findByAnimalId(animalId));
     }
 

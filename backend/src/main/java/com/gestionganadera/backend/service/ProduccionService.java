@@ -31,8 +31,10 @@ public class ProduccionService {
                 .map(this::toDTO).collect(Collectors.toList());
     }
 
-    public List<Produccion> findByAnimalId(@NonNull Integer animalId) {
-        return repository.findByAnimalId(animalId);
+    public List<ProduccionDTO> findByAnimalId(@NonNull Integer animalId) {
+        return repository.findByAnimalId(animalId).stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
     public Produccion findById(@NonNull Integer id) {
@@ -86,7 +88,7 @@ public class ProduccionService {
         return repository.getResumenByYear(year);
     }
 
-    private ProduccionDTO toDTO(Produccion p) {
+    public ProduccionDTO toDTO(Produccion p) {
         ProduccionDTO dto = new ProduccionDTO();
         dto.setId(p.getId());
         dto.setAnimalId(p.getAnimal() != null ? p.getAnimal().getId() : null);

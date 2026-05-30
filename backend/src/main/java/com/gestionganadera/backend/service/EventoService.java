@@ -32,8 +32,10 @@ public class EventoService {
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
     }
 
-    public List<Evento> findByAnimalId(@NonNull Integer animalId) {
-        return repository.findByAnimalId(animalId);
+    public List<EventoDTO> findByAnimalId(@NonNull Integer animalId) {
+        return repository.findByAnimalId(animalId).stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
     public List<EventoDTO> getRecent() {
@@ -69,7 +71,7 @@ public class EventoService {
         repository.deleteById(id);
     }
 
-    EventoDTO toDTO(Evento e) {
+    public EventoDTO toDTO(Evento e) {
         EventoDTO dto = new EventoDTO();
         dto.setId(e.getId());
         dto.setFecha(e.getFecha() != null ? e.getFecha().toString() : null);

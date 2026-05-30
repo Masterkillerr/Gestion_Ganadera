@@ -1,6 +1,7 @@
 package com.gestionganadera.backend.service;
 
 import com.gestionganadera.backend.dto.CreateTratamientoRequest;
+import com.gestionganadera.backend.dto.TratamientoDTO;
 import com.gestionganadera.backend.model.Evento;
 import com.gestionganadera.backend.model.Medicamento;
 import com.gestionganadera.backend.model.Tratamiento;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,20 +24,25 @@ public class TratamientoService {
     private final EventoRepository eventoRepository;
     private final MedicamentoRepository medicamentoRepository;
 
-    public List<Tratamiento> findAll() {
-        return repository.findAll();
+    public List<TratamientoDTO> findAll() {
+        return repository.findAll().stream()
+                .map(TratamientoDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    public List<Tratamiento> findByAnimalId(@NonNull Integer animalId) {
-        return repository.findByEventoAnimalId(animalId);
+    public List<TratamientoDTO> findByAnimalId(@NonNull Integer animalId) {
+        return repository.findByEventoAnimalId(animalId).stream()
+                .map(TratamientoDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    public Tratamiento findById(@NonNull Integer id) {
+    public TratamientoDTO findById(@NonNull Integer id) {
         return repository.findById(id)
+                .map(TratamientoDTO::fromEntity)
                 .orElseThrow(() -> new EntityNotFoundException("Tratamiento no encontrado"));
     }
 
-    public Tratamiento save(@NonNull CreateTratamientoRequest request) {
+    public TratamientoDTO save(@NonNull CreateTratamientoRequest request) {
         Evento evento = eventoRepository.findById(request.getEventoId())
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado: " + request.getEventoId()));
         Medicamento medicamento = medicamentoRepository.findById(request.getMedicamentoId())
@@ -48,11 +55,11 @@ public class TratamientoService {
         entity.setFechaInicio(request.getFechaInicio() != null ? request.getFechaInicio() : LocalDate.now());
         entity.setFechaFin(request.getFechaFin());
         entity.setObservacion(request.getObservacion());
-        return repository.save(entity);
+        return TratamientoDTO.fromEntity(repository.save(entity));
     }
 
     @NonNull
-    public Tratamiento update(@NonNull Integer id, @NonNull CreateTratamientoRequest request) {
+    public TratamientoDTO update(@NonNull Integer id, @NonNull CreateTratamientoRequest request) {
         Tratamiento entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Tratamiento no encontrado"));
 
@@ -69,7 +76,7 @@ public class TratamientoService {
         if (request.getFechaFin() != null) entity.setFechaFin(request.getFechaFin());
         if (request.getObservacion() != null) entity.setObservacion(request.getObservacion());
 
-        return repository.save(entity);
+        return TratamientoDTO.fromEntity(repository.save(entity));
     }
 
     public void delete(@NonNull Integer id) {
