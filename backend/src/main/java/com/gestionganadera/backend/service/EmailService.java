@@ -1,37 +1,42 @@
 package com.gestionganadera.backend.service;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class EmailService {
 
-  private final JavaMailSender mailSender;
+  private final RestTemplate http = new RestTemplate();
+  private final String apiKey;
+  private final String fromEmail;
 
-  @Value("${app.mail.from:}")
-  private String fromAddress;
-
-  public EmailService(JavaMailSender mailSender) {
-    this.mailSender = mailSender;
+  public EmailService(@Value("${RESEND_API_KEY:}") String apiKey,
+                      @Value("${app.mail.from:}") String fromEmail) {
+    this.apiKey = apiKey;
+    this.fromEmail = fromEmail;
   }
 
   public void sendWelcomeEmail(String toEmail, String nombre) {
-    if (fromAddress == null || fromAddress.isBlank() || toEmail == null || toEmail.isBlank()) {
-      return;
-    }
+    if (apiKey == null || apiKey.isBlank() || fromEmail == null || fromEmail.isBlank()) return;
 
-    SimpleMailMessage msg = new SimpleMailMessage();
-    msg.setFrom(fromAddress);
-    msg.setTo(toEmail);
-    msg.setSubject("Bienvenido a GestGan");
-    msg.setText(
-      "Hola " + nombre + "!\n\n" +
-      "Gracias por registrarte en GestGan, tu sistema de gestion ganadera.\n" +
-      "Ya podes comenzar a registrar tu hato, lotes, producciones y mucho mas.\n\n" +
-      "Saludos,\nEquipo GestGan"
-    );
-    mailSender.send(msg);
+    String body = """
+      {
+        "from": "%s",
+        "to": ["%s"],
+        "subject": "Bienvenido a GestGan",
+        "text": "Hola %s!\\n\\nGracias por registrarte en GestGan, tu sistema de gestion ganadera.\\nYa podes comenzar a registrar tu hato, lotes, producciones y mucho mas.\\n\\nSaludos,\\nEquipo GestGan"
+      }
+      """.formatted(fromEmail, toEmail, nombre);
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.setBearerAuth(apiKey);
+    HttpEntity<String> req = new HttpEntity<>(body, headers);
+
+    try {
+      http.postForEntity("https://api.resend.com/emails", req, String.class);
+    } catch (Exception ignored) { }
   }
 }
