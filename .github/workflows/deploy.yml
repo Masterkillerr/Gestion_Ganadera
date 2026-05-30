@@ -63,14 +63,15 @@ jobs:
       - name: Validate Flyway migrations
         run: mvn flyway:migrate flyway:validate -B
         env:
-          DB_URL: jdbc:postgresql://localhost:5432/gestion_ganadera
-          DB_USERNAME: postgres
-          DB_PASSWORD: postgres
-          FLYWAY_ENABLED: "true"
+          FLYWAY_URL: jdbc:postgresql://localhost:5432/gestion_ganadera
+          FLYWAY_USER: postgres
+          FLYWAY_PASSWORD: postgres
           DB_DDL_AUTO: none
 
       - name: Build and run tests
         run: mvn test --batch-mode
+        env:
+          FLYWAY_ENABLED: "false"
 
       - name: Upload JaCoCo coverage report
         if: ${{ !cancelled() }}
