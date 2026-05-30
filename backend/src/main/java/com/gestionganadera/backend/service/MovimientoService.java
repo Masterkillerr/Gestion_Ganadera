@@ -121,8 +121,8 @@ public class MovimientoService {
                 .collect(Collectors.toList());
     }
 
-    public Integer getUltimoLoteIdByArete(@NonNull String arete) {
-        return movimientoRepository.findUltimoLoteIdByArete(arete);
+    public String getUltimoLoteNombreByAnimalId(@NonNull Integer animalId) {
+        return movimientoRepository.findUltimoLoteNombreByAnimalId(animalId);
     }
 
     /**

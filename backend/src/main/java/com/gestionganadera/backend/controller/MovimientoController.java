@@ -30,11 +30,11 @@ public class MovimientoController {
         return ResponseEntity.ok(movimientoService.getAnimalesByLote(loteId));
     }
 
-    @GetMapping("/animal/arete/{arete}/ultimo-lote")
-    @Operation(summary = "Último lote por arete", description = "Obtiene el ID del último lote donde estuvo el animal por arete")
-    public ResponseEntity<Integer> getUltimoLoteByArete(@PathVariable @NonNull String arete) {
-        Integer loteId = movimientoService.getUltimoLoteIdByArete(arete);
-        return loteId != null ? ResponseEntity.ok(loteId) : ResponseEntity.noContent().build();
+    @GetMapping("/animal/{id}/ultimo-lote-nombre")
+    @Operation(summary = "Nombre del último lote por animal", description = "Obtiene el nombre del último lote donde estuvo el animal")
+    public ResponseEntity<String> getUltimoLoteNombreByAnimal(@PathVariable @NonNull Integer id) {
+        String nombreLote = movimientoService.getUltimoLoteNombreByAnimalId(id);
+        return nombreLote != null ? ResponseEntity.ok(nombreLote) : ResponseEntity.noContent().build();
     }
 
     @GetMapping("/lote/{loteId}/capacity")
