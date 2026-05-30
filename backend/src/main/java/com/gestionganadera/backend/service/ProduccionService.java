@@ -84,9 +84,10 @@ public class ProduccionService {
         repository.deleteById(id);
     }
 
-    public List<ProduccionResumenDTO> getResumen(@NonNull Integer year) {
-        return repository.getResumenByYear(year);
+    public java.math.BigDecimal getPromedioProduccionDiaria() {
+        return repository.getPromedioProduccionDiaria();
     }
+
 
     public ProduccionDTO toDTO(Produccion p) {
         ProduccionDTO dto = new ProduccionDTO();

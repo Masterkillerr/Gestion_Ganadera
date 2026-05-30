@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface AnimalRepository extends JpaRepository<Animal, Integer> {
     Optional<Animal> findByIdentificadorArete(String identificadorArete);
+    long countByEstadoAnimal_Nombre(String nombre);
 }

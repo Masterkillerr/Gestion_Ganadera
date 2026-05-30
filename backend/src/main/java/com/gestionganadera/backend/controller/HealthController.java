@@ -9,9 +9,17 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.Instant;
 import java.util.Map;
 
+import com.gestionganadera.backend.service.AnimalService;
+import com.gestionganadera.backend.service.ProduccionService;
+import lombok.RequiredArgsConstructor;
+import java.math.BigDecimal;
+
 @RestController
-@Tag(name = "Health", description = "Health check endpoint to wake up the backend")
+@RequiredArgsConstructor
+@Tag(name = "Health", description = "Health check and dashboard metrics")
 public class HealthController {
+    private final ProduccionService produccionService;
+    private final AnimalService animalService;
 
     @GetMapping("/health")
     @Operation(summary = "Health check", description = "Returns OK to wake the backend from idle")
@@ -20,5 +28,17 @@ public class HealthController {
             "status", "ok",
             "timestamp", Instant.now().toString()
         ));
+    }
+
+    @GetMapping("/metrics/promedio-leche")
+    @Operation(summary = "Promedio de leche por día")
+    public ResponseEntity<BigDecimal> getPromedioLeche() {
+        return ResponseEntity.ok(produccionService.getPromedioProduccionDiaria());
+    }
+
+    @GetMapping("/metrics/vacas-lactancia")
+    @Operation(summary = "Cantidad de animales en lactancia")
+    public ResponseEntity<Long> getVacasLactancia() {
+        return ResponseEntity.ok(animalService.getCountByEstado("Lactancia"));
     }
 }

@@ -118,11 +118,8 @@ public class AnimalService {
         return animalRepository.save(existingAnimal);
     }
 
-    public void delete(@NonNull Integer id) {
-        animalRepository.findById(id)
-                .ifPresentOrElse(
-                    animal -> animalRepository.deleteById(id),
-                    () -> { throw new RuntimeException("Animal no encontrado"); }
-                );
+    public long getCountByEstado(String estado) {
+        return animalRepository.countByEstadoAnimal_Nombre(estado);
     }
+
 }

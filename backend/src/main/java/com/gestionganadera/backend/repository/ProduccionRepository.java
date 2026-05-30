@@ -20,4 +20,6 @@ public interface ProduccionRepository extends JpaRepository<Produccion, Integer>
            "WHERE YEAR(p.fecha) = :year " +
            "GROUP BY MONTH(p.fecha)")
     List<ProduccionResumenDTO> getResumenByYear(@Param("year") int year);
+    @Query(value = "SELECT ROUND(AVG(total_diario), 2) FROM (SELECT SUM(litros) AS total_diario FROM produccion GROUP BY fecha) AS produccion_diaria", nativeQuery = true)
+    java.math.BigDecimal getPromedioProduccionDiaria();
 }
