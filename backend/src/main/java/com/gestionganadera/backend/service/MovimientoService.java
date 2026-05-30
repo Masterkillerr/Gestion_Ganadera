@@ -121,6 +121,10 @@ public class MovimientoService {
                 .collect(Collectors.toList());
     }
 
+    public Integer getUltimoLoteIdByArete(@NonNull String arete) {
+        return movimientoRepository.findUltimoLoteIdByArete(arete);
+    }
+
     /**
      * Obtiene el último movimiento de un animal.
      */

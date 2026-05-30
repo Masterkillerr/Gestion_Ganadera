@@ -30,12 +30,11 @@ public class MovimientoController {
         return ResponseEntity.ok(movimientoService.getAnimalesByLote(loteId));
     }
 
-    @GetMapping("/animal/{animalId}/ultimo")
-    @Operation(summary = "Último movimiento de un animal", description = "Obtiene el último movimiento registrado de un animal")
-    public ResponseEntity<MovimientoDTO> getUltimoByAnimal(@PathVariable @NonNull Integer animalId) {
-        return movimientoService.findUltimoByAnimalId(animalId)
-                .map(m -> ResponseEntity.ok(movimientoService.toSimpleDTO(m)))
-                .orElse(ResponseEntity.ok(new MovimientoDTO()));
+    @GetMapping("/animal/arete/{arete}/ultimo-lote")
+    @Operation(summary = "Último lote por arete", description = "Obtiene el ID del último lote donde estuvo el animal por arete")
+    public ResponseEntity<Integer> getUltimoLoteByArete(@PathVariable @NonNull String arete) {
+        Integer loteId = movimientoService.getUltimoLoteIdByArete(arete);
+        return loteId != null ? ResponseEntity.ok(loteId) : ResponseEntity.noContent().build();
     }
 
     @GetMapping("/lote/{loteId}/capacity")
