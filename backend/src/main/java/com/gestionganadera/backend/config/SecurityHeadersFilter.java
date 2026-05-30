@@ -15,7 +15,15 @@ public class SecurityHeadersFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
+        jakarta.servlet.http.HttpServletRequest httpRequest = (jakarta.servlet.http.HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+        String path = httpRequest.getRequestURI();
+
+        // Evitar que las directivas estrictas de CSP e iframe bloqueen Swagger UI
+        if (path != null && (path.contains("/swagger-ui") || path.contains("/v3/api-docs"))) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         // HSTS: force HTTPS for 1 year
         httpResponse.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
