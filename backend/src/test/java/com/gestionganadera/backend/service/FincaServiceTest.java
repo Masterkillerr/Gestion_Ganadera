@@ -1,6 +1,7 @@
 package com.gestionganadera.backend.service;
 
 import com.gestionganadera.backend.dto.CreateFincaRequest;
+import com.gestionganadera.backend.dto.FincaDTO;
 import com.gestionganadera.backend.dto.FincaStatsDTO;
 import com.gestionganadera.backend.model.Finca;
 import com.gestionganadera.backend.repository.AnimalRepository;
@@ -46,7 +47,7 @@ class FincaServiceTest {
     void findAll_returnsAllFincas() {
         when(fincaRepository.findAll()).thenReturn(List.of(finca));
 
-        List<Finca> result = fincaService.findAll();
+        List<FincaDTO> result = fincaService.findAll();
 
         assertEquals(1, result.size());
         assertEquals("Mi Finca", result.get(0).getNombre());
@@ -63,7 +64,7 @@ class FincaServiceTest {
     void findById_existing_returnsFinca() {
         when(fincaRepository.findById(1)).thenReturn(Optional.of(finca));
 
-        Optional<Finca> result = fincaService.findById(1);
+        Optional<FincaDTO> result = fincaService.findById(1);
 
         assertTrue(result.isPresent());
         assertEquals("Mi Finca", result.get().getNombre());
@@ -89,7 +90,7 @@ class FincaServiceTest {
 
         when(fincaRepository.save(any(Finca.class))).thenReturn(saved);
 
-        Finca result = fincaService.save(request);
+        FincaDTO result = fincaService.save(request);
 
         assertEquals("Nueva Finca", result.getNombre());
         assertEquals("Campo Verde", result.getUbicacion());
@@ -109,7 +110,7 @@ class FincaServiceTest {
 
         when(fincaRepository.save(any(Finca.class))).thenReturn(saved);
 
-        Finca result = fincaService.save(request);
+        FincaDTO result = fincaService.save(request);
 
         assertEquals("Minimal", result.getNombre());
     }
@@ -129,7 +130,7 @@ class FincaServiceTest {
 
         when(fincaRepository.save(any(Finca.class))).thenReturn(updated);
 
-        Finca result = fincaService.update(1, request);
+        FincaDTO result = fincaService.update(1, request);
 
         assertEquals("Finca Actualizada", result.getNombre());
         assertEquals("Nueva Ubicación", result.getUbicacion());

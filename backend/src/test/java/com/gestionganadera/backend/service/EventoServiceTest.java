@@ -99,10 +99,10 @@ class EventoServiceTest {
     void findByAnimalId_returnsEventos() {
         when(repository.findByAnimalId(10)).thenReturn(List.of(evento));
 
-        List<Evento> result = eventoService.findByAnimalId(10);
+        List<EventoDTO> result = eventoService.findByAnimalId(10);
 
         assertEquals(1, result.size());
-        assertEquals("Salud", result.get(0).getTipoEvento().getNombre());
+        assertEquals("Salud", result.get(0).getTipoEvento());
     }
 
     @Test

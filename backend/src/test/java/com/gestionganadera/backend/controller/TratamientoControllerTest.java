@@ -1,7 +1,7 @@
 package com.gestionganadera.backend.controller;
 
 import com.gestionganadera.backend.dto.CreateTratamientoRequest;
-import com.gestionganadera.backend.model.Tratamiento;
+import com.gestionganadera.backend.dto.TratamientoDTO;
 import com.gestionganadera.backend.service.TratamientoService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,18 +29,18 @@ class TratamientoControllerTest {
     void findAll_returnsList() {
         when(service.findAll()).thenReturn(List.of());
 
-        ResponseEntity<List<Tratamiento>> response = controller.findAll();
+        ResponseEntity<List<TratamientoDTO>> response = controller.findAll();
 
         assertEquals(200, response.getStatusCode().value());
     }
 
     @Test
     void findById_returnsTratamiento() {
-        Tratamiento t = new Tratamiento();
+        TratamientoDTO t = new TratamientoDTO();
         t.setId(1);
         when(service.findById(1)).thenReturn(t);
 
-        ResponseEntity<Tratamiento> response = controller.findById(1);
+        ResponseEntity<TratamientoDTO> response = controller.findById(1);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
@@ -54,11 +54,11 @@ class TratamientoControllerTest {
         request.setDosisMl("10ml");
         request.setFechaInicio(LocalDate.now());
 
-        Tratamiento saved = new Tratamiento();
+        TratamientoDTO saved = new TratamientoDTO();
         saved.setId(1);
         when(service.save(request)).thenReturn(saved);
 
-        ResponseEntity<Tratamiento> response = controller.create(request);
+        ResponseEntity<TratamientoDTO> response = controller.create(request);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
@@ -69,11 +69,11 @@ class TratamientoControllerTest {
         CreateTratamientoRequest request = new CreateTratamientoRequest();
         request.setDosisMl("15ml");
 
-        Tratamiento updated = new Tratamiento();
+        TratamientoDTO updated = new TratamientoDTO();
         updated.setId(1);
         when(service.update(1, request)).thenReturn(updated);
 
-        ResponseEntity<Tratamiento> response = controller.update(1, request);
+        ResponseEntity<TratamientoDTO> response = controller.update(1, request);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());

@@ -2,6 +2,7 @@ package com.gestionganadera.backend.service;
 
 import com.gestionganadera.backend.dto.CreateLoteRequest;
 import com.gestionganadera.backend.model.Finca;
+import com.gestionganadera.backend.dto.LoteDTO;
 import com.gestionganadera.backend.model.Lote;
 import com.gestionganadera.backend.repository.FincaRepository;
 import com.gestionganadera.backend.repository.LoteRepository;
@@ -54,7 +55,7 @@ class LoteServiceTest {
     void findAll_returnsAllLotes() {
         when(loteRepository.findAll()).thenReturn(List.of(lote));
 
-        List<Lote> result = loteService.findAll();
+        List<LoteDTO> result = loteService.findAll();
 
         assertEquals(1, result.size());
         assertEquals("Lote A", result.get(0).getNombre());
@@ -64,7 +65,7 @@ class LoteServiceTest {
     void findById_existing_returnsLote() {
         when(loteRepository.findById(10)).thenReturn(Optional.of(lote));
 
-        Optional<Lote> result = loteService.findById(10);
+        Optional<LoteDTO> result = loteService.findById(10);
 
         assertTrue(result.isPresent());
         assertEquals("Lote A", result.get().getNombre());
@@ -100,7 +101,7 @@ class LoteServiceTest {
 
         when(loteRepository.save(any(Lote.class))).thenReturn(saved);
 
-        Lote result = loteService.save(request);
+        LoteDTO result = loteService.save(request);
 
         assertEquals("Nuevo Lote", result.getNombre());
         assertEquals(15.5, result.getHectareas().doubleValue(), 0.01);
@@ -120,10 +121,10 @@ class LoteServiceTest {
 
         when(loteRepository.save(any(Lote.class))).thenReturn(saved);
 
-        Lote result = loteService.save(request);
+        LoteDTO result = loteService.save(request);
 
         assertEquals("Lote Sin Finca", result.getNombre());
-        assertNull(result.getFinca());
+        assertNull(result.getFincaId());
     }
 
     @Test
@@ -143,7 +144,7 @@ class LoteServiceTest {
 
         when(loteRepository.save(any(Lote.class))).thenReturn(updated);
 
-        Lote result = loteService.update(10, request);
+        LoteDTO result = loteService.update(10, request);
 
         assertEquals("Lote Actualizado", result.getNombre());
         assertEquals(20, result.getHectareas().doubleValue(), 0.01);
@@ -201,10 +202,10 @@ class LoteServiceTest {
 
         when(loteRepository.save(any(Lote.class))).thenReturn(updated);
 
-        Lote result = loteService.update(10, request);
+        LoteDTO result = loteService.update(10, request);
 
         assertEquals("Lote con Finca", result.getNombre());
-        assertNotNull(result.getFinca());
+        assertNotNull(result.getFincaId());
         assertEquals(25, result.getHectareas().doubleValue(), 0.01);
         assertEquals("Bermuda", result.getTipoPasto());
         verify(fincaRepository).findById(1);
@@ -241,7 +242,7 @@ class LoteServiceTest {
         when(fincaRepository.findById(1)).thenReturn(Optional.of(finca));
         when(loteRepository.findByFincaId(1)).thenReturn(List.of(lote));
 
-        List<Lote> result = loteService.findByFincaId(1);
+        List<LoteDTO> result = loteService.findByFincaId(1);
 
         assertEquals(1, result.size());
         assertEquals("Lote A", result.get(0).getNombre());

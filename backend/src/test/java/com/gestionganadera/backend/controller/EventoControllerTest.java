@@ -38,7 +38,7 @@ class EventoControllerTest {
     void findByAnimalId_returnsList() {
         when(service.findByAnimalId(100)).thenReturn(List.of());
 
-        ResponseEntity<List<Evento>> response = controller.findByAnimalId(100);
+        ResponseEntity<List<EventoDTO>> response = controller.findByAnimalId(100);
 
         assertEquals(200, response.getStatusCode().value());
     }
@@ -50,11 +50,12 @@ class EventoControllerTest {
         request.setTipoEventoId(1);
         request.setDescripcion("Revision");
 
-        Evento saved = new Evento();
-        saved.setId(1);
-        when(service.save(request)).thenReturn(saved);
+        EventoDTO savedDTO = new EventoDTO();
+        savedDTO.setId(1);
+        when(service.save(request)).thenReturn(new Evento());
+        when(service.toDTO(any())).thenReturn(savedDTO);
 
-        ResponseEntity<Evento> response = controller.create(request);
+        ResponseEntity<EventoDTO> response = controller.create(request);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());

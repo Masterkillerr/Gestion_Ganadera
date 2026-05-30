@@ -1,6 +1,7 @@
 package com.gestionganadera.backend.service;
 
 import com.gestionganadera.backend.dto.CreateAlimentacionRequest;
+import com.gestionganadera.backend.dto.AlimentacionDTO;
 import com.gestionganadera.backend.model.Alimentacion;
 import com.gestionganadera.backend.model.Animal;
 import com.gestionganadera.backend.model.Dieta;
@@ -65,10 +66,10 @@ class AlimentacionServiceTest {
     void findByAnimalId_returnsAlimentaciones() {
         when(repository.findByAnimalId(10)).thenReturn(List.of(alimentacion));
 
-        List<Alimentacion> result = alimentacionService.findByAnimalId(10);
+        List<AlimentacionDTO> result = alimentacionService.findByAnimalId(10);
 
         assertEquals(1, result.size());
-        assertEquals("Pasto", result.get(0).getDieta().getNombre());
+        assertEquals("Pasto", result.get(0).getDietaNombre());
         assertEquals("Alimentacion test", result.get(0).getObservacion());
     }
 
@@ -85,7 +86,7 @@ class AlimentacionServiceTest {
     void findAll_returnsAllAlimentaciones() {
         when(repository.findAll()).thenReturn(List.of(alimentacion));
 
-        List<Alimentacion> result = alimentacionService.findAll();
+        List<AlimentacionDTO> result = alimentacionService.findAll();
 
         assertEquals(1, result.size());
     }
@@ -96,7 +97,7 @@ class AlimentacionServiceTest {
     void findById_existing_returnsAlimentacion() {
         when(repository.findById(1)).thenReturn(Optional.of(alimentacion));
 
-        Alimentacion result = alimentacionService.findById(1);
+        AlimentacionDTO result = alimentacionService.findById(1);
 
         assertNotNull(result);
         assertEquals(1, result.getId());
@@ -131,7 +132,7 @@ class AlimentacionServiceTest {
 
         when(repository.save(any(Alimentacion.class))).thenReturn(saved);
 
-        Alimentacion result = alimentacionService.save(request);
+        AlimentacionDTO result = alimentacionService.save(request);
 
         assertEquals("Racion diaria", result.getObservacion());
         assertEquals(LocalDateTime.of(2025, 2, 1, 6, 0), result.getFecha());
@@ -155,10 +156,10 @@ class AlimentacionServiceTest {
 
         when(repository.save(any(Alimentacion.class))).thenReturn(saved);
 
-        Alimentacion result = alimentacionService.save(request);
+        AlimentacionDTO result = alimentacionService.save(request);
 
         assertNotNull(result);
-        assertNull(result.getDieta());
+        assertNull(result.getDietaId());
         assertNull(result.getObservacion());
         verify(repository).save(any(Alimentacion.class));
     }
@@ -208,7 +209,7 @@ class AlimentacionServiceTest {
 
         when(repository.save(any(Alimentacion.class))).thenReturn(updated);
 
-        Alimentacion result = alimentacionService.update(1, request);
+        AlimentacionDTO result = alimentacionService.update(1, request);
 
         assertEquals("Actualizado", result.getObservacion());
         verify(repository).save(any(Alimentacion.class));

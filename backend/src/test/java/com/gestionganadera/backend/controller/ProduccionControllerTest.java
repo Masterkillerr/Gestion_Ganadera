@@ -3,7 +3,6 @@ package com.gestionganadera.backend.controller;
 import com.gestionganadera.backend.dto.CreateProduccionRequest;
 import com.gestionganadera.backend.dto.ProduccionDTO;
 import com.gestionganadera.backend.dto.ProduccionResumenDTO;
-import com.gestionganadera.backend.model.Produccion;
 import com.gestionganadera.backend.service.ProduccionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,12 +41,12 @@ class ProduccionControllerTest {
 
     @Test
     void findByAnimalId_returnsList() {
-        Produccion produccion = new Produccion();
+        ProduccionDTO produccion = new ProduccionDTO();
         produccion.setId(1);
         produccion.setLitros(BigDecimal.TEN);
         when(service.findByAnimalId(10)).thenReturn(List.of(produccion));
 
-        ResponseEntity<List<Produccion>> response = controller.findByAnimalId(10);
+        ResponseEntity<List<ProduccionDTO>> response = controller.findByAnimalId(10);
 
         assertEquals(200, response.getStatusCode().value());
         assertEquals(1, response.getBody().size());

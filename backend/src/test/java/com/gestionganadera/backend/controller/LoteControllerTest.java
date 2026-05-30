@@ -1,6 +1,7 @@
 package com.gestionganadera.backend.controller;
 
 import com.gestionganadera.backend.dto.CreateLoteRequest;
+import com.gestionganadera.backend.dto.LoteDTO;
 import com.gestionganadera.backend.model.Lote;
 import com.gestionganadera.backend.service.LoteService;
 import org.junit.jupiter.api.Test;
@@ -27,13 +28,13 @@ class LoteControllerTest {
 
     @Test
     void getAllLotes_returnsList() {
-        Lote lote = new Lote();
+        LoteDTO lote = new LoteDTO();
         lote.setId(1);
         lote.setNombre("Lote A");
 
         when(loteService.findAll()).thenReturn(List.of(lote));
 
-        ResponseEntity<List<Lote>> response = loteController.getAllLotes();
+        ResponseEntity<List<LoteDTO>> response = loteController.getAllLotes();
 
         assertEquals(200, response.getStatusCode().value());
         assertEquals(1, response.getBody().size());
@@ -41,11 +42,11 @@ class LoteControllerTest {
 
     @Test
     void getLoteById_found_returns200() {
-        Lote lote = new Lote();
+        LoteDTO lote = new LoteDTO();
         lote.setId(1);
         when(loteService.findById(1)).thenReturn(Optional.of(lote));
 
-        ResponseEntity<Lote> response = loteController.getLoteById(1);
+        ResponseEntity<LoteDTO> response = loteController.getLoteById(1);
 
         assertEquals(200, response.getStatusCode().value());
     }
@@ -54,7 +55,7 @@ class LoteControllerTest {
     void getLoteById_notFound_returns404() {
         when(loteService.findById(999)).thenReturn(Optional.empty());
 
-        ResponseEntity<Lote> response = loteController.getLoteById(999);
+        ResponseEntity<LoteDTO> response = loteController.getLoteById(999);
 
         assertEquals(404, response.getStatusCode().value());
     }
@@ -64,13 +65,13 @@ class LoteControllerTest {
         CreateLoteRequest request = new CreateLoteRequest();
         request.setNombre("Nuevo Lote");
 
-        Lote saved = new Lote();
+        LoteDTO saved = new LoteDTO();
         saved.setId(2);
         saved.setNombre("Nuevo Lote");
 
         when(loteService.save(request)).thenReturn(saved);
 
-        ResponseEntity<Lote> response = loteController.createLote(request);
+        ResponseEntity<LoteDTO> response = loteController.createLote(request);
 
         assertEquals(200, response.getStatusCode().value());
         assertEquals("Nuevo Lote", response.getBody().getNombre());
@@ -81,13 +82,13 @@ class LoteControllerTest {
         CreateLoteRequest request = new CreateLoteRequest();
         request.setNombre("Actualizado");
 
-        Lote updated = new Lote();
+        LoteDTO updated = new LoteDTO();
         updated.setId(1);
         updated.setNombre("Actualizado");
 
         when(loteService.update(1, request)).thenReturn(updated);
 
-        ResponseEntity<Lote> response = loteController.updateLote(1, request);
+        ResponseEntity<LoteDTO> response = loteController.updateLote(1, request);
 
         assertEquals(200, response.getStatusCode().value());
     }

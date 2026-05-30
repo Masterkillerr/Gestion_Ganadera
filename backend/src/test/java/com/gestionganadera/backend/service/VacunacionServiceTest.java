@@ -1,6 +1,7 @@
 package com.gestionganadera.backend.service;
 
 import com.gestionganadera.backend.dto.CreateVacunacionRequest;
+import com.gestionganadera.backend.dto.VacunacionDTO;
 import com.gestionganadera.backend.model.*;
 import com.gestionganadera.backend.repository.EventoRepository;
 import com.gestionganadera.backend.repository.VacunaRepository;
@@ -63,10 +64,10 @@ class VacunacionServiceTest {
     void findAll_returnsAllVacunaciones() {
         when(repository.findAll()).thenReturn(List.of(vacunacion));
 
-        List<Vacunacion> result = vacunacionService.findAll();
+        List<VacunacionDTO> result = vacunacionService.findAll();
 
         assertEquals(1, result.size());
-        assertEquals("Aftosa", result.get(0).getVacuna().getNombre());
+        assertEquals("Aftosa", result.get(0).getVacunaNombre());
     }
 
     @Test
@@ -82,10 +83,10 @@ class VacunacionServiceTest {
     void findById_returnsVacunacion_whenFound() {
         when(repository.findById(1)).thenReturn(Optional.of(vacunacion));
 
-        Vacunacion result = vacunacionService.findById(1);
+        VacunacionDTO result = vacunacionService.findById(1);
 
         assertNotNull(result);
-        assertEquals("Aftosa", result.getVacuna().getNombre());
+        assertEquals("Aftosa", result.getVacunaNombre());
     }
 
     @Test
@@ -117,7 +118,7 @@ class VacunacionServiceTest {
 
         when(repository.save(any(Vacunacion.class))).thenReturn(saved);
 
-        Vacunacion result = vacunacionService.save(request);
+        VacunacionDTO result = vacunacionService.save(request);
 
         assertEquals(LocalDate.of(2025, 9, 1), result.getProximaDosis());
         assertEquals("Refuerzo anual", result.getObservacion());
@@ -140,7 +141,7 @@ class VacunacionServiceTest {
 
         when(repository.save(any(Vacunacion.class))).thenReturn(saved);
 
-        Vacunacion result = vacunacionService.save(request);
+        VacunacionDTO result = vacunacionService.save(request);
 
         assertNotNull(result);
         assertNull(result.getProximaDosis());
@@ -188,7 +189,7 @@ class VacunacionServiceTest {
         request.setProximaDosis(LocalDate.of(2026, 1, 1));
         request.setObservacion("Actualizado");
 
-        Vacunacion result = vacunacionService.update(1, request);
+        VacunacionDTO result = vacunacionService.update(1, request);
 
         assertEquals(LocalDate.of(2026, 1, 1), result.getProximaDosis());
         assertEquals("Actualizado", result.getObservacion());
@@ -203,7 +204,7 @@ class VacunacionServiceTest {
         CreateVacunacionRequest request = new CreateVacunacionRequest();
         request.setObservacion("Solo observacion");
 
-        Vacunacion result = vacunacionService.update(1, request);
+        VacunacionDTO result = vacunacionService.update(1, request);
 
         assertEquals("Solo observacion", result.getObservacion());
         assertEquals(LocalDate.of(2025, 7, 10), result.getProximaDosis()); // unchanged

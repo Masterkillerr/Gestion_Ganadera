@@ -1,6 +1,7 @@
 package com.gestionganadera.backend.service;
 
 import com.gestionganadera.backend.dto.CreateTratamientoRequest;
+import com.gestionganadera.backend.dto.TratamientoDTO;
 import com.gestionganadera.backend.model.*;
 import com.gestionganadera.backend.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -67,10 +68,10 @@ class TratamientoServiceTest {
     void findAll_returnsTratamientos() {
         when(repository.findAll()).thenReturn(List.of(tratamiento));
 
-        List<Tratamiento> result = tratamientoService.findAll();
+        List<TratamientoDTO> result = tratamientoService.findAll();
 
         assertEquals(1, result.size());
-        assertEquals("Ivermectina", result.get(0).getMedicamento().getNombre());
+        assertEquals("Ivermectina", result.get(0).getMedicamentoNombre());
         assertEquals("10ml", result.get(0).getDosisMl());
     }
 
@@ -80,7 +81,7 @@ class TratamientoServiceTest {
     void findById_existing_returnsTratamiento() {
         when(repository.findById(1)).thenReturn(Optional.of(tratamiento));
 
-        Tratamiento result = tratamientoService.findById(1);
+        TratamientoDTO result = tratamientoService.findById(1);
 
         assertNotNull(result);
         assertEquals(1, result.getId());
@@ -119,7 +120,7 @@ class TratamientoServiceTest {
 
         when(repository.save(any(Tratamiento.class))).thenReturn(saved);
 
-        Tratamiento result = tratamientoService.save(request);
+        TratamientoDTO result = tratamientoService.save(request);
 
         assertEquals("20ml", result.getDosisMl());
         assertEquals("Nuevo tratamiento", result.getObservacion());
@@ -142,7 +143,7 @@ class TratamientoServiceTest {
 
         when(repository.save(any(Tratamiento.class))).thenReturn(saved);
 
-        Tratamiento result = tratamientoService.save(request);
+        TratamientoDTO result = tratamientoService.save(request);
 
         assertNotNull(result);
         verify(repository).save(any(Tratamiento.class));
@@ -193,7 +194,7 @@ class TratamientoServiceTest {
 
         when(repository.save(any(Tratamiento.class))).thenReturn(updated);
 
-        Tratamiento result = tratamientoService.update(1, request);
+        TratamientoDTO result = tratamientoService.update(1, request);
 
         assertEquals("15ml", result.getDosisMl());
         assertEquals("Actualizado", result.getObservacion());

@@ -88,7 +88,7 @@ class ProduccionServiceTest {
     void findByAnimalId_returnsProducciones() {
         when(repository.findByAnimalId(10)).thenReturn(List.of(produccion));
 
-        List<Produccion> result = produccionService.findByAnimalId(10);
+        List<ProduccionDTO> result = produccionService.findByAnimalId(10);
 
         assertEquals(1, result.size());
         assertEquals(BigDecimal.valueOf(25.5), result.get(0).getLitros());

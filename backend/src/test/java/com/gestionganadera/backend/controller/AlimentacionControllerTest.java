@@ -1,7 +1,7 @@
 package com.gestionganadera.backend.controller;
 
+import com.gestionganadera.backend.dto.AlimentacionDTO;
 import com.gestionganadera.backend.dto.CreateAlimentacionRequest;
-import com.gestionganadera.backend.model.Alimentacion;
 import com.gestionganadera.backend.service.AlimentacionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +29,7 @@ class AlimentacionControllerTest {
     void findByAnimalId_returnsList() {
         when(service.findByAnimalId(100)).thenReturn(List.of());
 
-        ResponseEntity<List<Alimentacion>> response = controller.findByAnimalId(100);
+        ResponseEntity<List<AlimentacionDTO>> response = controller.findByAnimalId(100);
 
         assertEquals(200, response.getStatusCode().value());
     }
@@ -42,11 +42,11 @@ class AlimentacionControllerTest {
         request.setFecha(LocalDateTime.now());
         request.setObservacion("Test");
 
-        Alimentacion saved = new Alimentacion();
+        AlimentacionDTO saved = new AlimentacionDTO();
         saved.setId(1);
         when(service.save(request)).thenReturn(saved);
 
-        ResponseEntity<Alimentacion> response = controller.create(request);
+        ResponseEntity<AlimentacionDTO> response = controller.create(request);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());

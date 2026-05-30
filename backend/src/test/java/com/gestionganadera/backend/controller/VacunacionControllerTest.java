@@ -1,7 +1,7 @@
 package com.gestionganadera.backend.controller;
 
 import com.gestionganadera.backend.dto.CreateVacunacionRequest;
-import com.gestionganadera.backend.model.Vacunacion;
+import com.gestionganadera.backend.dto.VacunacionDTO;
 import com.gestionganadera.backend.service.VacunacionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,18 +29,18 @@ class VacunacionControllerTest {
     void findAll_returnsList() {
         when(service.findAll()).thenReturn(List.of());
 
-        ResponseEntity<List<Vacunacion>> response = controller.findAll();
+        ResponseEntity<List<VacunacionDTO>> response = controller.findAll();
 
         assertEquals(200, response.getStatusCode().value());
     }
 
     @Test
     void findById_returnsVacunacion() {
-        Vacunacion v = new Vacunacion();
+        VacunacionDTO v = new VacunacionDTO();
         v.setId(1);
         when(service.findById(1)).thenReturn(v);
 
-        ResponseEntity<Vacunacion> response = controller.findById(1);
+        ResponseEntity<VacunacionDTO> response = controller.findById(1);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
@@ -52,11 +52,11 @@ class VacunacionControllerTest {
         request.setEventoId(1);
         request.setVacunaId(1);
 
-        Vacunacion saved = new Vacunacion();
+        VacunacionDTO saved = new VacunacionDTO();
         saved.setId(1);
         when(service.save(request)).thenReturn(saved);
 
-        ResponseEntity<Vacunacion> response = controller.create(request);
+        ResponseEntity<VacunacionDTO> response = controller.create(request);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
@@ -68,11 +68,11 @@ class VacunacionControllerTest {
         request.setEventoId(1);
         request.setVacunaId(1);
 
-        Vacunacion updated = new Vacunacion();
+        VacunacionDTO updated = new VacunacionDTO();
         updated.setId(1);
         when(service.update(1, request)).thenReturn(updated);
 
-        ResponseEntity<Vacunacion> response = controller.update(1, request);
+        ResponseEntity<VacunacionDTO> response = controller.update(1, request);
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
