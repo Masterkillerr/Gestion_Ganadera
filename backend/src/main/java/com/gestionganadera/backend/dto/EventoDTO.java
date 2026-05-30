@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 public class EventoDTO {
     private Integer id;
     private String fecha;
-    private String tipoEvento;
+    private String tipo;
+    private String tipoEvento; // Legacy field for compatibility
     private String descripcion;
     private Integer animalId;
     private String animalNombre;
