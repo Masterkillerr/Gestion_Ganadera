@@ -1,8 +1,8 @@
 package com.gestionganadera.backend.service;
 
+import com.gestionganadera.backend.dto.AnimalDTO;
 import com.gestionganadera.backend.dto.CreateMovimientoRequest;
 import com.gestionganadera.backend.dto.MovimientoDTO;
-import com.gestionganadera.backend.model.Animal;
 import com.gestionganadera.backend.model.Evento;
 import com.gestionganadera.backend.model.Lote;
 import com.gestionganadera.backend.model.Movimiento;
@@ -112,11 +112,12 @@ public class MovimientoService {
     /**
      * Obtiene los animales cuyo último movimiento tiene como destino el lote indicado.
      */
-    public List<Animal> getAnimalesByLote(@NonNull Integer loteId) {
+    public List<AnimalDTO> getAnimalesByLote(@NonNull Integer loteId) {
         return movimientoRepository.findLatestByLoteDestino(loteId)
                 .stream()
                 .map(m -> m.getEvento().getAnimal())
                 .distinct()
+                .map(AnimalDTO::fromEntity)
                 .collect(Collectors.toList());
     }
 

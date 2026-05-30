@@ -1,8 +1,8 @@
 package com.gestionganadera.backend.controller;
 
+import com.gestionganadera.backend.dto.AnimalDTO;
 import com.gestionganadera.backend.dto.CreateMovimientoRequest;
 import com.gestionganadera.backend.dto.MovimientoDTO;
-import com.gestionganadera.backend.model.Animal;
 import com.gestionganadera.backend.service.MovimientoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,7 +26,7 @@ public class MovimientoController {
 
     @GetMapping("/lote/{loteId}/animales")
     @Operation(summary = "Animales por lote", description = "Obtiene los animales cuyo último movimiento tiene como destino el lote indicado")
-    public ResponseEntity<List<Animal>> getAnimalesByLote(@PathVariable @NonNull Integer loteId) {
+    public ResponseEntity<List<AnimalDTO>> getAnimalesByLote(@PathVariable @NonNull Integer loteId) {
         return ResponseEntity.ok(movimientoService.getAnimalesByLote(loteId));
     }
 
