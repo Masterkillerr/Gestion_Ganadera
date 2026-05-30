@@ -143,6 +143,24 @@ jobs:
             --region ${{ env.AWS_REGION }} \
             --auto-create-application
 
+      - name: Re-check environment Ready before deploy
+        run: |
+          echo "🔍 Re-checking environment is Ready before deploying..."
+          for i in $(seq 1 15); do
+            STATUS=$(aws elasticbeanstalk describe-environments \
+              --environment-names ${{ env.EB_ENVIRONMENT }} \
+              --region ${{ env.AWS_REGION }} \
+              --query 'Environments[0].Status' --output text)
+            if [ "$STATUS" = "Ready" ]; then
+              echo "✅ Environment is Ready."
+              exit 0
+            fi
+            echo "⏳ Status=$STATUS — waiting... ($i/15)"
+            sleep 20
+          done
+          echo "❌ Environment not ready after 5 min, aborting."
+          exit 1
+
       - name: Deploy to Elastic Beanstalk
         run: |
           aws elasticbeanstalk update-environment \
