@@ -70,7 +70,7 @@ class AuthServiceTest {
         validRequest.setPassword("password123");
         validRequest.setRecaptchaToken("valid-token");
 
-        userRole = new Role(1, "USER");
+        userRole = new Role(1, "OPERARIO");
 
         savedUser = new Usuario();
         savedUser.setId(1);
@@ -137,7 +137,7 @@ class AuthServiceTest {
     @Test
     void register_success_returnsUsuarioResponse() {
         when(usuarioRepository.existsByEmail(validRequest.getEmail())).thenReturn(false);
-        when(roleRepository.findByNombre("USER")).thenReturn(Optional.of(userRole));
+        when(roleRepository.findByNombre("OPERARIO")).thenReturn(Optional.of(userRole));
         when(passwordEncoder.encode(validRequest.getPassword())).thenReturn("encoded-password");
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(savedUser);
 
@@ -156,12 +156,12 @@ class AuthServiceTest {
             assertEquals(savedUser.getId(), response.getId());
             assertEquals("Juan Pérez", response.getNombre());
             assertEquals("juan@example.com", response.getEmail());
-            assertEquals("USER", response.getRole());
+            assertEquals("OPERARIO", response.getRole());
             assertNotNull(response.getCreadoEn());
         }
 
         verify(usuarioRepository).existsByEmail("juan@example.com");
-        verify(roleRepository).findByNombre("USER");
+        verify(roleRepository).findByNombre("OPERARIO");
         verify(passwordEncoder).encode("password123");
         verify(usuarioRepository).save(argThat(usuario ->
                 usuario.getNombre().equals("Juan Pérez") &&
@@ -235,7 +235,7 @@ class AuthServiceTest {
             assertNotNull(response);
             assertEquals("test-jwt-token", response.getToken());
             assertEquals("juan@example.com", response.getEmail());
-            assertEquals("USER", response.getRol());
+            assertEquals("OPERARIO", response.getRol());
             assertEquals("Juan Pérez", response.getNombre());
         }
 
@@ -269,7 +269,7 @@ class AuthServiceTest {
 
             LoginResponse response = authService.login(request);
 
-            assertEquals("USER", response.getRol());
+            assertEquals("OPERARIO", response.getRol());
         }
     }
 
@@ -323,7 +323,7 @@ class AuthServiceTest {
     @Test
     void register_success_createsRoleIfNotFound() {
         when(usuarioRepository.existsByEmail(validRequest.getEmail())).thenReturn(false);
-        when(roleRepository.findByNombre("USER")).thenReturn(Optional.empty());
+        when(roleRepository.findByNombre("OPERARIO")).thenReturn(Optional.empty());
         when(roleRepository.save(any(Role.class))).thenReturn(userRole);
         when(passwordEncoder.encode(validRequest.getPassword())).thenReturn("encoded-password");
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(savedUser);
@@ -342,7 +342,7 @@ class AuthServiceTest {
             assertNotNull(response);
             assertEquals("Juan Pérez", response.getNombre());
 
-            verify(roleRepository).save(argThat(role -> role.getNombre().equals("USER")));
+            verify(roleRepository).save(argThat(role -> role.getNombre().equals("OPERARIO")));
         }
     }
 }

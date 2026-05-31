@@ -88,25 +88,43 @@ public class DemoDataSeeder implements CommandLineRunner {
         log.info("  ✓ Catálogos listos");
 
         // ── 1. Roles & Usuarios ──────────────────────────
-        Role adminRole = findByName(roleRepository.findAll(), Role::getNombre, "ADMIN");
-        Role userRole  = findByName(roleRepository.findAll(), Role::getNombre, "USUARIO");
+        Role adminRole  = findByName(roleRepository.findAll(), Role::getNombre, "ADMINISTRADOR");
+        Role operarioRole = findByName(roleRepository.findAll(), Role::getNombre, "OPERARIO");
+        Role veterRole  = findByName(roleRepository.findAll(), Role::getNombre, "VETERINARIO");
+        Role zooteRole  = findByName(roleRepository.findAll(), Role::getNombre, "ZOOTECNISTA");
 
         Usuario admin = new Usuario();
         admin.setNombre("Admin Ganadero");
         admin.setEmail("admin@ganado.com");
         admin.setPassword(passwordEncoder.encode("Admin123!"));
-        admin.setRole(adminRole != null ? adminRole : userRole);
+        admin.setRole(adminRole);
         admin.setCreadoEn(LocalDateTime.now().minusMonths(6));
         usuarioRepository.save(admin);
 
-        Usuario testUser = new Usuario();
-        testUser.setNombre("Usuario Prueba");
-        testUser.setEmail("test@ganado.com");
-        testUser.setPassword(passwordEncoder.encode("Test123!"));
-        testUser.setRole(userRole);
-        testUser.setCreadoEn(LocalDateTime.now().minusMonths(3));
-        usuarioRepository.save(testUser);
-        log.info("  ✓ Usuarios: admin@ganado.com / test@ganado.com");
+        Usuario operario = new Usuario();
+        operario.setNombre("Operario Prueba");
+        operario.setEmail("test@ganado.com");
+        operario.setPassword(passwordEncoder.encode("Test123!"));
+        operario.setRole(operarioRole);
+        operario.setCreadoEn(LocalDateTime.now().minusMonths(3));
+        usuarioRepository.save(operario);
+
+        Usuario veterinario = new Usuario();
+        veterinario.setNombre("Veterinario Prueba");
+        veterinario.setEmail("vet@ganado.com");
+        veterinario.setPassword(passwordEncoder.encode("Vet123!"));
+        veterinario.setRole(veterRole);
+        veterinario.setCreadoEn(LocalDateTime.now().minusMonths(2));
+        usuarioRepository.save(veterinario);
+
+        Usuario zootecnista = new Usuario();
+        zootecnista.setNombre("Zootecnista Prueba");
+        zootecnista.setEmail("zoo@ganado.com");
+        zootecnista.setPassword(passwordEncoder.encode("Zoo123!"));
+        zootecnista.setRole(zooteRole);
+        zootecnista.setCreadoEn(LocalDateTime.now().minusMonths(1));
+        usuarioRepository.save(zootecnista);
+        log.info("  ✓ Usuarios: admin@ganado.com(ADMIN) / test@ganado.com(OP) / vet@ganado.com(VET) / zoo@ganado.com(ZOO)");
 
         // ── 2. Finca ─────────────────────────────────────
         Finca finca = new Finca();
@@ -384,7 +402,7 @@ public class DemoDataSeeder implements CommandLineRunner {
         }
         log.info("  ✓ {} alimentaciones", alimCount);
 
-        log.info("🌱✅ Datos demo listos! admin@ganado.com / test@ganado.com · {} animales · {} lotes · {} producciones · {} reproducciones · {} partos · {} vacunaciones",
+        log.info("🌱✅ Datos demo listos! admin@ganado.com(ADMIN) / test@ganado.com(OP) / vet@ganado.com(VET) / zoo@ganado.com(ZOO) · {} animales · {} lotes · {} producciones · {} reproducciones · {} partos · {} vacunaciones",
                 animales.size(), lotes.size(), prodCount, reproCount, partoCount, vacCount);
     }
 
@@ -392,7 +410,7 @@ public class DemoDataSeeder implements CommandLineRunner {
 
     private void ensureRoles() {
         if (roleRepository.count() == 0) {
-            for (String name : List.of("ADMIN", "USUARIO", "VETERINARIO")) {
+            for (String name : List.of("ADMINISTRADOR", "OPERARIO", "VETERINARIO", "ZOOTECNISTA")) {
                 Role r = new Role();
                 r.setNombre(name);
                 roleRepository.save(r);

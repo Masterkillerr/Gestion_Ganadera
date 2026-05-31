@@ -2,6 +2,7 @@ package com.gestionganadera.backend.exception;
 
 import com.gestionganadera.backend.dto.ErrorResponse;
 import com.gestionganadera.backend.exception.DuplicateResourceException;
+import com.gestionganadera.backend.exception.IllegalOperationException;
 import com.gestionganadera.backend.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +65,17 @@ public class GlobalExceptionHandler {
    System.currentTimeMillis()
   );
   return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+ }
+
+ @ExceptionHandler(IllegalOperationException.class)
+ public ResponseEntity<ErrorResponse> handleIllegalOperation(IllegalOperationException ex) {
+  log.warn("Illegal operation: {}", ex.getMessage());
+  ErrorResponse error = new ErrorResponse(
+   HttpStatus.BAD_REQUEST.value(),
+   ex.getMessage(),
+   System.currentTimeMillis()
+  );
+  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
  }
 
  @ExceptionHandler(IllegalArgumentException.class)

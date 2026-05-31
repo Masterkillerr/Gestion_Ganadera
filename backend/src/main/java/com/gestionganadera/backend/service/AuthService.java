@@ -68,7 +68,7 @@ public class AuthService {
   Usuario usuario = (Usuario) authentication.getPrincipal();
   String token = jwtUtil.generateToken(usuario);
 
-  String roleName = usuario.getRole() != null ? usuario.getRole().getNombre() : "USER";
+  String roleName = usuario.getRole() != null ? usuario.getRole().getNombre() : "OPERARIO";
   return new LoginResponse(token, usuario.getEmail(), roleName, usuario.getNombre());
  }
 
@@ -86,11 +86,11 @@ public class AuthService {
   usuario.setEmail(request.getEmail());
   usuario.setPassword(passwordEncoder.encode(request.getPassword()));
 
-  // Asignar rol USER por defecto
-  Role userRole = roleRepository.findByNombre("USER")
+  // Asignar rol OPERARIO por defecto
+  Role userRole = roleRepository.findByNombre("OPERARIO")
    .orElseGet(() -> {
     Role role = new Role();
-    role.setNombre("USER");
+    role.setNombre("OPERARIO");
     return roleRepository.save(role);
    });
   usuario.setRole(userRole);

@@ -72,9 +72,9 @@ class FullApiIntegrationTest {
     @BeforeEach
     void setUp() {
         // Create test role
-        Role role = roleRepository.findByNombre("USER").orElseGet(() -> {
+        Role role = roleRepository.findByNombre("OPERARIO").orElseGet(() -> {
             Role newRole = new Role();
-            newRole.setNombre("USER");
+            newRole.setNombre("OPERARIO");
             return roleRepository.save(newRole);
         });
 
@@ -109,7 +109,7 @@ class FullApiIntegrationTest {
 
     @Test
     void registerAndLogin_returnsCredentials() {
-        LoginResponse mockLogin = new LoginResponse("mock-jwt-token", "newuser@example.com", "USER", "New User");
+        LoginResponse mockLogin = new LoginResponse("mock-jwt-token", "newuser@example.com", "OPERARIO", "New User");
         when(authService.login(any(LoginRequest.class))).thenReturn(mockLogin);
 
         LoginRequest loginReq = new LoginRequest();
@@ -123,8 +123,8 @@ class FullApiIntegrationTest {
         assertEquals(200, loginResp.getStatusCode().value());
         assertNotNull(Objects.requireNonNull(loginResp.getBody()).getToken());
         assertEquals("newuser@example.com", loginResp.getBody().getEmail());
-        assertEquals("USER", loginResp.getBody().getRol(),
-            "Role field should be 'USER' in the response");
+        assertEquals("OPERARIO", loginResp.getBody().getRol(),
+            "Role field should be 'OPERARIO' in the response");
     }
 
     // ===== Finca CRUD =====

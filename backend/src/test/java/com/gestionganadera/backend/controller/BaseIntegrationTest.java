@@ -81,14 +81,14 @@ public abstract class BaseIntegrationTest {
                 .build();
 
         // Ensure roles exist
-        Role userRole = roleRepository.findByNombre("USER").orElseGet(() -> {
+        Role userRole = roleRepository.findByNombre("OPERARIO").orElseGet(() -> {
             Role role = new Role();
-            role.setNombre("USER");
+            role.setNombre("OPERARIO");
             return roleRepository.save(role);
         });
-        roleRepository.findByNombre("ADMIN").orElseGet(() -> {
+        roleRepository.findByNombre("ADMINISTRADOR").orElseGet(() -> {
             Role role = new Role();
-            role.setNombre("ADMIN");
+            role.setNombre("ADMINISTRADOR");
             return roleRepository.save(role);
         });
 

@@ -24,14 +24,14 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @Operation(summary = "Listar usuarios", description = "Solo accesible con rol ADMIN")
     public ResponseEntity<List<UsuarioDTO>> getAllUsuarios() {
         return ResponseEntity.ok(usuarioService.findAll());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @Operation(summary = "Obtener usuario por ID", description = "Solo accesible con rol ADMIN")
     public ResponseEntity<UsuarioDTO> getUsuarioById(@PathVariable @NonNull Integer id) {
         return usuarioService.findById(id)
@@ -40,21 +40,21 @@ public class UsuarioController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @Operation(summary = "Crear usuario", description = "Solo accesible con rol ADMIN")
     public ResponseEntity<UsuarioDTO> createUsuario(@Valid @RequestBody @NonNull CreateUsuarioRequest request) {
         return ResponseEntity.ok(usuarioService.create(request));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @Operation(summary = "Actualizar usuario", description = "Solo accesible con rol ADMIN")
     public ResponseEntity<UsuarioDTO> updateUsuario(@PathVariable @NonNull Integer id, @Valid @RequestBody @NonNull CreateUsuarioRequest request) {
         return ResponseEntity.ok(usuarioService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @Operation(summary = "Eliminar usuario", description = "Solo accesible con rol ADMIN")
     public ResponseEntity<Void> deleteUsuario(@PathVariable @NonNull Integer id) {
         usuarioService.delete(id);

@@ -53,7 +53,7 @@ public class TestAuthConfig {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 Usuario usuario = (Usuario) authentication.getPrincipal();
                 String token = jwtUtil.generateToken(usuario);
-                String roleName = usuario.getRole() != null ? usuario.getRole().getNombre() : "USER";
+                String roleName = usuario.getRole() != null ? usuario.getRole().getNombre() : "OPERARIO";
                 return new LoginResponse(token, usuario.getEmail(), roleName, usuario.getNombre());
             }
 
@@ -69,10 +69,10 @@ public class TestAuthConfig {
                 usuario.setEmail(request.getEmail());
                 usuario.setPassword(passwordEncoder.encode(request.getPassword()));
 
-                Role userRole = roleRepository.findByNombre("USER")
+                Role userRole = roleRepository.findByNombre("OPERARIO")
                         .orElseGet(() -> {
                             Role role = new Role();
-                            role.setNombre("USER");
+                            role.setNombre("OPERARIO");
                             return roleRepository.save(role);
                         });
                 usuario.setRole(userRole);

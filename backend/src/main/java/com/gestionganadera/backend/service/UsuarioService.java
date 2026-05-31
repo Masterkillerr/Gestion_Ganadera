@@ -5,6 +5,7 @@ import com.gestionganadera.backend.dto.UpdateProfileRequest;
 import com.gestionganadera.backend.dto.UsuarioDTO;
 import com.gestionganadera.backend.exception.DuplicateResourceException;
 import com.gestionganadera.backend.exception.ResourceNotFoundException;
+import com.gestionganadera.backend.exception.IllegalOperationException;
 import com.gestionganadera.backend.model.Role;
 import com.gestionganadera.backend.model.Usuario;
 import com.gestionganadera.backend.repository.RoleRepository;
@@ -63,8 +64,22 @@ public class UsuarioService {
     }
 
     public UsuarioDTO update(@NonNull Integer id, @NonNull CreateUsuarioRequest request) {
+        Usuario currentUser = getCurrentUser();
         return usuarioRepository.findById(id)
                 .map(existing -> {
+                    boolean isTargetAdmin = "ADMINISTRADOR".equals(existing.getRole().getNombre());
+                    boolean isSelf = currentUser.getId().equals(existing.getId());
+
+                    // No permitir cambiar el rol de otro administrador
+                    if (isTargetAdmin && !isSelf) {
+                        throw new IllegalOperationException("No puedes modificar a otro administrador");
+                    }
+
+                    // No permitir que un admin se cambie su propio rol
+                    if (isSelf && request.getRol() != null && !"ADMINISTRADOR".equals(request.getRol())) {
+                        throw new IllegalOperationException("No puedes cambiar tu propio rol de Administrador");
+                    }
+
                     if (request.getNombre() != null) {
                         existing.setNombre(request.getNombre());
                     }
@@ -87,9 +102,28 @@ public class UsuarioService {
     }
 
     public void delete(@NonNull Integer id) {
+        Usuario currentUser = getCurrentUser();
         usuarioRepository.findById(id)
                 .ifPresentOrElse(
-                    usuario -> usuarioRepository.deleteById(id),
+                    usuario -> {
+                        boolean isTargetAdmin = "ADMINISTRADOR".equals(usuario.getRole().getNombre());
+                        boolean isSelf = currentUser.getId().equals(usuario.getId());
+
+                        // No permitir eliminar a otro administrador
+                        if (isTargetAdmin && !isSelf) {
+                            throw new IllegalOperationException("No puedes eliminar a otro administrador");
+                        }
+
+                        // No permitir eliminarse a sí mismo si es el único admin
+                        if (isSelf && isTargetAdmin) {
+                            long adminCount = usuarioRepository.countByRoleNombre("ADMINISTRADOR");
+                            if (adminCount <= 1) {
+                                throw new IllegalOperationException("No puedes eliminar la única cuenta de administrador del sistema");
+                            }
+                        }
+
+                        usuarioRepository.deleteById(id);
+                    },
                     () -> { throw new ResourceNotFoundException("Usuario no encontrado"); }
                 );
     }

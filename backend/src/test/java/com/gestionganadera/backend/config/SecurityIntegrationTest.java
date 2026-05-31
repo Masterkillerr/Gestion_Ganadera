@@ -64,9 +64,9 @@ class SecurityIntegrationTest {
     @BeforeEach
     void setUp() {
         // Create test role
-        Role role = roleRepository.findByNombre("USER").orElseGet(() -> {
+        Role role = roleRepository.findByNombre("OPERARIO").orElseGet(() -> {
             Role newRole = new Role();
-            newRole.setNombre("USER");
+            newRole.setNombre("OPERARIO");
             return roleRepository.save(newRole);
         });
 
@@ -96,7 +96,7 @@ class SecurityIntegrationTest {
 
     @Test
     void loginEndpoint_allowsPublicAccess() {
-        LoginResponse mockResponse = new LoginResponse("mock-token", "test@example.com", "USER", "Test User");
+        LoginResponse mockResponse = new LoginResponse("mock-token", "test@example.com", "OPERARIO", "Test User");
         when(authService.login(any(LoginRequest.class))).thenReturn(mockResponse);
 
         LoginRequest request = new LoginRequest();
@@ -236,9 +236,9 @@ class SecurityIntegrationTest {
         ResponseEntity<String> response = restTemplate.exchange(
             "/usuario", HttpMethod.GET, entity, String.class);
 
-        // @PreAuthorize("hasRole('ADMIN')") should reject USER role → 403 (AccessDeniedException)
+        // @PreAuthorize("hasRole('ADMINISTRADOR')") should reject OPERARIO role → 403 (AccessDeniedException)
         assertEquals(403, response.getStatusCode().value(),
-            "User with USER role should be denied access to admin endpoint");
+            "User with OPERARIO role should be denied access to admin endpoint");
     }
 
     @Test

@@ -107,9 +107,10 @@ public class DataSeeder implements CommandLineRunner {
 
         // Roles
         roleRepository.saveAll(List.of(
-                new Role(null, "ADMIN"),
-                new Role(null, "USUARIO"),
-                new Role(null, "VETERINARIO")
+                new Role(null, "ADMINISTRADOR"),
+                new Role(null, "OPERARIO"),
+                new Role(null, "VETERINARIO"),
+                new Role(null, "ZOOTECNISTA")
         ));
 
         // Razas
