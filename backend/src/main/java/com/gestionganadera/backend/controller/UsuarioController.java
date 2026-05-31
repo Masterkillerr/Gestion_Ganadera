@@ -72,4 +72,11 @@ public class UsuarioController {
     public ResponseEntity<UsuarioDTO> updateProfile(@Valid @RequestBody @NonNull UpdateProfileRequest request) {
         return ResponseEntity.ok(usuarioService.updateProfile(request));
     }
+
+    @DeleteMapping(value = "/profile", produces = "application/json")
+    @Operation(summary = "Eliminar cuenta propia", description = "Elimina la cuenta del usuario autenticado")
+    public ResponseEntity<Void> deleteOwnAccount() {
+        usuarioService.deleteOwnAccount();
+        return ResponseEntity.noContent().build();
+    }
 }

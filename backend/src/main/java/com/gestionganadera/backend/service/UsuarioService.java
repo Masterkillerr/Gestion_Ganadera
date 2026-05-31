@@ -98,6 +98,11 @@ public class UsuarioService {
         return UsuarioDTO.fromEntity(getCurrentUser());
     }
 
+    public void deleteOwnAccount() {
+        Usuario currentUser = getCurrentUser();
+        usuarioRepository.deleteById(currentUser.getId());
+    }
+
     public UsuarioDTO updateProfile(@NonNull UpdateProfileRequest request) {
         Usuario currentUser = getCurrentUser();
 
