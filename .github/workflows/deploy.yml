@@ -152,8 +152,6 @@ jobs:
         run: |
           mkdir -p deploy
           cp target/*.jar deploy/application.jar
-          # Include .ebextensions for environment property declarations
-          cp -r ../.ebextensions deploy/
           cd deploy
           zip -r ../backend-${{ steps.version.outputs.label }}.zip .
 
@@ -170,23 +168,6 @@ jobs:
             --source-bundle S3Bucket="${{ env.EB_S3_BUCKET }}",S3Key="backend/backend-${{ steps.version.outputs.label }}.zip" \
             --region ${{ env.AWS_REGION }} \
             --auto-create-application
-
-      - name: Set environment secrets on Elastic Beanstalk
-        # RECAPTCHA_SECRET: if empty, backend skips reCAPTCHA validation.
-        # JWT_SECRET:      if empty, app fails at startup (HMAC-SHA needs
-        #                  ≥256-bit key), forcing it to be configured.
-        #                  The hardcoded fallback is insecure
-        #                  ('defaultSecretThatMustBeChangedInProduction').
-        # Multiple --option-settings flags are combined into a single call
-        # to avoid an "Environment update in progress" conflict.
-        run: |
-          echo "🔑 Setting RECAPTCHA_SECRET + JWT_SECRET from GitHub secrets..."
-          # Use CLI shorthand syntax to avoid fragile JSON escaping
-          aws elasticbeanstalk update-environment \
-            --environment-name ${{ env.EB_ENVIRONMENT }} \
-            --region ${{ env.AWS_REGION }} \
-            --option-settings "Namespace=aws:elasticbeanstalk:application:environment,OptionName=RECAPTCHA_SECRET,Value=${{ secrets.RECAPTCHA_SECRET }}" \
-            --option-settings "Namespace=aws:elasticbeanstalk:application:environment,OptionName=JWT_SECRET,Value=${{ secrets.JWT_SECRET }}"
 
       - name: Re-check environment Ready before deploy
         run: |
@@ -275,11 +256,6 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          # reCAPTCHA: requires BOTH VITE_RECAPTCHA_SITE_KEY (here) AND
-          # RECAPTCHA_SECRET (set in Elastic Beanstalk env vars) to work.
-          # If either is empty/not set, both frontend and backend skip reCAPTCHA.
-          # When enabling reCAPTCHA: also add RECAPTCHA_SECRET to repo secrets
-          # and it will be injected into EB during deploy-backend.
           VITE_RECAPTCHA_SITE_KEY: 6LdghgEtAAAAACIFocLD44eu2xdytjFDhRTkb9wA
           VITE_API_URL: https://d3gw8tv95pui9q.cloudfront.net
 
