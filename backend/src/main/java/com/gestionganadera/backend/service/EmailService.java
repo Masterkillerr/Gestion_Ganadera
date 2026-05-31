@@ -48,12 +48,12 @@ public class EmailService {
     public void sendWelcomeEmail(String toEmail, String nombre) {
         if (mailSender == null || fromEmail == null || fromEmail.isBlank()) return;
 
-        String subject = "Bienvenido a GestGan";
+        String subject = "Bienvenido a GreenField";
         String text = String.format(
                 "Hola %s!\n\n" +
-                "Gracias por registrarte en GestGan, tu sistema de gestión ganadera.\n" +
+                "Gracias por registrarte en GreenField, tu sistema de gestión ganadera.\n" +
                 "Ya podés comenzar a registrar tu hato, lotes, producciones y mucho más.\n\n" +
-                "Saludos,\nEquipo GestGan",
+                "Saludos,\nEquipo GreenField",
                 nombre);
 
         SimpleMailMessage msg = new SimpleMailMessage();
@@ -63,7 +63,9 @@ public class EmailService {
         msg.setText(text);
 
         try {
-            mailSender.send(msg);
-        } catch (Exception ignored) { }
+         mailSender.send(msg);
+        } catch (Exception ex) {
+         throw new IllegalStateException("No se pudo enviar el correo de bienvenida", ex);
+        }
     }
 }

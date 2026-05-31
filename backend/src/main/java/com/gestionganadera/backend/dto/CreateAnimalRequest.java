@@ -2,6 +2,7 @@ package com.gestionganadera.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class CreateAnimalRequest {
     private Integer razaId;
 
     @NotNull(message = "La fecha de nacimiento es obligatoria")
+    @Past(message = "La fecha de nacimiento no puede ser futura")
     private LocalDate fechaNacimiento;
 
     @Positive(message = "El peso debe ser positivo")

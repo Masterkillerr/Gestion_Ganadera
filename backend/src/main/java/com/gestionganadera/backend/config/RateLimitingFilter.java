@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -15,69 +16,81 @@ import java.util.concurrent.TimeUnit;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import lombok.RequiredArgsConstructor;
 
 @Component
-@Order(1)
+@RequiredArgsConstructor
 public class RateLimitingFilter implements Filter {
 
-    private final Map<String, RateLimitEntry> attempts = new ConcurrentHashMap<>();
-    private ScheduledExecutorService cleanupScheduler;
+ private static final Set<String> AUTH_PREFIXES = Set.of(
+  "/auth/login",
+  "/auth/register",
+  "/auth/forgot-password",
+  "/auth/reset-password"
+ );
 
-    // Max 5 attempts per IP per minute for auth endpoints
-    private static final int MAX_ATTEMPTS = 5;
-    private static final long WINDOW_MILLIS = TimeUnit.MINUTES.toMillis(1);
+ private final Map<String, RateLimitEntry> attempts = new ConcurrentHashMap<>();
+ private ScheduledExecutorService cleanupScheduler;
 
-    @PostConstruct
-    public void init() {
-        cleanupScheduler = Executors.newSingleThreadScheduledExecutor();
-        // Clean up stale entries every 5 minutes to prevent memory leaks
-        cleanupScheduler.scheduleAtFixedRate(() -> {
-            long now = System.currentTimeMillis();
-            attempts.entrySet().removeIf(entry ->
-                now - entry.getValue().timestamp() > WINDOW_MILLIS);
-        }, 5, 5, TimeUnit.MINUTES);
-    }
+ // Max 5 attempts per IP per minute for auth endpoints
+ private static final int MAX_ATTEMPTS = 5;
+ private static final long WINDOW_MILLIS = TimeUnit.MINUTES.toMillis(1);
 
-    @PreDestroy
-    public void destroy() {
-        if (cleanupScheduler != null) {
-            cleanupScheduler.shutdown();
-        }
-    }
+ private boolean isAuthPath(String path) {
+  return AUTH_PREFIXES.stream().anyMatch(path::startsWith);
+ }
 
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
-            throws IOException, ServletException {
+ @PostConstruct
+ public void init() {
+  cleanupScheduler = Executors.newSingleThreadScheduledExecutor();
+  // Clean up stale entries every 5 minutes to prevent memory leaks
+  cleanupScheduler.scheduleAtFixedRate(() -> {
+   long now = System.currentTimeMillis();
+   attempts.entrySet().removeIf(entry ->
+    now - entry.getValue().timestamp() > WINDOW_MILLIS);
+  }, 5, 5, TimeUnit.MINUTES);
+ }
 
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        HttpServletResponse response = (HttpServletResponse) servletResponse;
+ @PreDestroy
+ public void destroy() {
+  if (cleanupScheduler != null) {
+   cleanupScheduler.shutdown();
+  }
+ }
 
-        String path = request.getRequestURI();
-        // Only rate limit auth endpoints
-        if (!path.contains("/auth/")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+ @Override
+ public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+ throws IOException, ServletException {
 
-        String clientIp = getClientIp(request);
-        long now = System.currentTimeMillis();
+  HttpServletRequest request = (HttpServletRequest) servletRequest;
+  HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        RateLimitEntry entry = attempts.compute(clientIp, (key, existing) -> {
-            if (existing == null || now - existing.timestamp() > WINDOW_MILLIS) {
-                return new RateLimitEntry(1, now);
-            }
-            return new RateLimitEntry(existing.count() + 1, existing.timestamp());
-        });
+  String path = request.getRequestURI();
+  // Only rate limit auth endpoints
+  if (!isAuthPath(path)) {
+   filterChain.doFilter(request, response);
+   return;
+  }
 
-        if (entry.count() > MAX_ATTEMPTS) {
-            response.setStatus(429);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"status\":429,\"message\":\"Demasiadas solicitudes. Intenta de nuevo en 1 minuto.\",\"timestamp\":" + now + "}");
-            return;
-        }
+  String clientIp = getClientIp(request);
+  long now = System.currentTimeMillis();
 
-        filterChain.doFilter(request, response);
-    }
+  RateLimitEntry entry = attempts.compute(clientIp, (key, existing) -> {
+   if (existing == null || now - existing.timestamp() > WINDOW_MILLIS) {
+    return new RateLimitEntry(1, now);
+   }
+   return new RateLimitEntry(existing.count() + 1, existing.timestamp());
+  });
+
+  if (entry.count() > MAX_ATTEMPTS) {
+   response.setStatus(429);
+   response.setContentType("application/json");
+   response.getWriter().write("{\"status\":429,\"message\":\"Demasiadas solicitudes. Intenta de nuevo en 1 minuto.\",\"timestamp\":" + now + "}");
+   return;
+  }
+
+  filterChain.doFilter(request, response);
+ }
 
     private String getClientIp(HttpServletRequest request) {
         String xForwardedFor = request.getHeader("X-Forwarded-For");

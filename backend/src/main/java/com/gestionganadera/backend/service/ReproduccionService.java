@@ -110,12 +110,14 @@ public class ReproduccionService {
         reproduccionRepository.delete(r);
     }
 
-    public List<PartosProximosDTO> getProximosPartos() {
-        LocalDate today = LocalDate.now();
-        LocalDate twoMonthsFromNow = today.plusMonths(2);
+    private static final int PROXIMOS_PARTOS_MONTHS = 2;
 
-        return reproduccionRepository
-                .findByFechaPartoEstimadaBetween(today, twoMonthsFromNow)
+     public List<PartosProximosDTO> getProximosPartos() {
+     LocalDate today = LocalDate.now();
+     LocalDate twoMonthsFromNow = today.plusMonths(PROXIMOS_PARTOS_MONTHS);
+
+     return reproduccionRepository
+     .findByFechaPartoEstimadaBetween(today, twoMonthsFromNow)
                 .stream()
                 .sorted(Comparator.comparing(Reproduccion::getFechaPartoEstimada))
                 .map(this::toPartosProximosDTO)
