@@ -65,7 +65,7 @@ public class RateLimitingFilter implements Filter {
   HttpServletRequest request = (HttpServletRequest) servletRequest;
   HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-  String path = request.getRequestURI();
+  String path = request.getServletPath();
   // Only rate limit auth endpoints
   if (!isAuthPath(path)) {
    filterChain.doFilter(request, response);

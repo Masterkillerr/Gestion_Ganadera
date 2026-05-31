@@ -44,7 +44,7 @@ class RateLimitingFilterTest {
     @Test
     void nonAuthPath_doesNotRateLimit() throws ServletException, IOException {
         // Arrange
-        when(request.getRequestURI()).thenReturn("/api/animales");
+        when(request.getServletPath()).thenReturn("/api/animales");
 
         // Act
         filter.doFilter(request, response, filterChain);
@@ -57,7 +57,7 @@ class RateLimitingFilterTest {
     @Test
     void authPath_allowsUpToMaxAttempts() throws ServletException, IOException {
         // Arrange
-        when(request.getRequestURI()).thenReturn("/api/auth/login");
+        when(request.getServletPath()).thenReturn("/auth/login");
         when(request.getRemoteAddr()).thenReturn("192.168.1.1");
 
         // Act — 5 requests should pass (MAX_ATTEMPTS = 5)
@@ -73,7 +73,7 @@ class RateLimitingFilterTest {
     @Test
     void authPath_exceedsMaxAttempts_returns429() throws ServletException, IOException {
         // Arrange
-        when(request.getRequestURI()).thenReturn("/api/auth/login");
+        when(request.getServletPath()).thenReturn("/auth/login");
         when(request.getRemoteAddr()).thenReturn("192.168.1.1");
 
         // Act — 6 requests (5 allowed, 6th blocked)
@@ -91,11 +91,11 @@ class RateLimitingFilterTest {
     @Test
     void differentIps_haveSeparateCounters() throws ServletException, IOException {
         // Arrange
-        when(request.getRequestURI()).thenReturn("/api/auth/login");
+        when(request.getServletPath()).thenReturn("/auth/login");
 
         // Create mock for second IP
         HttpServletRequest request2 = mock(HttpServletRequest.class);
-        when(request2.getRequestURI()).thenReturn("/api/auth/login");
+        when(request2.getServletPath()).thenReturn("/auth/login");
         when(request2.getRemoteAddr()).thenReturn("192.168.1.2");
 
         // First IP
@@ -121,7 +121,7 @@ class RateLimitingFilterTest {
     @Test
     void xForwardedFor_usesClientIp() throws ServletException, IOException {
         // Arrange
-        when(request.getRequestURI()).thenReturn("/api/auth/login");
+        when(request.getServletPath()).thenReturn("/auth/login");
         when(request.getHeader("X-Forwarded-For")).thenReturn("203.0.113.1, 10.0.0.1, 192.168.1.1");
 
         // Act — exceed limit for 203.0.113.1
@@ -137,7 +137,7 @@ class RateLimitingFilterTest {
 
     @Test
     void xForwardedFor_empty_fallsBackToRemoteAddr() throws ServletException, IOException {
-        when(request.getRequestURI()).thenReturn("/api/auth/login");
+        when(request.getServletPath()).thenReturn("/auth/login");
         when(request.getHeader("X-Forwarded-For")).thenReturn("");
         when(request.getRemoteAddr()).thenReturn("10.0.0.1");
 
@@ -156,7 +156,7 @@ class RateLimitingFilterTest {
 
     @Test
     void expiredEntry_resetsCounter() throws Exception {
-        when(request.getRequestURI()).thenReturn("/api/auth/login");
+        when(request.getServletPath()).thenReturn("/auth/login");
         when(request.getRemoteAddr()).thenReturn("192.168.1.1");
 
         // Make 3 requests from the same IP
