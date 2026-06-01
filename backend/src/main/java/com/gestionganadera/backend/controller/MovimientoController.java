@@ -61,9 +61,11 @@ public class MovimientoController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar movimientos")
-    public ResponseEntity<Page<MovimientoDTO>> getAll(@PageableDefault(size = 50) Pageable pageable) {
-        return ResponseEntity.ok(movimientoService.findAll(pageable));
+    @Operation(summary = "Listar movimientos", description = "Lista paginada con búsqueda por animal, lote o tipo")
+    public ResponseEntity<Page<MovimientoDTO>> getAll(
+            @PageableDefault(size = 50) Pageable pageable,
+            @RequestParam(required = false) String search) {
+        return ResponseEntity.ok(movimientoService.findAll(pageable, search));
     }
 
     @GetMapping("/{id}")

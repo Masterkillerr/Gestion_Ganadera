@@ -52,9 +52,9 @@ class MovimientoControllerTest {
     @Test
     void getAll_returnsPage() {
         Page<MovimientoDTO> page = new PageImpl<>(List.of(createDTO(1)));
-        when(movimientoService.findAll(any(Pageable.class))).thenReturn(page);
+        when(movimientoService.findAll(any(Pageable.class), isNull())).thenReturn(page);
 
-        ResponseEntity<Page<MovimientoDTO>> response = controller.getAll(Pageable.unpaged());
+        ResponseEntity<Page<MovimientoDTO>> response = controller.getAll(Pageable.unpaged(), null);
 
         assertEquals(200, response.getStatusCode().value());
         assertEquals(1, response.getBody().getContent().size());

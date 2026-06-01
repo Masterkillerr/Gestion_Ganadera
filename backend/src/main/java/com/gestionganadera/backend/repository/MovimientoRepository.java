@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,4 +37,19 @@ public interface MovimientoRepository extends JpaRepository<Movimiento, Integer>
            "WHERE m.id_lote_destino = :loteId " +
            "AND m.id = (SELECT MAX(m2.id) FROM movimiento m2 WHERE m2.id_evento = m.id_evento)", nativeQuery = true)
     Integer countAnimalesByLote(@Param("loteId") Integer loteId);
+
+    @Query("SELECT m FROM Movimiento m " +
+           "LEFT JOIN m.evento e " +
+           "LEFT JOIN e.animal a " +
+           "LEFT JOIN m.loteOrigen lo " +
+           "LEFT JOIN m.loteDestino ld " +
+           "LEFT JOIN m.tipoMovimiento tm " +
+           "WHERE (:search IS NULL OR :search = '' OR " +
+           "LOWER(a.nombre) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(a.identificadorArete) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(lo.nombre) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(ld.nombre) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(tm.nombre) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(m.motivo) LIKE LOWER(CONCAT('%', :search, '%')))")
+    Page<Movimiento> findBySearch(@Param("search") String search, Pageable pageable);
 }

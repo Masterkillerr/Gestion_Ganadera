@@ -45,6 +45,13 @@ public class MovimientoService {
         return movimientoRepository.findAll(pageable).map(this::toDTO);
     }
 
+    public Page<MovimientoDTO> findAll(Pageable pageable, String search) {
+        if (search == null || search.isBlank()) {
+            return findAll(pageable);
+        }
+        return movimientoRepository.findBySearch(search.trim(), pageable).map(this::toDTO);
+    }
+
     public MovimientoDTO findById(@NonNull Integer id) {
         Movimiento movimiento = movimientoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Movimiento no encontrado"));
