@@ -16,6 +16,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,9 +39,8 @@ public class MovimientoService {
                 .map(this::toDTO).collect(Collectors.toList());
     }
 
-    public List<MovimientoDTO> findAll() {
-        return movimientoRepository.findAll()
-                .stream().map(this::toDTO).collect(Collectors.toList());
+    public Page<MovimientoDTO> findAll(Pageable pageable) {
+        return movimientoRepository.findAll(pageable).map(this::toDTO);
     }
 
     public MovimientoDTO findById(@NonNull Integer id) {

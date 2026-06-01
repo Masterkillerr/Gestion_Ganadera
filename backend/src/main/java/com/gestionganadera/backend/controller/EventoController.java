@@ -12,6 +12,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+
 import java.util.List;
 
 @RestController
@@ -23,9 +27,9 @@ public class EventoController {
     private final EventoService service;
 
     @GetMapping
-    @Operation(summary = "Listar eventos", description = "Obtiene todos los eventos registrados")
-    public ResponseEntity<List<EventoDTO>> findAll() {
-        return ResponseEntity.ok(service.findAll());
+    @Operation(summary = "Listar eventos", description = "Obtiene todos los eventos registrados (paginado)")
+    public ResponseEntity<Page<EventoDTO>> findAll(@PageableDefault(size = 50) Pageable pageable) {
+        return ResponseEntity.ok(service.findAll(pageable));
     }
 
     @GetMapping("/recent")

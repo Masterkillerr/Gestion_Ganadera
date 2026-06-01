@@ -15,6 +15,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,9 +28,8 @@ public class ProduccionService {
     private final AnimalRepository animalRepository;
     private final TurnoProduccionRepository turnoProduccionRepository;
 
-    public List<ProduccionDTO> findAll() {
-        return repository.findAll().stream()
-                .map(this::toDTO).collect(Collectors.toList());
+    public Page<ProduccionDTO> findAll(Pageable pageable) {
+        return repository.findAll(pageable).map(this::toDTO);
     }
 
     public List<ProduccionDTO> findByAnimalId(@NonNull Integer animalId) {

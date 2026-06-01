@@ -10,6 +10,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,13 +50,14 @@ class MovimientoControllerTest {
     }
 
     @Test
-    void getAll_returnsList() {
-        when(movimientoService.findAll()).thenReturn(List.of(createDTO(1)));
+    void getAll_returnsPage() {
+        Page<MovimientoDTO> page = new PageImpl<>(List.of(createDTO(1)));
+        when(movimientoService.findAll(any(Pageable.class))).thenReturn(page);
 
-        ResponseEntity<List<MovimientoDTO>> response = controller.getAll();
+        ResponseEntity<Page<MovimientoDTO>> response = controller.getAll(Pageable.unpaged());
 
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(1, response.getBody().size());
+        assertEquals(1, response.getBody().getContent().size());
     }
 
     @Test

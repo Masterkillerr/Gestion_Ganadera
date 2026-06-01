@@ -11,6 +11,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -28,15 +31,16 @@ class ProduccionControllerTest {
     private ProduccionController controller;
 
     @Test
-    void findAll_returnsList() {
+    void findAll_returnsPage() {
         ProduccionDTO dto = new ProduccionDTO();
         dto.setId(1);
-        when(service.findAll()).thenReturn(List.of(dto));
+        Page<ProduccionDTO> page = new PageImpl<>(List.of(dto));
+        when(service.findAll(any(Pageable.class))).thenReturn(page);
 
-        ResponseEntity<List<ProduccionDTO>> response = controller.findAll();
+        ResponseEntity<Page<ProduccionDTO>> response = controller.findAll(Pageable.unpaged());
 
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(1, response.getBody().size());
+        assertEquals(1, response.getBody().getContent().size());
     }
 
     @Test

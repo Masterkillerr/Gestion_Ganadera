@@ -16,6 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -65,13 +68,14 @@ class EventoServiceTest {
 
     @Test
     void findAll_returnsEventoDTOs() {
-        when(repository.findAll()).thenReturn(List.of(evento));
+        Page<Evento> page = new PageImpl<>(List.of(evento));
+        when(repository.findAll(any(Pageable.class))).thenReturn(page);
 
-        List<EventoDTO> result = eventoService.findAll();
+        Page<EventoDTO> result = eventoService.findAll(Pageable.unpaged());
 
-        assertEquals(1, result.size());
-        assertEquals("Salud", result.get(0).getTipoEvento());
-        assertEquals("Revision veterinaria", result.get(0).getDescripcion());
+        assertEquals(1, result.getContent().size());
+        assertEquals("Salud", result.getContent().get(0).getTipoEvento());
+        assertEquals("Revision veterinaria", result.getContent().get(0).getDescripcion());
     }
 
     // --- findById tests ---

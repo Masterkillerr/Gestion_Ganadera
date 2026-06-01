@@ -12,6 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -100,23 +103,25 @@ class MovimientoServiceTest {
     // --- findAll tests ---
 
     @Test
-    void findAll_returnsList() {
-        when(movimientoRepository.findAll()).thenReturn(List.of(movimiento));
+    void findAll_returnsPage() {
+        Page<Movimiento> page = new PageImpl<>(List.of(movimiento));
+        when(movimientoRepository.findAll(any(Pageable.class))).thenReturn(page);
 
-        List<MovimientoDTO> result = movimientoService.findAll();
+        Page<MovimientoDTO> result = movimientoService.findAll(Pageable.unpaged());
 
-        assertEquals(1, result.size());
-        assertEquals("Vaca Test", result.get(0).getAnimalNombre());
-        assertEquals("Lote Origen", result.get(0).getOrigen());
-        assertEquals("Lote Destino", result.get(0).getDestino());
-        assertEquals("Traslado", result.get(0).getTipoMovimiento());
+        assertEquals(1, result.getContent().size());
+        assertEquals("Vaca Test", result.getContent().get(0).getAnimalNombre());
+        assertEquals("Lote Origen", result.getContent().get(0).getOrigen());
+        assertEquals("Lote Destino", result.getContent().get(0).getDestino());
+        assertEquals("Traslado", result.getContent().get(0).getTipoMovimiento());
     }
 
     @Test
     void findAll_empty_whenNoMovimientos() {
-        when(movimientoRepository.findAll()).thenReturn(List.of());
+        Page<Movimiento> emptyPage = new PageImpl<>(List.of());
+        when(movimientoRepository.findAll(any(Pageable.class))).thenReturn(emptyPage);
 
-        assertTrue(movimientoService.findAll().isEmpty());
+        assertTrue(movimientoService.findAll(Pageable.unpaged()).isEmpty());
     }
 
     // --- findById tests ---

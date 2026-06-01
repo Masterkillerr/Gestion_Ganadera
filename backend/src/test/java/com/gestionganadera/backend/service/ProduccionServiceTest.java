@@ -16,6 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -66,20 +69,22 @@ class ProduccionServiceTest {
 
     @Test
     void findAll_returnsProducciones() {
-        when(repository.findAll()).thenReturn(List.of(produccion));
+        Page<Produccion> page = new PageImpl<>(List.of(produccion));
+        when(repository.findAll(any(Pageable.class))).thenReturn(page);
 
-        List<ProduccionDTO> result = produccionService.findAll();
+        Page<ProduccionDTO> result = produccionService.findAll(Pageable.unpaged());
 
-        assertEquals(1, result.size());
-        assertEquals(BigDecimal.valueOf(25.5), result.get(0).getLitros());
-        assertEquals("Mañana", result.get(0).getTurno());
+        assertEquals(1, result.getContent().size());
+        assertEquals(BigDecimal.valueOf(25.5), result.getContent().get(0).getLitros());
+        assertEquals("Mañana", result.getContent().get(0).getTurno());
     }
 
     @Test
     void findAll_emptyList_whenNoProducciones() {
-        when(repository.findAll()).thenReturn(List.of());
+        Page<Produccion> emptyPage = new PageImpl<>(List.of());
+        when(repository.findAll(any(Pageable.class))).thenReturn(emptyPage);
 
-        assertTrue(produccionService.findAll().isEmpty());
+        assertTrue(produccionService.findAll(Pageable.unpaged()).isEmpty());
     }
 
     // --- findByAnimalId tests ---

@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,10 +32,8 @@ public class AlimentacionService {
                 .collect(Collectors.toList());
     }
 
-    public List<AlimentacionDTO> findAll() {
-        return repository.findAll().stream()
-                .map(AlimentacionDTO::fromEntity)
-                .collect(Collectors.toList());
+    public Page<AlimentacionDTO> findAll(Pageable pageable) {
+        return repository.findAll(pageable).map(AlimentacionDTO::fromEntity);
     }
 
     public AlimentacionDTO findById(@NonNull Integer id) {

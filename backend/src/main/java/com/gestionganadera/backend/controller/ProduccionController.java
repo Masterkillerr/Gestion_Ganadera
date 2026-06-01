@@ -14,6 +14,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+
 import java.util.List;
 
 @RestController
@@ -25,9 +29,9 @@ public class ProduccionController {
     private final ProduccionService service;
 
     @GetMapping
-    @Operation(summary = "Listar producción", description = "Obtiene todos los registros de producción de leche")
-    public ResponseEntity<List<ProduccionDTO>> findAll() {
-        return ResponseEntity.ok(service.findAll());
+    @Operation(summary = "Listar producción", description = "Obtiene todos los registros de producción de leche (paginado)")
+    public ResponseEntity<Page<ProduccionDTO>> findAll(@PageableDefault(size = 9999) Pageable pageable) {
+        return ResponseEntity.ok(service.findAll(pageable));
     }
 
     @GetMapping("/animal/{animalId}")

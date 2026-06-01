@@ -13,6 +13,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,9 +25,8 @@ public class EventoService {
  private final AnimalRepository animalRepository;
  private final TipoEventoRepository tipoEventoRepository;
 
- public List<EventoDTO> findAll() {
- return repository.findAll()
- .stream().map(this::toDTO).collect(Collectors.toList());
+ public Page<EventoDTO> findAll(Pageable pageable) {
+ return repository.findAll(pageable).map(this::toDTO);
  }
 
  public Evento findById(@NonNull Integer id) {
@@ -40,12 +41,13 @@ public class EventoService {
  }
 
  public List<EventoDTO> getRecent() {
- return findAll().stream()
+ return repository.findAll().stream()
  .sorted((a, b) -> {
  if (a.getFecha() == null || b.getFecha() == null) return 0;
  return b.getFecha().compareTo(a.getFecha());
  })
  .limit(20)
+ .map(this::toDTO)
  .collect(Collectors.toList());
  }    @Transactional
     public Evento save(@NonNull CreateEventoRequest request) {
