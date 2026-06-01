@@ -16,8 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.*;
 
 @Service
@@ -126,30 +124,27 @@ public class AnimalService {
     }
 
     public long getCountEnTratamiento() {
-        return animalRepository.countByEstadoAnimal_NombreContainingIgnoreCase("Tratamiento");
+        return animalRepository.countByEstadoAnimal_NombreIgnoreCase("En Tratamiento");
     }
 
     public Map<String, Long> getDistribucionEdad() {
-        List<LocalDate> fechas = animalRepository.findAllFechasNacimiento();
-        long terneros = 0, novillos = 0, adultos = 0, sinDatos = 0;
-
         long totalAnimales = animalRepository.count();
-        sinDatos = totalAnimales - fechas.size();
-
-        LocalDate now = LocalDate.now();
-        for (LocalDate fn : fechas) {
-            if (fn == null) { sinDatos++; continue; }
-            long months = Period.between(fn, now).toTotalMonths();
-            if (months <= 12) terneros++;
-            else if (months <= 24) novillos++;
-            else adultos++;
-        }
+        List<Object[]> raw = animalRepository.findDistribucionEdadRaw();
 
         Map<String, Long> dist = new LinkedHashMap<>();
-        dist.put("terneros", terneros);
-        dist.put("novillos", novillos);
-        dist.put("adultos", adultos);
-        dist.put("sinDatos", sinDatos);
+        dist.put("terneros", 0L);
+        dist.put("novillos", 0L);
+        dist.put("adultos", 0L);
+
+        long conFecha = 0;
+        for (Object[] row : raw) {
+            String categoria = (String) row[0];
+            Long count = ((Number) row[1]).longValue();
+            dist.put(categoria, count);
+            conFecha += count;
+        }
+
+        dist.put("sinDatos", totalAnimales - conFecha);
         return dist;
     }
 
