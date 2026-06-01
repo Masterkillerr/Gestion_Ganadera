@@ -9,6 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
@@ -29,18 +32,19 @@ class AnimalControllerTest {
     private AnimalController animalController;
 
     @Test
-    void getAllAnimales_returnsList() {
+    void getAllAnimales_returnsPage() {
         Animal animal = new Animal();
         animal.setId(1);
         animal.setNombre("Vaca");
 
-        when(animalService.findAll()).thenReturn(List.of(animal));
+        Page<Animal> page = new PageImpl<>(List.of(animal));
+        when(animalService.findAll(any(Pageable.class))).thenReturn(page);
 
-        ResponseEntity<List<AnimalDTO>> response = animalController.getAllAnimales();
+        ResponseEntity<Page<AnimalDTO>> response = animalController.getAllAnimales(Pageable.ofSize(20));
 
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(1, response.getBody().size());
-        assertEquals("Vaca", response.getBody().get(0).getNombre());
+        assertEquals(1, response.getBody().getContent().size());
+        assertEquals("Vaca", response.getBody().getContent().get(0).getNombre());
     }
 
     @Test

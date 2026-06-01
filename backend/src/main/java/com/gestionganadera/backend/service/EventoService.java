@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,13 +62,27 @@ public class EventoService {
  entity.setFecha(request.getFecha());
  }
  return repository.save(entity);
- }
+ }    @Transactional
+    public Evento update(@NonNull Integer id, @NonNull CreateEventoRequest request) {
+        Evento entity = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado con ID " + id));
 
- public void delete(@NonNull Integer id) {
- Evento entity = repository.findById(id)
- .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
- repository.deleteById(entity.getId());
- }
+        entity.setAnimal(animalRepository.findById(request.getAnimalId())
+                .orElseThrow(() -> new EntityNotFoundException("Animal con ID " + request.getAnimalId() + " no encontrado")));
+        entity.setTipoEvento(tipoEventoRepository.findById(request.getTipoEventoId())
+                .orElseThrow(() -> new EntityNotFoundException("Tipo de evento con ID " + request.getTipoEventoId() + " no encontrado")));
+        entity.setDescripcion(request.getDescripcion());
+        if (request.getFecha() != null) {
+            entity.setFecha(request.getFecha());
+        }
+        return repository.save(entity);
+    }
+
+    public void delete(@NonNull Integer id) {
+        Evento entity = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
+        repository.deleteById(entity.getId());
+    }
 
  public EventoDTO toDTO(Evento e) {
  EventoDTO dto = new EventoDTO();

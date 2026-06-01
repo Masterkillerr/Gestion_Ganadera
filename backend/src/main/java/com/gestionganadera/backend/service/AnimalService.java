@@ -11,10 +11,11 @@ import com.gestionganadera.backend.repository.EstadoAnimalRepository;
 import com.gestionganadera.backend.exception.DuplicateResourceException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,8 +27,8 @@ public class AnimalService {
     private final SexoRepository sexoRepository;
     private final EstadoAnimalRepository estadoAnimalRepository;
 
-    public List<Animal> findAll() {
-        return animalRepository.findAll();
+    public Page<Animal> findAll(Pageable pageable) {
+        return animalRepository.findAll(pageable);
     }
 
     public Optional<Animal> findById(@NonNull Integer id) {

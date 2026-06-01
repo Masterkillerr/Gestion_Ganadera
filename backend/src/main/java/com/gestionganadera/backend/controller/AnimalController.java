@@ -7,13 +7,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/animal")
@@ -25,12 +25,9 @@ public class AnimalController {
     private final AnimalService animalService;
 
     @GetMapping
-    @Operation(summary = "Listar animales", description = "Obtiene todos los animales")
-    public ResponseEntity<List<AnimalDTO>> getAllAnimales() {
-        List<AnimalDTO> animales = animalService.findAll().stream()
-                .map(AnimalDTO::fromEntity)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(animales);
+    @Operation(summary = "Listar animales", description = "Obtiene todos los animales (paginado)")
+    public ResponseEntity<Page<AnimalDTO>> getAllAnimales(@PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(animalService.findAll(pageable).map(AnimalDTO::fromEntity));
     }
 
     @GetMapping("/{id}")

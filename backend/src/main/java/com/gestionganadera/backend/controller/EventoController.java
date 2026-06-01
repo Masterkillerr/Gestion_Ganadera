@@ -46,6 +46,13 @@ public class EventoController {
         return ResponseEntity.ok(service.toDTO(service.save(request)));
     }
 
+    @PutMapping("/{id}")
+    @Operation(summary = "Actualizar evento")
+    public ResponseEntity<EventoDTO> update(@PathVariable @NonNull Integer id,
+                                              @Valid @RequestBody @NonNull CreateEventoRequest request) {
+        return ResponseEntity.ok(service.toDTO(service.update(id, request)));
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar evento")
     public ResponseEntity<Void> delete(@PathVariable @NonNull Integer id) {

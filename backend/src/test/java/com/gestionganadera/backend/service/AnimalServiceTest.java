@@ -10,6 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -63,12 +67,13 @@ class AnimalServiceTest {
 
     @Test
     void findAll_returnsAllAnimals() {
-        when(animalRepository.findAll()).thenReturn(List.of(animal));
+        Page<Animal> page = new PageImpl<>(List.of(animal));
+        when(animalRepository.findAll(any(Pageable.class))).thenReturn(page);
 
-        List<Animal> result = animalService.findAll();
+        Page<Animal> result = animalService.findAll(Pageable.ofSize(20));
 
-        assertEquals(1, result.size());
-        assertEquals("Animal Test", result.get(0).getNombre());
+        assertEquals(1, result.getContent().size());
+        assertEquals("Animal Test", result.getContent().get(0).getNombre());
     }
 
     @Test
