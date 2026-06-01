@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,14 +43,9 @@ public class EventoService {
  }
 
  public List<EventoDTO> getRecent() {
- return repository.findAll().stream()
- .sorted((a, b) -> {
- if (a.getFecha() == null || b.getFecha() == null) return 0;
- return b.getFecha().compareTo(a.getFecha());
- })
- .limit(20)
+ return repository.findAll(PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "fecha")))
  .map(this::toDTO)
- .collect(Collectors.toList());
+ .getContent();
  }    @Transactional
     public Evento save(@NonNull CreateEventoRequest request) {
  Animal animal = animalRepository.findById(request.getAnimalId())

@@ -120,7 +120,8 @@ class EventoServiceTest {
 
     @Test
     void getRecent_returnsRecentEventos() {
-        when(repository.findAll()).thenReturn(List.of(evento));
+        Page<Evento> page = new PageImpl<>(List.of(evento));
+        when(repository.findAll(any(Pageable.class))).thenReturn(page);
 
         List<EventoDTO> result = eventoService.getRecent();
 

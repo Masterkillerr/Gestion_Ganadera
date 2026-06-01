@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,11 +34,11 @@ public class MovimientoService {
     private final TipoMovimientoRepository tipoMovimientoRepository;
 
     public List<MovimientoDTO> getRecent() {
-        return movimientoRepository.findAll().stream()
+        return movimientoRepository.findAll(PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "evento.fecha")))
+                .stream()
                 .filter(m -> m.getEvento() != null && m.getEvento().getFecha() != null)
-                .sorted((a, b) -> b.getEvento().getFecha().compareTo(a.getEvento().getFecha()))
-                .limit(20)
-                .map(this::toDTO).collect(Collectors.toList());
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
     public Page<MovimientoDTO> findAll(Pageable pageable) {

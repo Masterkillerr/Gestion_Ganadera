@@ -83,7 +83,8 @@ class MovimientoServiceTest {
 
     @Test
     void getRecent_returnsList() {
-        when(movimientoRepository.findAll()).thenReturn(List.of(movimiento));
+        Page<Movimiento> page = new PageImpl<>(List.of(movimiento));
+        when(movimientoRepository.findAll(any(Pageable.class))).thenReturn(page);
 
         List<MovimientoDTO> result = movimientoService.getRecent();
 
@@ -95,7 +96,8 @@ class MovimientoServiceTest {
 
     @Test
     void getRecent_empty_whenNoMovimientos() {
-        when(movimientoRepository.findAll()).thenReturn(List.of());
+        Page<Movimiento> emptyPage = new PageImpl<>(List.of());
+        when(movimientoRepository.findAll(any(Pageable.class))).thenReturn(emptyPage);
 
         assertTrue(movimientoService.getRecent().isEmpty());
     }
