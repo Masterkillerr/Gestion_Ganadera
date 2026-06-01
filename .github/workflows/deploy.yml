@@ -14,11 +14,11 @@ env:
 # ── Shared Backend Env ──
   EB_APPLICATION: gestion_ganadera_backend
   EB_ENVIRONMENT: Gestionganaderabackend-env
-  EB_S3_BUCKET: elasticbeanstalk-us-east-2-392362834988
+  EB_S3_BUCKET: ${{ secrets.EB_S3_BUCKET }}
 
 # ── Shared Frontend Env ──
-  S3_BUCKET: gestion-ganadera-frontend
-  CF_DISTRIBUTION_ID: E36X49KRLGV2TK
+  S3_BUCKET: ${{ secrets.S3_BUCKET }}
+  CF_DISTRIBUTION_ID: ${{ secrets.CF_DISTRIBUTION_ID }}
 
 jobs:
   # ═══════════════════════════════════════
@@ -256,8 +256,8 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          VITE_RECAPTCHA_SITE_KEY: 6LdghgEtAAAAACIFocLD44eu2xdytjFDhRTkb9wA
-          VITE_API_URL: https://d3gw8tv95pui9q.cloudfront.net
+          VITE_RECAPTCHA_SITE_KEY: ${{ secrets.VITE_RECAPTCHA_SITE_KEY }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
