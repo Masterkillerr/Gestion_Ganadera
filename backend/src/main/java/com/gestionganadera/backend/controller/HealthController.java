@@ -13,6 +13,7 @@ import com.gestionganadera.backend.service.AnimalService;
 import com.gestionganadera.backend.service.ProduccionService;
 import lombok.RequiredArgsConstructor;
 import java.math.BigDecimal;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,5 +41,17 @@ public class HealthController {
     @Operation(summary = "Cantidad de animales en lactancia")
     public ResponseEntity<Long> getVacasLactancia() {
         return ResponseEntity.ok(animalService.getCountByEstado("Lactancia"));
+    }
+
+    @GetMapping("/metrics/en-tratamiento")
+    @Operation(summary = "Cantidad de animales en tratamiento")
+    public ResponseEntity<Long> getEnTratamiento() {
+        return ResponseEntity.ok(animalService.getCountEnTratamiento());
+    }
+
+    @GetMapping("/metrics/distribucion-edad")
+    @Operation(summary = "Distribución de animales por rango etario")
+    public ResponseEntity<Map<String, Long>> getDistribucionEdad() {
+        return ResponseEntity.ok(animalService.getDistribucionEdad());
     }
 }

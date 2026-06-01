@@ -16,7 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -121,6 +123,34 @@ public class AnimalService {
 
     public long getCountByEstado(String estado) {
         return animalRepository.countByEstadoAnimal_Nombre(estado);
+    }
+
+    public long getCountEnTratamiento() {
+        return animalRepository.countByEstadoAnimal_NombreContainingIgnoreCase("Tratamiento");
+    }
+
+    public Map<String, Long> getDistribucionEdad() {
+        List<LocalDate> fechas = animalRepository.findAllFechasNacimiento();
+        long terneros = 0, novillos = 0, adultos = 0, sinDatos = 0;
+
+        long totalAnimales = animalRepository.count();
+        sinDatos = totalAnimales - fechas.size();
+
+        LocalDate now = LocalDate.now();
+        for (LocalDate fn : fechas) {
+            if (fn == null) { sinDatos++; continue; }
+            long months = Period.between(fn, now).toTotalMonths();
+            if (months <= 12) terneros++;
+            else if (months <= 24) novillos++;
+            else adultos++;
+        }
+
+        Map<String, Long> dist = new LinkedHashMap<>();
+        dist.put("terneros", terneros);
+        dist.put("novillos", novillos);
+        dist.put("adultos", adultos);
+        dist.put("sinDatos", sinDatos);
+        return dist;
     }
 
     public void delete(@NonNull Integer id) {
