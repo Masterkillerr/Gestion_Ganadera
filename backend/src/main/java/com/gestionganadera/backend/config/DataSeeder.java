@@ -49,11 +49,18 @@ public class DataSeeder implements CommandLineRunner {
 
         // Estado Animal
         estadoAnimalRepository.saveAll(List.of(
-                new EstadoAnimal(null, "Activo"),
-                new EstadoAnimal(null, "Vendido"),
+                new EstadoAnimal(null, "Sano"),
+                new EstadoAnimal(null, "Vendido/Baja"),
                 new EstadoAnimal(null, "Muerto"),
                 new EstadoAnimal(null, "Enfermo"),
                 new EstadoAnimal(null, "En Tratamiento")
+        ));
+
+        // Gestante / Lactancia / Seca — también agregados en V11 migration
+        estadoAnimalRepository.saveAll(List.of(
+                new EstadoAnimal(null, "Gestante"),
+                new EstadoAnimal(null, "Lactancia"),
+                new EstadoAnimal(null, "Seca")
         ));
 
         // Condición Nacimiento

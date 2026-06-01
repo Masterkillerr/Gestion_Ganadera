@@ -38,9 +38,13 @@ class AnimalControllerTest {
         animal.setNombre("Vaca");
 
         Page<Animal> page = new PageImpl<>(List.of(animal));
-        when(animalService.findAll(any(Pageable.class))).thenReturn(page);
+        String search = null;
+        String estado = null;
+        String sexo = null;
+        Pageable pageable = Pageable.ofSize(20);
+        when(animalService.findAllFiltered(search, estado, sexo, pageable)).thenReturn(page);
 
-        ResponseEntity<Page<AnimalDTO>> response = animalController.getAllAnimales(Pageable.ofSize(20));
+        ResponseEntity<Page<AnimalDTO>> response = animalController.getAllAnimales(search, estado, sexo, pageable);
 
         assertEquals(200, response.getStatusCode().value());
         assertEquals(1, response.getBody().getContent().size());

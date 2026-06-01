@@ -74,8 +74,8 @@ public class DemoDataSeeder implements CommandLineRunner {
         Raza nelore    = ensureRaza("Nelore");
         Raza simmental = ensureRaza("Simmental");
 
-        EstadoAnimal activo         = ensureEstado("Activo");
-        EstadoAnimal vendido        = ensureEstado("Vendido");
+        EstadoAnimal sano           = ensureEstado("Sano");
+        EstadoAnimal vendidoBaja    = ensureEstado("Vendido/Baja");
         EstadoAnimal enfermo        = ensureEstado("Enfermo");
         EstadoAnimal enTratamiento  = ensureEstado("En Tratamiento");
         EstadoAnimal lactancia      = ensureEstado("Lactancia");
@@ -144,39 +144,39 @@ public class DemoDataSeeder implements CommandLineRunner {
         log.info("  ✓ 5 lotes creados");
 
         // ── 4. Animales ──────────────────────────────────
-        Animal toro1 = createAnimal("T-001", "Trueno",    macho, brahman,  activo, LocalDate.of(2020, 3, 15),  new BigDecimal("780.00"), null, null);
-        Animal toro2 = createAnimal("T-002", "Relámpago", macho, brangus,  activo, LocalDate.of(2019, 8, 1),   new BigDecimal("810.00"), null, null);
-        Animal toro3 = createAnimal("T-003", "Cimarrón",  macho, angus,    activo, LocalDate.of(2021, 1, 20),  new BigDecimal("720.00"), null, null);
+        Animal toro1 = createAnimal("T-001", "Trueno",    macho, brahman,  sano, LocalDate.of(2020, 3, 15),  new BigDecimal("780.00"), null, null);
+        Animal toro2 = createAnimal("T-002", "Relámpago", macho, brangus,  sano, LocalDate.of(2019, 8, 1),   new BigDecimal("810.00"), null, null);
+        Animal toro3 = createAnimal("T-003", "Cimarrón",  macho, angus,  sano,   LocalDate.of(2021, 1, 20),  new BigDecimal("720.00"), null, null);
 
-        Animal vaca1  = createAnimal("V-001", "Luna",      hembra, holstein, activo, LocalDate.of(2021, 5, 10),  new BigDecimal("550.00"), null, null);
-        Animal vaca2  = createAnimal("V-002", "Estrella",  hembra, holstein, activo, LocalDate.of(2020, 11, 5),  new BigDecimal("530.00"), null, null);
-        Animal vaca3  = createAnimal("V-003", "Margarita", hembra, nelore,   activo, LocalDate.of(2021, 2, 18),  new BigDecimal("480.00"), null, null);
-        Animal vaca4  = createAnimal("V-004", "Rosa",      hembra, brangus,  activo, LocalDate.of(2022, 4, 22),  new BigDecimal("460.00"), null, null);
-        Animal vaca5  = createAnimal("V-005", "Blanca",    hembra, holstein, activo, LocalDate.of(2020, 7, 30),  new BigDecimal("570.00"), null, null);
-        Animal vaca6  = createAnimal("V-006", "Clavel",    hembra, nelore,   activo, LocalDate.of(2022, 1, 12),  new BigDecimal("440.00"), null, null);
-        Animal vaca7  = createAnimal("V-007", "Aurora",    hembra, holstein, activo, LocalDate.of(2021, 9, 8),   new BigDecimal("520.00"), null, null);
-        Animal vaca8  = createAnimal("V-008", "Lucero",    hembra, brangus,  activo, LocalDate.of(2022, 6, 14),  new BigDecimal("450.00"), null, null);
-        Animal vaca9  = createAnimal("V-009", "Nube",      hembra, holstein, activo, LocalDate.of(2019, 12, 3),  new BigDecimal("600.00"), null, null);
-        Animal vaca10 = createAnimal("V-010", "Coral",     hembra, nelore,   activo, LocalDate.of(2023, 3, 20),  new BigDecimal("420.00"), null, null);
-        Animal vaca11 = createAnimal("V-011", "Perla",     hembra, holstein, activo, LocalDate.of(2021, 7, 25),  new BigDecimal("510.00"), null, null);
-        Animal vaca12 = createAnimal("V-012", "Dulce",     hembra, brangus,  activo, LocalDate.of(2020, 9, 14),  new BigDecimal("490.00"), null, null);
+        Animal vaca1  = createAnimal("V-001", "Luna",      hembra, holstein, sano, LocalDate.of(2021, 5, 10),  new BigDecimal("550.00"), null, null);
+        Animal vaca2  = createAnimal("V-002", "Estrella",  hembra, holstein, sano, LocalDate.of(2020, 11, 5),  new BigDecimal("530.00"), null, null);
+        Animal vaca3  = createAnimal("V-003", "Margarita", hembra, nelore,   sano, LocalDate.of(2021, 2, 18),  new BigDecimal("480.00"), null, null);
+        Animal vaca4  = createAnimal("V-004", "Rosa",      hembra, brangus,  sano, LocalDate.of(2022, 4, 22),  new BigDecimal("460.00"), null, null);
+        Animal vaca5  = createAnimal("V-005", "Blanca",    hembra, holstein, sano, LocalDate.of(2020, 7, 30),  new BigDecimal("570.00"), null, null);
+        Animal vaca6  = createAnimal("V-006", "Clavel",    hembra, nelore,   sano, LocalDate.of(2022, 1, 12),  new BigDecimal("440.00"), null, null);
+        Animal vaca7  = createAnimal("V-007", "Aurora",    hembra, holstein, sano, LocalDate.of(2021, 9, 8),   new BigDecimal("520.00"), null, null);
+        Animal vaca8  = createAnimal("V-008", "Lucero",    hembra, brangus,  sano, LocalDate.of(2022, 6, 14),  new BigDecimal("450.00"), null, null);
+        Animal vaca9  = createAnimal("V-009", "Nube",      hembra, holstein, sano, LocalDate.of(2019, 12, 3),  new BigDecimal("600.00"), null, null);
+        Animal vaca10 = createAnimal("V-010", "Coral",     hembra, nelore,   sano, LocalDate.of(2023, 3, 20),  new BigDecimal("420.00"), null, null);
+        Animal vaca11 = createAnimal("V-011", "Perla",     hembra, holstein, sano, LocalDate.of(2021, 7, 25),  new BigDecimal("510.00"), null, null);
+        Animal vaca12 = createAnimal("V-012", "Dulce",     hembra, brangus,  sano, LocalDate.of(2020, 9, 14),  new BigDecimal("490.00"), null, null);
 
-        Animal novilla1 = createAnimal("N-001", "Campanita", hembra, holstein, activo,  LocalDate.of(2023, 6, 1),   new BigDecimal("320.00"), null, null);
-        Animal novilla2 = createAnimal("N-002", "Brisa",     hembra, brahman,  activo,  LocalDate.of(2023, 8, 15),  new BigDecimal("290.00"), null, null);
-        Animal novilla3 = createAnimal("N-003", "Lluvia",    hembra, nelore,   activo,  LocalDate.of(2024, 1, 10),  new BigDecimal("250.00"), null, null);
-        Animal novilla4 = createAnimal("N-004", "Arena",     hembra, brangus,  activo,  LocalDate.of(2023, 11, 5),  new BigDecimal("280.00"), null, null);
-        Animal novilla5 = createAnimal("N-005", "Cielo",     hembra, holstein, activo,  LocalDate.of(2024, 3, 22),  new BigDecimal("220.00"), null, null);
-        Animal novilla6 = createAnimal("N-006", "Zafiro",    hembra, simmental, activo, LocalDate.of(2023, 5, 30),  new BigDecimal("310.00"), null, null);
+        Animal novilla1 = createAnimal("N-001", "Campanita", hembra, holstein,   sano,  LocalDate.of(2023, 6, 1),   new BigDecimal("320.00"), null, null);
+        Animal novilla2 = createAnimal("N-002", "Brisa",     hembra, brahman,  sano,  LocalDate.of(2023, 8, 15),  new BigDecimal("290.00"), null, null);
+        Animal novilla3 = createAnimal("N-003", "Lluvia",    hembra, nelore,   sano,  LocalDate.of(2024, 1, 10),  new BigDecimal("250.00"), null, null);
+        Animal novilla4 = createAnimal("N-004", "Arena",     hembra, brangus,  sano,  LocalDate.of(2023, 11, 5),  new BigDecimal("280.00"), null, null);
+        Animal novilla5 = createAnimal("N-005", "Cielo",     hembra, holstein,   sano,  LocalDate.of(2024, 3, 22),  new BigDecimal("220.00"), null, null);
+        Animal novilla6 = createAnimal("N-006", "Zafiro",    hembra, simmental, sano, LocalDate.of(2023, 5, 30),  new BigDecimal("310.00"), null, null);
 
-        Animal novillo1 = createAnimal("N-007", "Tormenta", macho, brahman,   activo, LocalDate.of(2023, 4, 12), new BigDecimal("340.00"), null, null);
-        Animal novillo2 = createAnimal("N-008", "Rayo",     macho, brangus,   activo, LocalDate.of(2023, 9, 8),  new BigDecimal("300.00"), null, null);
-        Animal novillo3 = createAnimal("N-009", "Fuego",    macho, angus,     activo, LocalDate.of(2024, 2, 14), new BigDecimal("260.00"), null, null);
-        Animal novillo4 = createAnimal("N-010", "Viento",   macho, simmental, activo, LocalDate.of(2023, 7, 20), new BigDecimal("330.00"), null, null);
+        Animal novillo1 = createAnimal("N-007", "Tormenta", macho, brahman,   sano, LocalDate.of(2023, 4, 12), new BigDecimal("340.00"), null, null);
+        Animal novillo2 = createAnimal("N-008", "Rayo",     macho, brangus,   sano, LocalDate.of(2023, 9, 8),  new BigDecimal("300.00"), null, null);
+        Animal novillo3 = createAnimal("N-009", "Fuego",    macho, angus,   sano,   LocalDate.of(2024, 2, 14), new BigDecimal("260.00"), null, null);
+        Animal novillo4 = createAnimal("N-010", "Viento",   macho, simmental, sano, LocalDate.of(2023, 7, 20), new BigDecimal("330.00"), null, null);
 
-        Animal vendido1 = createAnimal("X-001", "Viejo Roble", macho,  angus,    vendido, LocalDate.of(2018, 3, 10), new BigDecimal("850.00"), null, null);
-        Animal vendido2 = createAnimal("X-002", "Rosita",      hembra, holstein, vendido, LocalDate.of(2019, 6, 5),  new BigDecimal("580.00"), null, null);
+        Animal vendido1 = createAnimal("X-001", "Viejo Roble", macho,  angus,    vendidoBaja, LocalDate.of(2018, 3, 10), new BigDecimal("850.00"), null, null);
+        Animal vendido2 = createAnimal("X-002", "Rosita",      hembra, holstein,  vendidoBaja, LocalDate.of(2019, 6, 5),  new BigDecimal("580.00"), null, null);
         Animal enfermo1 = createAnimal("S-001", "Temblor",     macho,  brahman,  enfermo,  LocalDate.of(2022, 10, 3), new BigDecimal("420.00"), null, null);
-        Animal ternero1 = createAnimal("C-001", "Pequitas",    hembra, holstein, activo,   LocalDate.of(2025, 1, 15), new BigDecimal("120.00"), vaca1, toro1);
+        Animal ternero1 = createAnimal("C-001", "Pequitas",    hembra, holstein,   sano,   LocalDate.of(2025, 1, 15), new BigDecimal("120.00"), vaca1, toro1);
 
         List<Animal> vacas = List.of(vaca1, vaca2, vaca3, vaca4, vaca5, vaca6, vaca7, vaca8, vaca9, vaca10, vaca11, vaca12);
         List<Animal> animales = List.of(
