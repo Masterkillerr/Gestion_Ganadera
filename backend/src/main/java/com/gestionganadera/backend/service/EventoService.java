@@ -47,9 +47,8 @@ public class EventoService {
  })
  .limit(20)
  .collect(Collectors.toList());
- }
-
- public Evento save(@NonNull CreateEventoRequest request) {
+ }    @Transactional
+    public Evento save(@NonNull CreateEventoRequest request) {
  Animal animal = animalRepository.findById(request.getAnimalId())
  .orElseThrow(() -> new EntityNotFoundException("Animal con ID " + request.getAnimalId() + " no encontrado"));
 
@@ -78,6 +77,7 @@ public class EventoService {
         return repository.save(entity);
     }
 
+    @Transactional
     public void delete(@NonNull Integer id) {
         Evento entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));

@@ -11,6 +11,7 @@ import com.gestionganadera.backend.repository.LoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,7 @@ public class FincaService {
                 .map(FincaDTO::fromEntity);
     }
 
+    @Transactional
     public FincaDTO save(@NonNull CreateFincaRequest request) {
         Finca finca = new Finca();
         finca.setNombre(request.getNombre());
@@ -43,6 +45,7 @@ public class FincaService {
         return FincaDTO.fromEntity(fincaRepository.save(finca));
     }
 
+    @Transactional
     public FincaDTO update(@NonNull Integer id, @NonNull CreateFincaRequest request) {
         return fincaRepository.findById(id)
                 .map(existing -> {
@@ -54,6 +57,7 @@ public class FincaService {
                 .orElseThrow(() -> new RuntimeException("Finca no encontrada"));
     }
 
+    @Transactional
     public void delete(@NonNull Integer id) {
         fincaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Finca no encontrada"));

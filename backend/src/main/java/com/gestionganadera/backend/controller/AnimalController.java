@@ -25,9 +25,13 @@ public class AnimalController {
     private final AnimalService animalService;
 
     @GetMapping
-    @Operation(summary = "Listar animales", description = "Obtiene todos los animales (paginado)")
-    public ResponseEntity<Page<AnimalDTO>> getAllAnimales(@PageableDefault(size = 20) Pageable pageable) {
-        return ResponseEntity.ok(animalService.findAll(pageable).map(AnimalDTO::fromEntity));
+    @Operation(summary = "Listar animales", description = "Obtiene todos los animales (paginado, con filtros)")
+    public ResponseEntity<Page<AnimalDTO>> getAllAnimales(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String estado,
+            @RequestParam(required = false) String sexo,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(animalService.findAllFiltered(search, estado, sexo, pageable).map(AnimalDTO::fromEntity));
     }
 
     @GetMapping("/{id}")

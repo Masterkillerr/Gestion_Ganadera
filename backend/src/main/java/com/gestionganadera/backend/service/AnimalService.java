@@ -13,8 +13,10 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -29,6 +31,36 @@ public class AnimalService {
 
     public Page<Animal> findAll(Pageable pageable) {
         return animalRepository.findAll(pageable);
+    }
+
+    public Page<Animal> findAllFiltered(String search, String estado, String sexo, Pageable pageable) {
+        Specification<Animal> spec = (root, query, cb) -> cb.conjunction();
+
+        if (search != null && !search.isBlank()) {
+            String pattern = "%" + search.trim().toLowerCase() + "%";
+            spec = spec.and((root, query, cb) ->
+                cb.or(
+                    cb.like(cb.lower(root.get("identificadorArete")), pattern),
+                    cb.like(cb.lower(root.get("nombre")), pattern)
+                )
+            );
+        }
+
+        if (estado != null && !estado.isBlank()) {
+            String finalEstado = estado;
+            spec = spec.and((root, query, cb) ->
+                cb.equal(cb.lower(root.join("estadoAnimal").get("nombre")), finalEstado.toLowerCase())
+            );
+        }
+
+        if (sexo != null && !sexo.isBlank()) {
+            String finalSexo = sexo;
+            spec = spec.and((root, query, cb) ->
+                cb.equal(cb.lower(root.join("sexo").get("nombre")), finalSexo.toLowerCase())
+            );
+        }
+
+        return animalRepository.findAll(spec, pageable);
     }
 
     public Optional<Animal> findById(@NonNull Integer id) {
@@ -71,6 +103,7 @@ public class AnimalService {
         return animal;
     }
 
+    @Transactional
     public Animal save(@NonNull CreateAnimalRequest request) {
         if (animalRepository.findByIdentificadorArete(request.getIdentificadorArete()).isPresent()) {
             throw new DuplicateResourceException("Ya existe un animal con el arete: " + request.getIdentificadorArete());
@@ -78,6 +111,7 @@ public class AnimalService {
         return animalRepository.save(fromRequest(request));
     }
 
+    @Transactional
     public Animal update(@NonNull Integer id, @NonNull CreateAnimalRequest request) {
      Animal existingAnimal = animalRepository.findById(id)
      .orElseThrow(() -> new EntityNotFoundException("Animal con ID " + id + " no encontrado"));
@@ -148,6 +182,7 @@ public class AnimalService {
         return dist;
     }
 
+    @Transactional
     public void delete(@NonNull Integer id) {
         animalRepository.findById(id)
                 .ifPresentOrElse(

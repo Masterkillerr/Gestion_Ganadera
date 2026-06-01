@@ -14,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.List;
@@ -47,6 +48,7 @@ public class MovimientoService {
         return toDTO(movimiento);
     }
 
+    @Transactional
     public MovimientoDTO create(@NonNull CreateMovimientoRequest request) {
         Evento evento = eventoRepository.findById(request.getEventoId())
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
@@ -73,6 +75,7 @@ public class MovimientoService {
         return toDTO(saved);
     }
 
+    @Transactional
     public MovimientoDTO update(@NonNull Integer id, @NonNull CreateMovimientoRequest request) {
         Movimiento existing = movimientoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Movimiento no encontrado"));
@@ -103,6 +106,7 @@ public class MovimientoService {
         return toDTO(saved);
     }
 
+    @Transactional
     public void delete(@NonNull Integer id) {
         Movimiento entity = movimientoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Movimiento no encontrado"));
