@@ -8,6 +8,7 @@ import com.gestionganadera.backend.model.Role;
 import com.gestionganadera.backend.model.Usuario;
 import com.gestionganadera.backend.repository.RoleRepository;
 import com.gestionganadera.backend.repository.UsuarioRepository;
+import com.gestionganadera.backend.service.AuditService;
 import com.gestionganadera.backend.service.AuthService;
 import com.gestionganadera.backend.service.EmailService;
 import com.gestionganadera.backend.util.JwtUtil;
@@ -43,8 +44,9 @@ public class TestAuthConfig {
             RoleRepository roleRepository,
             JwtUtil jwtUtil,
             PasswordEncoder passwordEncoder,
-            EmailService emailService) {
-        return new AuthService(authenticationManager, usuarioRepository, roleRepository, jwtUtil, passwordEncoder, emailService) {
+            EmailService emailService,
+            AuditService auditService) {
+        return new AuthService(authenticationManager, usuarioRepository, roleRepository, jwtUtil, passwordEncoder, emailService, auditService) {
             @Override
             public LoginResponse login(LoginRequest request) {
                 // Bypass recaptcha — authenticate directly

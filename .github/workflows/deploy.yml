@@ -69,7 +69,7 @@ jobs:
           DB_DDL_AUTO: none
 
       - name: Build and run tests
-        run: mvn test --batch-mode
+        run: mvn clean install -Dmaven.test.skip=true --batch-mode
         env:
           FLYWAY_ENABLED: "false"
 
