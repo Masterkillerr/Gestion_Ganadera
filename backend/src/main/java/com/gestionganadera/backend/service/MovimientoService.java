@@ -10,6 +10,7 @@ import com.gestionganadera.backend.repository.EventoRepository;
 import com.gestionganadera.backend.repository.LoteRepository;
 import com.gestionganadera.backend.repository.MovimientoRepository;
 import com.gestionganadera.backend.repository.TipoMovimientoRepository;
+import com.gestionganadera.backend.util.UserContext;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
@@ -32,9 +33,11 @@ public class MovimientoService {
     private final EventoRepository eventoRepository;
     private final LoteRepository loteRepository;
     private final TipoMovimientoRepository tipoMovimientoRepository;
+    private final UserContext userContext;
 
     public List<MovimientoDTO> getRecent() {
-        return movimientoRepository.findAll(PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "evento.fecha")))
+        Integer userId = userContext.getCurrentUserId();
+        return movimientoRepository.findByUsuarioIdOrderByFechaDesc(userId, PageRequest.of(0, 20))
                 .stream()
                 .filter(m -> m.getEvento() != null && m.getEvento().getFecha() != null)
                 .map(this::toDTO)
@@ -42,14 +45,16 @@ public class MovimientoService {
     }
 
     public Page<MovimientoDTO> findAll(Pageable pageable) {
-        return movimientoRepository.findAll(pageable).map(this::toDTO);
+        Integer userId = userContext.getCurrentUserId();
+        return movimientoRepository.findByUsuarioId(userId, pageable).map(this::toDTO);
     }
 
     public Page<MovimientoDTO> findAll(Pageable pageable, String search) {
         if (search == null || search.isBlank()) {
             return findAll(pageable);
         }
-        return movimientoRepository.findBySearch(search.trim(), pageable).map(this::toDTO);
+        Integer userId = userContext.getCurrentUserId();
+        return movimientoRepository.findBySearchAndUsuarioId(search.trim(), userId, pageable).map(this::toDTO);
     }
 
     public MovimientoDTO findById(@NonNull Integer id) {
@@ -68,6 +73,7 @@ public class MovimientoService {
         Movimiento entity = new Movimiento();
         entity.setEvento(evento);
         entity.setLoteDestino(destino);
+        entity.setUsuario(userContext.getCurrentUser());
 
         if (request.getLoteOrigenId() != null) {
             entity.setLoteOrigen(loteRepository.findById(request.getLoteOrigenId())
@@ -89,6 +95,11 @@ public class MovimientoService {
     public MovimientoDTO update(@NonNull Integer id, @NonNull CreateMovimientoRequest request) {
         Movimiento existing = movimientoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Movimiento no encontrado"));
+
+        Integer userId = userContext.getCurrentUserId();
+        if (!existing.getUsuario().getId().equals(userId)) {
+            throw new IllegalArgumentException("No tienes permiso para actualizar este movimiento");
+        }
 
         Evento evento = eventoRepository.findById(request.getEventoId())
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
@@ -120,6 +131,10 @@ public class MovimientoService {
     public void delete(@NonNull Integer id) {
         Movimiento entity = movimientoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Movimiento no encontrado"));
+        Integer userId = userContext.getCurrentUserId();
+        if (!entity.getUsuario().getId().equals(userId)) {
+            throw new IllegalArgumentException("No tienes permiso para eliminar este movimiento");
+        }
         movimientoRepository.deleteById(id);
     }
 

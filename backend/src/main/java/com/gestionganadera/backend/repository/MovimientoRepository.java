@@ -49,4 +49,24 @@ public interface MovimientoRepository extends JpaRepository<Movimiento, Integer>
            "LOWER(tm.nombre) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(m.motivo) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Movimiento> findBySearch(@Param("search") String search, Pageable pageable);
+
+    Page<Movimiento> findByUsuarioId(Integer usuarioId, Pageable pageable);
+
+    @Query("SELECT m FROM Movimiento m WHERE m.usuario.id = :usuarioId ORDER BY m.evento.fecha DESC")
+    Page<Movimiento> findByUsuarioIdOrderByFechaDesc(@Param("usuarioId") Integer usuarioId, Pageable pageable);
+
+    @Query("SELECT m FROM Movimiento m " +
+           "LEFT JOIN m.evento e " +
+           "LEFT JOIN e.animal a " +
+           "LEFT JOIN m.loteOrigen lo " +
+           "LEFT JOIN m.loteDestino ld " +
+           "LEFT JOIN m.tipoMovimiento tm " +
+           "WHERE m.usuario.id = :usuarioId AND (:search IS NULL OR :search = '' OR " +
+           "LOWER(a.nombre) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(a.identificadorArete) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(lo.nombre) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(ld.nombre) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(tm.nombre) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(m.motivo) LIKE LOWER(CONCAT('%', :search, '%')))")
+    Page<Movimiento> findBySearchAndUsuarioId(@Param("search") String search, @Param("usuarioId") Integer usuarioId, Pageable pageable);
 }
