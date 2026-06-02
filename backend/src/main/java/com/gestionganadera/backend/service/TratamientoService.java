@@ -8,6 +8,7 @@ import com.gestionganadera.backend.model.Tratamiento;
 import com.gestionganadera.backend.repository.EventoRepository;
 import com.gestionganadera.backend.repository.MedicamentoRepository;
 import com.gestionganadera.backend.repository.TratamientoRepository;
+import com.gestionganadera.backend.util.UserContext;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
@@ -23,9 +24,11 @@ public class TratamientoService {
     private final TratamientoRepository repository;
     private final EventoRepository eventoRepository;
     private final MedicamentoRepository medicamentoRepository;
+    private final UserContext userContext;
 
     public List<TratamientoDTO> findAll() {
-        return repository.findAll().stream()
+        Integer userId = userContext.getCurrentUserId();
+        return repository.findByUsuarioId(userId).stream()
                 .map(TratamientoDTO::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -55,6 +58,7 @@ public class TratamientoService {
         entity.setFechaInicio(request.getFechaInicio() != null ? request.getFechaInicio() : LocalDate.now());
         entity.setFechaFin(request.getFechaFin());
         entity.setObservacion(request.getObservacion());
+        entity.setUsuario(userContext.getCurrentUser());
         return TratamientoDTO.fromEntity(repository.save(entity));
     }
 
@@ -62,6 +66,11 @@ public class TratamientoService {
     public TratamientoDTO update(@NonNull Integer id, @NonNull CreateTratamientoRequest request) {
         Tratamiento entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Tratamiento no encontrado"));
+
+        Integer userId = userContext.getCurrentUserId();
+        if (!entity.getUsuario().getId().equals(userId)) {
+            throw new IllegalArgumentException("No tienes permiso para actualizar este tratamiento");
+        }
 
         if (request.getEventoId() != null) {
             entity.setEvento(eventoRepository.findById(request.getEventoId())
@@ -82,6 +91,10 @@ public class TratamientoService {
     public void delete(@NonNull Integer id) {
         Tratamiento entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Tratamiento no encontrado"));
+        Integer userId = userContext.getCurrentUserId();
+        if (!entity.getUsuario().getId().equals(userId)) {
+            throw new IllegalArgumentException("No tienes permiso para eliminar este tratamiento");
+        }
         repository.deleteById(id);
     }
 }
