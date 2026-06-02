@@ -322,5 +322,4 @@ if (rootMsg != null) {
 
 ---
 
-**Auditoría completada por:** Claude Code  
-**Siguiente revisión recomendada:** 2026-07-01
+**Próxima revisión recomendada:** 2026-07-01
