@@ -26,6 +26,7 @@ public class FincaService {
     private final AnimalRepository animalRepository;
     private final LoteRepository loteRepository;
     private final UserContext userContext;
+    private final AuditService auditService;
 
     public List<FincaDTO> findAll() {
         Integer userId = userContext.getCurrentUserId();
@@ -46,7 +47,9 @@ public class FincaService {
         finca.setUbicacion(request.getUbicacion());
         finca.setExtension(request.getExtension());
         finca.setUsuario(userContext.getCurrentUser());
-        return FincaDTO.fromEntity(fincaRepository.save(finca));
+        Finca saved = fincaRepository.save(finca);
+        auditService.logCreate("Finca", saved.getId());
+        return FincaDTO.fromEntity(saved);
     }
 
     @Transactional
@@ -60,7 +63,9 @@ public class FincaService {
                     existing.setNombre(request.getNombre());
                     existing.setUbicacion(request.getUbicacion());
                     existing.setExtension(request.getExtension());
-                    return FincaDTO.fromEntity(fincaRepository.save(existing));
+                    Finca saved = fincaRepository.save(existing);
+                    auditService.logUpdate("Finca", saved.getId(), "nombre, ubicacion, extension");
+                    return FincaDTO.fromEntity(saved);
                 })
                 .orElseThrow(() -> new RuntimeException("Finca no encontrada"));
     }
@@ -73,6 +78,7 @@ public class FincaService {
         if (!finca.getUsuario().getId().equals(userId)) {
             throw new IllegalArgumentException("No tienes permiso para eliminar esta finca");
         }
+        auditService.logDelete("Finca", id);
         fincaRepository.deleteById(id);
     }
 

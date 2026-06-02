@@ -35,6 +35,7 @@ public class AuthService {
  private final JwtUtil jwtUtil;
  private final PasswordEncoder passwordEncoder;
  private final EmailService emailService;
+ private final AuditService auditService;
 
  @Value("${app.recaptcha.secret}")
  private String recaptchaSecret;
@@ -67,6 +68,9 @@ public class AuthService {
   SecurityContextHolder.getContext().setAuthentication(authentication);
   Usuario usuario = (Usuario) authentication.getPrincipal();
   String token = jwtUtil.generateToken(usuario);
+
+  // Log successful login
+  auditService.logLogin(usuario.getEmail());
 
   String roleName = usuario.getRole() != null ? usuario.getRole().getNombre() : "OPERARIO";
   return new LoginResponse(token, usuario.getEmail(), roleName, usuario.getNombre());
