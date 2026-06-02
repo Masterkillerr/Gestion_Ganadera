@@ -142,7 +142,7 @@ jobs:
           cache: maven
 
       - name: Build JAR
-        run: mvn clean package -DskipTests -B
+        run: mvn clean package -Dmaven.test.skip=true -B
 
       - name: Generate version label
         id: version
