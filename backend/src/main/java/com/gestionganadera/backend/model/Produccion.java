@@ -29,6 +29,10 @@ public class Produccion {
     @JoinColumn(name = "id_turno_produccion")
     private TurnoProduccion turnoProduccion;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuario usuario;
+
     @Column(precision = 10, scale = 2)
     private BigDecimal litros;
 

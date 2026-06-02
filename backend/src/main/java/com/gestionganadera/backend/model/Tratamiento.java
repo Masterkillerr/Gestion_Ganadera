@@ -28,6 +28,10 @@ public class Tratamiento {
     @JoinColumn(name = "id_medicamento", nullable = false)
     private Medicamento medicamento;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuario usuario;
+
     @Column(name = "fecha_inicio", nullable = false)
     private LocalDate fechaInicio;
 

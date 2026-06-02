@@ -26,6 +26,10 @@ public class Movimiento {
     private TipoMovimiento tipoMovimiento;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuario usuario;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_lote_origen")
     private Lote loteOrigen;
 

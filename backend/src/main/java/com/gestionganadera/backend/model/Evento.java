@@ -28,6 +28,10 @@ public class Evento {
     @JoinColumn(name = "id_tipo_evento", nullable = false)
     private TipoEvento tipoEvento;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuario usuario;
+
     @Column(nullable = false)
     private LocalDateTime fecha;
 

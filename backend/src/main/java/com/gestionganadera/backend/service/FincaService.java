@@ -8,6 +8,7 @@ import com.gestionganadera.backend.model.Lote;
 import com.gestionganadera.backend.repository.AnimalRepository;
 import com.gestionganadera.backend.repository.FincaRepository;
 import com.gestionganadera.backend.repository.LoteRepository;
+import com.gestionganadera.backend.util.UserContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -24,9 +25,11 @@ public class FincaService {
     private final FincaRepository fincaRepository;
     private final AnimalRepository animalRepository;
     private final LoteRepository loteRepository;
+    private final UserContext userContext;
 
     public List<FincaDTO> findAll() {
-        return fincaRepository.findAll().stream()
+        Integer userId = userContext.getCurrentUserId();
+        return fincaRepository.findByUsuarioId(userId).stream()
                 .map(FincaDTO::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -42,6 +45,7 @@ public class FincaService {
         finca.setNombre(request.getNombre());
         finca.setUbicacion(request.getUbicacion());
         finca.setExtension(request.getExtension());
+        finca.setUsuario(userContext.getCurrentUser());
         return FincaDTO.fromEntity(fincaRepository.save(finca));
     }
 
@@ -49,6 +53,10 @@ public class FincaService {
     public FincaDTO update(@NonNull Integer id, @NonNull CreateFincaRequest request) {
         return fincaRepository.findById(id)
                 .map(existing -> {
+                    Integer userId = userContext.getCurrentUserId();
+                    if (!existing.getUsuario().getId().equals(userId)) {
+                        throw new IllegalArgumentException("No tienes permiso para actualizar esta finca");
+                    }
                     existing.setNombre(request.getNombre());
                     existing.setUbicacion(request.getUbicacion());
                     existing.setExtension(request.getExtension());
@@ -59,8 +67,12 @@ public class FincaService {
 
     @Transactional
     public void delete(@NonNull Integer id) {
-        fincaRepository.findById(id)
+        Finca finca = fincaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Finca no encontrada"));
+        Integer userId = userContext.getCurrentUserId();
+        if (!finca.getUsuario().getId().equals(userId)) {
+            throw new IllegalArgumentException("No tienes permiso para eliminar esta finca");
+        }
         fincaRepository.deleteById(id);
     }
 

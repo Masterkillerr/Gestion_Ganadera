@@ -27,6 +27,10 @@ public class Alimentacion {
     @JoinColumn(name = "id_dieta")
     private Dieta dieta;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuario usuario;
+
     @Column(nullable = false)
     private LocalDateTime fecha;
 
