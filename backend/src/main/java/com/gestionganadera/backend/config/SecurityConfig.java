@@ -34,9 +34,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .requiresChannel(channel -> channel.anyRequest().requiresSecure())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            // CSRF deshabilitado porque usamos JWT Bearer tokens (stateless auth).
-            // Si en el futuro se migra a cookies de sesión, debe habilitarse CSRF.
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider)
@@ -44,6 +43,15 @@ public class SecurityConfig {
                 .requestMatchers("/auth/**", "/health", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
                 .anyRequest().authenticated()
+            )
+            .headers(headers -> headers
+                .xssProtection()
+                .and()
+                .contentSecurityPolicy("default-src 'self'")
+                .and()
+                .httpStrictTransportSecurity()
+                    .maxAgeInSeconds(31536000)
+                    .includeSubDomains(true)
             )
             .exceptionHandling(ex -> ex
             .authenticationEntryPoint((request, response, authException) -> {
@@ -60,7 +68,7 @@ public class SecurityConfig {
             })
         )
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-        
+
         return http.build();
     }
 
