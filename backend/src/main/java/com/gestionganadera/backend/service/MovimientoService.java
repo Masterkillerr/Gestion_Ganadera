@@ -151,7 +151,7 @@ public class MovimientoService {
     }
 
     public Integer getUltimoLoteIdByAnimalId(@NonNull Integer animalId) {
-        return movimientoRepository.findUltimoLoteIdByAnimalId(animalId);
+        return movimientoRepository.findUltimoLoteIdByAnimalId(animalId).orElse(null);
     }
 
     /**

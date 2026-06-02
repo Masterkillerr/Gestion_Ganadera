@@ -45,13 +45,11 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .headers(headers -> headers
-                .xssProtection()
-                .and()
-                .contentSecurityPolicy("default-src 'self'")
-                .and()
-                .httpStrictTransportSecurity()
+                .xssProtection(xss -> {})
+                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'"))
+                .httpStrictTransportSecurity(hsts -> hsts
                     .maxAgeInSeconds(31536000)
-                    .includeSubDomains(true)
+                    .includeSubDomains(true))
             )
             .exceptionHandling(ex -> ex
             .authenticationEntryPoint((request, response, authException) -> {
