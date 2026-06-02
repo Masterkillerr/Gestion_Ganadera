@@ -8,6 +8,7 @@ import com.gestionganadera.backend.model.Dieta;
 import com.gestionganadera.backend.repository.AlimentacionRepository;
 import com.gestionganadera.backend.repository.AnimalRepository;
 import com.gestionganadera.backend.repository.DietaRepository;
+import com.gestionganadera.backend.util.UserContext;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
@@ -25,6 +26,7 @@ public class AlimentacionService {
     private final AlimentacionRepository repository;
     private final AnimalRepository animalRepository;
     private final DietaRepository dietaRepository;
+    private final UserContext userContext;
 
     public List<AlimentacionDTO> findByAnimalId(Integer animalId) {
         return repository.findByAnimalId(animalId).stream()
@@ -33,7 +35,8 @@ public class AlimentacionService {
     }
 
     public Page<AlimentacionDTO> findAll(Pageable pageable) {
-        return repository.findAll(pageable).map(AlimentacionDTO::fromEntity);
+        Integer userId = userContext.getCurrentUserId();
+        return repository.findByUsuarioId(userId, pageable).map(AlimentacionDTO::fromEntity);
     }
 
     public AlimentacionDTO findById(@NonNull Integer id) {
@@ -56,6 +59,7 @@ public class AlimentacionService {
         entity.setDieta(dieta);
         entity.setFecha(request.getFecha() != null ? request.getFecha() : LocalDateTime.now());
         entity.setObservacion(request.getObservacion());
+        entity.setUsuario(userContext.getCurrentUser());
         return AlimentacionDTO.fromEntity(repository.save(entity));
     }
 
@@ -63,6 +67,11 @@ public class AlimentacionService {
     public AlimentacionDTO update(@NonNull Integer id, @NonNull CreateAlimentacionRequest request) {
         Alimentacion entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Alimentación no encontrada"));
+
+        Integer userId = userContext.getCurrentUserId();
+        if (!entity.getUsuario().getId().equals(userId)) {
+            throw new IllegalArgumentException("No tienes permiso para actualizar esta alimentación");
+        }
 
         if (request.getAnimalId() != null) {
             entity.setAnimal(animalRepository.findById(request.getAnimalId())
@@ -81,6 +90,10 @@ public class AlimentacionService {
     public void delete(@NonNull Integer id) {
         Alimentacion entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Alimentación no encontrada"));
+        Integer userId = userContext.getCurrentUserId();
+        if (!entity.getUsuario().getId().equals(userId)) {
+            throw new IllegalArgumentException("No tienes permiso para eliminar esta alimentación");
+        }
         repository.deleteById(id);
     }
 }

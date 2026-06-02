@@ -9,6 +9,7 @@ import com.gestionganadera.backend.model.TurnoProduccion;
 import com.gestionganadera.backend.repository.AnimalRepository;
 import com.gestionganadera.backend.repository.ProduccionRepository;
 import com.gestionganadera.backend.repository.TurnoProduccionRepository;
+import com.gestionganadera.backend.util.UserContext;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
@@ -27,9 +28,11 @@ public class ProduccionService {
     private final ProduccionRepository repository;
     private final AnimalRepository animalRepository;
     private final TurnoProduccionRepository turnoProduccionRepository;
+    private final UserContext userContext;
 
     public Page<ProduccionDTO> findAll(Pageable pageable) {
-        return repository.findAll(pageable).map(this::toDTO);
+        Integer userId = userContext.getCurrentUserId();
+        return repository.findByUsuarioId(userId, pageable).map(this::toDTO);
     }
 
     public List<ProduccionDTO> findByAnimalId(@NonNull Integer animalId) {
@@ -56,6 +59,7 @@ public class ProduccionService {
                     .orElseThrow(() -> new EntityNotFoundException("Turno de producción no encontrado")));
         }
         entity.setFecha(request.getFecha());
+        entity.setUsuario(userContext.getCurrentUser());
         return toDTO(repository.save(entity));
     }
 
@@ -63,6 +67,11 @@ public class ProduccionService {
     public ProduccionDTO update(@NonNull Integer id, @NonNull CreateProduccionRequest request) {
         Produccion entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Producción no encontrada"));
+
+        Integer userId = userContext.getCurrentUserId();
+        if (!entity.getUsuario().getId().equals(userId)) {
+            throw new IllegalArgumentException("No tienes permiso para actualizar esta producción");
+        }
 
         if (request.getAnimalId() != null && !request.getAnimalId().equals(entity.getAnimal().getId())) {
             entity.setAnimal(animalRepository.findById(request.getAnimalId())
@@ -82,6 +91,10 @@ public class ProduccionService {
     public void delete(@NonNull Integer id) {
         Produccion entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Producción no encontrada"));
+        Integer userId = userContext.getCurrentUserId();
+        if (!entity.getUsuario().getId().equals(userId)) {
+            throw new IllegalArgumentException("No tienes permiso para eliminar esta producción");
+        }
         repository.deleteById(id);
     }
 

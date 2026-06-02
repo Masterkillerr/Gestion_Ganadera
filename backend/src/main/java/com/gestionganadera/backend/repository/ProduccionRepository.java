@@ -2,6 +2,8 @@ package com.gestionganadera.backend.repository;
 
 import com.gestionganadera.backend.dto.ProduccionResumenDTO;
 import com.gestionganadera.backend.model.Produccion;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +16,7 @@ public interface ProduccionRepository extends JpaRepository<Produccion, Integer>
     List<Produccion> findByAnimalId(Integer animalId);
     List<Produccion> findByAnimalIdIn(List<Integer> animalIds);
     List<Produccion> findByAnimalIdInOrderByFechaDesc(List<Integer> animalIds);
+    Page<Produccion> findByUsuarioId(Integer usuarioId, Pageable pageable);
 
     @Query("SELECT new com.gestionganadera.backend.dto.ProduccionResumenDTO(:year, MONTH(p.fecha), SUM(p.litros), COUNT(p)) " +
            "FROM Produccion p " +
