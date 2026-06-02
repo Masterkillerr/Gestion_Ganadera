@@ -23,19 +23,16 @@ public interface MovimientoRepository extends JpaRepository<Movimiento, Integer>
            "ORDER BY m.id DESC LIMIT 1")
     Optional<Movimiento> findUltimoByAnimalId(@Param("animalId") Integer animalId);
 
-    @Query(value = "SELECT l.id FROM evento e " +
-           "JOIN movimiento m ON e.id = m.id_evento " +
-           "JOIN lote l ON m.id_lote_destino = l.id " +
-           "JOIN animal a ON e.id_animal = a.id " +
-           "WHERE a.id = :animalId " +
-           "ORDER BY e.fecha DESC LIMIT 1", nativeQuery = true)
-    Integer findUltimoLoteIdByAnimalId(@Param("animalId") Integer animalId);
+    @Query("SELECT l.id FROM Movimiento m " +
+           "JOIN m.evento e " +
+           "JOIN m.loteDestino l " +
+           "WHERE e.animal.id = :animalId " +
+           "ORDER BY e.fecha DESC")
+    Optional<Integer> findUltimoLoteIdByAnimalId(@Param("animalId") Integer animalId);
 
-    @Query(value = "SELECT COUNT(a.id) FROM movimiento m " +
-           "JOIN evento e ON e.id = m.id_evento " +
-           "LEFT JOIN animal a ON a.id = e.id_animal " +
-           "WHERE m.id_lote_destino = :loteId " +
-           "AND m.id = (SELECT MAX(m2.id) FROM movimiento m2 WHERE m2.id_evento = m.id_evento)", nativeQuery = true)
+    @Query("SELECT COUNT(DISTINCT e.animal.id) FROM Movimiento m " +
+           "JOIN m.evento e " +
+           "WHERE m.loteDestino.id = :loteId")
     Integer countAnimalesByLote(@Param("loteId") Integer loteId);
 
     @Query("SELECT m FROM Movimiento m " +
